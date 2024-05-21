@@ -39,7 +39,7 @@ class WorkRouter(Router):
             return
 
         request_text = f"Предложение сотрудничеста от {message.from_user.first_name or ''} {message.from_user.last_name or ''} (@{message.from_user.username or ''}):\n\n{message.html_text}"
-        await state.set_data({'request': request_text})
+        await state.set_data({"request": request_text})
 
         await message.answer(
             block_default_text + "\n\n-------\n" + request_text + "\n-------",
@@ -53,8 +53,9 @@ class WorkRouter(Router):
     async def send_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         data = await state.get_data()
 
-        await send_data_to_back(self.bot, data['request'])
+        number = await send_data_to_back(self.bot, data["request"])
 
         await callback.answer(sent_text)
 
-        await self.bot.send_message(callback.from_user.id, reqest_registred_text, reply_markup=make_back_keyboard())
+        await self.bot.send_message(callback.from_user.id, f"Номер обращения - {number}\n\n{reqest_registred_text}", reply_markup=make_back_keyboard())
+        await state.set_data({})

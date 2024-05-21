@@ -1,7 +1,7 @@
 from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.fsm.state import StatesGroup, State
 
 from Routers.DefaultTexts import send_text, sent_text, cancel_text, back_text, back_to_menu_text
@@ -19,6 +19,7 @@ class MainRouter(Router):
 
         self.bot = bot
 
+        self.message.register(self.get_chat_id_hnadler, Command("get_chat_id"))
         self.message.register(self.enter_handler, CommandStart())
         self.callback_query.register(self.enter_callback_handler, F.data == back_text)
         self.callback_query.register(self.enter_callback_handler, F.data == cancel_text)
@@ -27,6 +28,9 @@ class MainRouter(Router):
         self.message.register(self.default_reqest_handler, MainRouterState.default)
         self.message.register(self.default_handler)
         self.callback_query.register(self.default_callback_handler)
+
+    async def get_chat_id_hnadler(self, message: Message) -> None:
+        await message.answer(str(message.chat.id))
 
     async def default_handler(self, message: Message) -> None:
         await message.answer(unknown_action_text, reply_markup=make_back_keyboard())
@@ -60,7 +64,7 @@ class MainRouter(Router):
             return
 
         request_text = f"Обращение от {message.from_user.first_name or ''} {message.from_user.last_name or ''} (@{message.from_user.username or ''}):\n\n{message.html_text}"
-        await state.set_data({'request': request_text})
+        await state.set_data({"request": request_text})
 
         await message.answer(
             block_default_text + "\n\n-------\n" + request_text + "\n-------",
@@ -75,8 +79,9 @@ class MainRouter(Router):
     async def send_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         data = await state.get_data()
 
-        await send_data_to_back(self.bot, data['request'])
+        number = await send_data_to_back(self.bot, data["request"])
 
         await callback.answer(sent_text)
 
-        await self.bot.send_message(callback.from_user.id, reqest_registred_text, reply_markup=make_back_keyboard())
+        await self.bot.send_message(callback.from_user.id, f"Номер обращения - {number}\n\n{reqest_registred_text}", reply_markup=make_back_keyboard())
+        await state.set_data({})
