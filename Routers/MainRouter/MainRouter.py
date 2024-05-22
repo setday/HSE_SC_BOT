@@ -10,6 +10,8 @@ from Routers.KeyboardMaker import make_keyboard, make_back_keyboard
 from Logger.BackChatUtils import send_data_to_back
 from .MainRouterTexts import *
 
+from ..Utils import answer_callback
+
 class MainRouterState(StatesGroup):
     default = State()
 
@@ -52,10 +54,14 @@ class MainRouter(Router):
 
         await callback.answer()
 
-        await self.bot.send_message(callback.from_user.id, block_enter_text, reply_markup=make_keyboard(
-            button_option_request,
-            button_option_info,
-            button_option_work
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=block_enter_text,
+            reply_markup=make_keyboard(
+                button_option_request,
+                button_option_info,
+                button_option_work
         ))
 
     async def default_reqest_handler(self, message: Message, state: FSMContext) -> None:
@@ -83,5 +89,10 @@ class MainRouter(Router):
 
         await callback.answer(sent_text)
 
-        await self.bot.send_message(callback.from_user.id, f"Номер обращения - {number}\n\n{reqest_registred_text}", reply_markup=make_back_keyboard())
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=f"Номер обращения - {number}\n\n{reqest_registred_text}",
+            reply_markup=make_back_keyboard()
+        )
         await state.set_data({})

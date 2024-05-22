@@ -10,6 +10,8 @@ from ..MainRouter.MainRouterTexts import button_option_request, button_option_re
 from Routers.DefaultTexts import send_text, sent_text, cancel_text
 from Routers.KeyboardMaker import make_keyboard, make_back_keyboard
 
+from ..Utils import answer_callback
+
 
 class RequestRouterState(StatesGroup):
     default = State()
@@ -33,9 +35,10 @@ class RequestRouter(Router):
         self.message.register(self.default_reqest_handler, RequestRouterState.default)
 
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        await self.bot.send_message(
-            callback.from_user.id,
-            block_enter_text,
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=block_enter_text,
             reply_markup=make_keyboard(
                 button_option_edu,
                 button_option_support,
@@ -49,7 +52,12 @@ class RequestRouter(Router):
         await state.set_state(RequestRouterState.default)
 
     async def request_type_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        await self.bot.send_message(callback.from_user.id, detailed_text)
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=detailed_text,
+            reply_markup=make_back_keyboard()
+        )
         await callback.answer()
 
         await state.set_data({"request_type": callback.data})
@@ -61,9 +69,11 @@ class RequestRouter(Router):
         await state.set_state(RequestRouterState.default)
 
     async def request_faculty_and_course_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        await self.bot.send_message(
-            callback.from_user.id,
-            faculty_question_text
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=faculty_question_text,
+            reply_markup=make_back_keyboard()
         )
         await callback.answer()
 
@@ -99,5 +109,10 @@ class RequestRouter(Router):
 
         await callback.answer(sent_text)
 
-        await self.bot.send_message(callback.from_user.id, f"Номер обращения - {number}\n\n{reqest_registred_text}", reply_markup=make_back_keyboard())
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=f"Номер обращения - {number}\n\n{reqest_registred_text}",
+            reply_markup=make_back_keyboard()
+        )
         await state.set_data({})

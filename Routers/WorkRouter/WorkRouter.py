@@ -10,6 +10,8 @@ from Logger.BackChatUtils import send_data_to_back
 from .WorkRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_option_work
 
+from ..Utils import answer_callback
+
 class WorkRouterState(StatesGroup):
     default = State()
 
@@ -26,9 +28,10 @@ class WorkRouter(Router):
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(WorkRouterState.default)
 
-        await self.bot.send_message(
-            callback.from_user.id,
-            block_enter_text,
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=block_enter_text,
             parse_mode="markdown"
         )
         await callback.answer('Поехали!')
@@ -57,5 +60,10 @@ class WorkRouter(Router):
 
         await callback.answer(sent_text)
 
-        await self.bot.send_message(callback.from_user.id, f"Номер обращения - {number}\n\n{reqest_registred_text}", reply_markup=make_back_keyboard())
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=f"Номер обращения - {number}\n\n{reqest_registred_text}",
+            reply_markup=make_back_keyboard()
+        )
         await state.set_data({})
