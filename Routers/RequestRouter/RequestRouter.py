@@ -49,6 +49,9 @@ class RequestRouter(Router):
         )
 
         self.callback_query.register(
+            self.ask_for_faculty, F.data == button_text_back_to_faculty["en"][1]
+        )
+        self.callback_query.register(
             self.ask_for_course, RequestRouterState.faculty_requested
         )
 
@@ -99,8 +102,6 @@ class RequestRouter(Router):
         
         await state.update_data(request_type=button_text_topics_ids[callback.data])
 
-        await callback.answer()
-
         if callback.data == "in_dev":
             await callback.answer("This feature is in development")
             return
@@ -117,6 +118,8 @@ class RequestRouter(Router):
     ) -> None:
         await state.set_state(RequestRouterState.campus_or_dormitory_requested)
 
+        await callback.answer()
+
         lang = await get_lang_from_state(state)
 
         await answer_callback(
@@ -128,6 +131,8 @@ class RequestRouter(Router):
 
     async def ask_for_faculty(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(RequestRouterState.faculty_requested)
+
+        await callback.answer()
 
         lang = await get_lang_from_state(state)
 

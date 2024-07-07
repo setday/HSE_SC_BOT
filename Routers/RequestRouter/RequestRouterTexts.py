@@ -105,6 +105,10 @@ choose_course_text: dict[str, str] = {
     "en": "❔What course is your request about?",
 }
 
+button_text_back_to_faculty: dict[str, tuple[str, str]] = {
+    "ru": ("Вернуться в меню выбора факультета обращения🔙", "bck_to_fac"),
+    "en": ("Back to the faculty selection menu🔙", "bck_to_fac"),
+}
 button_text_courses: dict[str, list[tuple[str, str]]] = {
     "ru": [
         ("1️⃣Первый курс", "cr_1"),
@@ -112,6 +116,8 @@ button_text_courses: dict[str, list[tuple[str, str]]] = {
         ("3️⃣Третий курс", "cr_3"),
         ("4️⃣Четвёртый курс", "cr_4"),
         ("5️⃣Пятый курс", "cr_5"),
+        ("🔄 Магистратура/Аспирантура/Другое", "cr_cc"),
+        button_text_back_to_faculty["ru"],
     ],
     "en": [
         ("1️⃣First year", "cr_1"),
@@ -119,6 +125,8 @@ button_text_courses: dict[str, list[tuple[str, str]]] = {
         ("3️⃣Third year", "cr_3"),
         ("4️⃣Fourth year", "cr_4"),
         ("5️⃣Fifth year", "cr_5"),
+        ("🔄 Master's/PhD/Other", "cr_cc"),
+        button_text_back_to_faculty["en"],
     ],
 }
 button_text_courses_ids: dict[str, int] = {

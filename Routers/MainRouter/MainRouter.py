@@ -40,6 +40,7 @@ class MainRouter(Router):
 
     async def get_chat_id_hnadler(self, message: Message) -> None:
         await message.answer(str(message.chat.id))
+        await message.delete()
 
     # Enter handlers
     async def enter_handler(self, message: Message, state: FSMContext) -> None:
