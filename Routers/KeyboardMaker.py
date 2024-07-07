@@ -19,15 +19,6 @@ def make_keyboard(
     return builder.as_markup()
 
 
-def make_back_keyboard() -> InlineKeyboardMarkup:
-    builder = InlineKeyboardBuilder()
-
-    builder.add(InlineKeyboardButton(text=back_text, callback_data=back_text))
-
-    builder.adjust(1, repeat=True)
-    return builder.as_markup()
-
-
 def make_back_to_main_menu_keyboard(lang: str = "ru") -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 

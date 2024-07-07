@@ -31,7 +31,7 @@ async def main() -> None:
         default_router,
     )
 
-    # await bot.delete_webhook()
+    await bot.delete_webhook()
 
     poll = asyncio.create_task(dp.start_polling(bot))
 

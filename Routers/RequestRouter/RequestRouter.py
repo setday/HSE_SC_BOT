@@ -6,10 +6,9 @@ from aiogram.fsm.state import StatesGroup, State
 from Logger.BackChatUtils import send_data_to_back
 from .RequestRouterTexts import *
 
-from Routers.DefaultTexts import get_lang_from_state, button_text_back_to_main_menu
+from Routers.DefaultTexts import get_lang_from_state
 from Routers.KeyboardMaker import (
     make_keyboard,
-    make_back_keyboard,
     make_back_to_main_menu_keyboard,
 )
 
@@ -49,19 +48,22 @@ class RequestRouter(Router):
             self.register_topic_handler, RequestRouterState.topic_requested
         )
 
-        # self.callback_query.register(self.request_type_handler, F.data == button_option_another)
-        # self.callback_query.register(self.request_type_handler, F.data == button_option_campus)
-        # self.callback_query.register(self.request_type_handler, F.data == button_option_dormitory)
+        self.callback_query.register(
+            self.ask_for_course, RequestRouterState.faculty_requested
+        )
 
-        # self.callback_query.register(self.request_faculty_and_course_handler, F.data == button_option_support[:30])
-        # self.callback_query.register(self.request_faculty_and_course_handler, F.data == button_option_edu[:30])
-        # self.message.register(self.request_type_msg_handler, RequestRouterState.faculty_and_course_requested)
+        self.message.register(
+            self.application_reqest_handler_m, RequestRouterState.campus_or_dormitory_requested
+        )
 
         self.callback_query.register(
-            self.application_reqest_handler, RequestRouterState.application_requested
+            self.application_reqest_handler_c, RequestRouterState.course_requested
         )
         self.callback_query.register(
-            self.application_reqest_handler,
+            self.application_reqest_handler_c, RequestRouterState.application_requested
+        )
+        self.callback_query.register(
+            self.application_reqest_handler_c,
             F.data == button_text_back_to_application["en"][1],
         )
 
@@ -91,7 +93,11 @@ class RequestRouter(Router):
     async def register_topic_handler(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
-        await state.update_data(request_type=callback.data)
+        if callback.data is None:
+            await callback.answer(unexpected_error_text)
+            return
+        
+        await state.update_data(request_type=button_text_topics_ids[callback.data])
 
         await callback.answer()
 
@@ -99,28 +105,30 @@ class RequestRouter(Router):
             await callback.answer("This feature is in development")
             return
         elif callback.data == "ct_cmp_or_drm_prb":
-            await state.set_state(RequestRouterState.campus_or_dormitory_requested)
             await self.ask_for_campus_or_dormitory(callback, state)
         elif callback.data == "ct_edu_prb" or callback.data == "ct_app_com":
-            await state.set_state(RequestRouterState.faculty_requested)
             await self.ask_for_faculty(callback, state)
         else:
             await state.set_state(RequestRouterState.application_requested)
-            await self.application_reqest_handler(callback, state)
+            await self.application_reqest_handler_c(callback, state)
 
     async def ask_for_campus_or_dormitory(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
+        await state.set_state(RequestRouterState.campus_or_dormitory_requested)
+
         lang = await get_lang_from_state(state)
 
         await answer_callback(
             bot=self.bot,
             callback=callback,
             text=write_campus_or_dormitory_text[lang],
-            reply_markup=make_back_keyboard(),
+            reply_markup=make_keyboard(button_text_back_to_topic[lang]),
         )
 
     async def ask_for_faculty(self, callback: CallbackQuery, state: FSMContext) -> None:
+        await state.set_state(RequestRouterState.faculty_requested)
+
         lang = await get_lang_from_state(state)
 
         await answer_callback(
@@ -131,51 +139,53 @@ class RequestRouter(Router):
         )
 
     async def ask_for_course(self, callback: CallbackQuery, state: FSMContext) -> None:
+        await state.set_state(RequestRouterState.course_requested)
+
+        if callback.data is None:
+            await callback.answer(unexpected_error_text)
+            return
+
+        await callback.answer()
+        await state.update_data(faculty=button_text_faculties_ids[callback.data])
+
         lang = await get_lang_from_state(state)
 
         await answer_callback(
             bot=self.bot,
             callback=callback,
             text=choose_course_text[lang],
-            reply_markup=make_back_keyboard(),
+            reply_markup=make_keyboard(*button_text_courses[lang]),
         )
-
-    # async def request_type_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-    #     await answer_callback(
-    #         bot=self.bot,
-    #         callback=callback,
-    #         text=detailed_text,
-    #         reply_markup=make_back_keyboard()
-    #     )
-    #     await callback.answer()
-
-    #     await state.set_data({"request_type": callback.data})
-
-    # async def request_type_msg_handler(self, message: Message, state: FSMContext) -> None:
-    #     await message.answer(detailed_text)
-
-    #     await state.update_data({"faculty_and_course": message.text})
-    #     await state.set_state(RequestRouterState.default)
-
-    # async def request_faculty_and_course_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-    #     await answer_callback(
-    #         bot=self.bot,
-    #         callback=callback,
-    #         text=faculty_question_text,
-    #         reply_markup=make_back_keyboard()
-    #     )
-    #     await callback.answer()
-
-    #     await state.set_data({"request_type": callback.data})
-    #     await state.set_state(RequestRouterState.faculty_and_course_requested)
 
     ###
     # End state: application_requested
     ###
 
-    async def application_reqest_handler(
+    async def application_reqest_handler_m(
+            self, message: Message, state: FSMContext
+    ) -> None:
+        if not message.from_user:
+            await message.answer(unknown_user_text, reply_markup=make_back_to_main_menu_keyboard())
+            return
+
+        await state.set_state(RequestRouterState.entering_application)
+
+        await state.update_data(campus_or_dormitory=message.html_text)
+
+        lang = await get_lang_from_state(state)
+
+        await message.answer(
+            request_full_descr_text[lang],
+            reply_markup=make_keyboard(button_text_back_to_topic[lang]),
+            parse_mode="HTML",
+        )
+
+    async def application_reqest_handler_c(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
+        if callback.data and callback.data in button_text_courses_ids.keys():
+            await state.update_data(course=button_text_courses_ids[callback.data])
+
         await state.set_state(RequestRouterState.entering_application)
 
         await callback.answer()
@@ -186,7 +196,7 @@ class RequestRouter(Router):
             bot=self.bot,
             callback=callback,
             text=request_full_descr_text[lang],
-            reply_markup=make_back_to_main_menu_keyboard(lang),
+            reply_markup=make_keyboard(button_text_back_to_topic[lang]),
             parse_mode="HTML",
         )
 
@@ -205,12 +215,19 @@ class RequestRouter(Router):
 
         second_row_ru = ""
         if data.get("campus_or_dormitory", None):
-            second_row_ru = campus_or_dormitory_text["ru"] + data["campus_or_dormitory"]
+            second_row_ru = (
+                campus_or_dormitory_text["ru"] + data["campus_or_dormitory"]
+            )
         elif data.get("faculty", None):
-            second_row_ru = faculty["ru"] + data["faculty"]
+            second_row_ru = (
+                faculty["ru"] + button_text_faculties["ru"][data["faculty"]][0]
+            )
         else:
             second_row_ru = ""
-        third_row_ru = course["ru"] + data["course"] if data.get("course", None) else ""
+        third_row_ru = (
+            course["ru"] +
+            button_text_courses["ru"][data["course"]][0] if data.get("course", None) else ""
+        )
 
         second_row_native = ""
         if data.get("campus_or_dormitory", None):
@@ -218,17 +235,20 @@ class RequestRouter(Router):
                 campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
             )
         elif data.get("faculty", None):
-            second_row_native = faculty[lang] + data["faculty"]
+            second_row_native = (
+                faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
+            )
         else:
             second_row_native = ""
         third_row_native = (
-            course[lang] + data["course"] if data.get("course", None) else ""
+            course[lang] +
+            button_text_courses["ru"][data["course"]][0] if data.get("course", None) else ""
         )
 
         request_text_to_send = application_sent_text.format(
             f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}",
             message.from_user.username or "",
-            data.get("request_type", "")["ru"],
+            button_text_topics["ru"][data.get("request_type", 3)][0],
             second_row_ru,
             third_row_ru,
             message.html_text,
@@ -238,7 +258,7 @@ class RequestRouter(Router):
         request_text = confirm_application_text[lang].format(
             f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}",
             message.from_user.username or "",
-            data.get("request_type", "")["en"],
+            button_text_topics[lang][data.get("request_type", 3)][0],
             second_row_native,
             third_row_native,
             message.html_text,

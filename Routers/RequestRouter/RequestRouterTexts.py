@@ -7,11 +7,26 @@ block_enter_text: dict[str, str] = {
 
 button_text_topics: dict[str, list[tuple[str, str]]] = {
     "ru": [
-        ("Присутствие Студсовета на апелляционной комиссии ☎️", "ct_app_com"),
-        ("По поводу общежития или корпуса ВШЭ 🏡", "ct_cmp_or_drm_prb"),
-        ("По поводу образовательного процесса на факультете 📖", "ct_edu_prb"),
-        ("Другое 💊", "ct_another_prb"),
-        ("Ваши обращения 👀 (в разработке)", "in_dev"),
+        (
+            "Присутствие Студсовета на апелляционной комиссии ☎️",
+            "ct_app_com"
+        ),
+        (
+            "По поводу общежития или корпуса ВШЭ 🏡",
+            "ct_cmp_or_drm_prb"
+        ),
+        (
+            "По поводу образовательного процесса на факультете 📖",
+            "ct_edu_prb"
+        ),
+        (
+            "Другое 💊",
+            "ct_another_prb"
+        ),
+        (
+            "Ваши обращения 👀 (в разработке)",
+            "in_dev"
+        ),
         button_text_back_to_main_menu["ru"],
     ],
     "en": [
@@ -27,10 +42,19 @@ button_text_topics: dict[str, list[tuple[str, str]]] = {
             "There's a problem with the educational process at my faculty 📖",
             "ct_edu_prb",
         ),
-        ("Other 💊", "ct_another_prb"),
-        ("Your applications 👀 (in development)", "in_dev"),
+        (
+            "Other 💊",
+            "ct_another_prb"
+        ),
+        (
+            "Your applications 👀 (in development)",
+            "in_dev"
+        ),
         button_text_back_to_main_menu["en"],
     ],
+}
+button_text_topics_ids: dict[str, int] = {
+    key: i for i, (_, key) in enumerate(button_text_topics["ru"])
 }
 
 button_text_back_to_topic: dict[str, tuple[str, str]] = {
@@ -72,6 +96,9 @@ button_text_faculties: dict[str, list[tuple[str, str]]] = {
         button_text_back_to_topic["en"],
     ],
 }
+button_text_faculties_ids: dict[str, int] = {
+    key: i for i, (_, key) in enumerate(button_text_faculties["ru"])
+}
 
 choose_course_text: dict[str, str] = {
     "ru": "❔С каким курсом связано обращение?",
@@ -93,6 +120,9 @@ button_text_courses: dict[str, list[tuple[str, str]]] = {
         ("4️⃣Fourth year", "cr_4"),
         ("5️⃣Fifth year", "cr_5"),
     ],
+}
+button_text_courses_ids: dict[str, int] = {
+    key: i for i, (_, key) in enumerate(button_text_courses["ru"])
 }
 
 request_full_descr_text: dict[str, str] = {
@@ -144,7 +174,7 @@ application_sent_text: str = """<strong>Обращение от {0} (@{1}):</str
 
 <strong>Тема: {2}{3}{4}</strong>
 
-{2}"""
+{5}"""
 
 button_text_back_to_application: dict[str, tuple[str, str]] = {
     "ru": ("Вернуться в меню составления текста обращения🔙", "bck_to_apl_wrt"),
@@ -167,3 +197,4 @@ The Student Council will consider the application and contact you within a worki
 }
 
 unknown_user_text = "Errror: user is unknown"
+unexpected_error_text = "Unexpected error"
