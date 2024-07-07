@@ -28,6 +28,7 @@ button_text_back_to_main_menu: dict[str, tuple[str, str]] = {
     "en": ("Back to main menu🔙", "bck_to_mm"),
 }
 
+
 async def get_lang_from_state(state: any) -> str:
     try:
         data = await state.get_data()
@@ -37,4 +38,3 @@ async def get_lang_from_state(state: any) -> str:
         return lang
     except:
         return "ru"
-

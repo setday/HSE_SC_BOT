@@ -1,23 +1,169 @@
-block_enter_text = "Какова тема обращения обращение?"
-detailed_text = "Понял. Теперь можешь описать подробнее?"
+from Routers.DefaultTexts import button_text_back_to_main_menu
 
-button_option_edu = "Проблема в образовательном процессе"
-button_option_support = "Присутствие Студсовета на аппеляционной комиссии"
-button_option_campus = "Проблема в корпусах"
-button_option_dormitory = "Проблема с общежитиями"
-button_option_another = "Другое"
+block_enter_text: dict[str, str] = {
+    "ru": "❔По какому поводу обращение?",
+    "en": "❔What is your request about?",
+}
 
-faculty_question_text = "Укажи пожалуйста свой факультет и курс"
+button_text_topics: dict[str, list[tuple[str, str]]] = {
+    "ru": [
+        ("Присутствие Студсовета на апелляционной комиссии ☎️", "ct_app_com"),
+        ("По поводу общежития или корпуса ВШЭ 🏡", "ct_cmp_or_drm_prb"),
+        ("По поводу образовательного процесса на факультете 📖", "ct_edu_prb"),
+        ("Другое 💊", "ct_another_prb"),
+        ("Ваши обращения 👀 (в разработке)", "in_dev"),
+        button_text_back_to_main_menu["ru"],
+    ],
+    "en": [
+        (
+            "I need a Student Council's representative at the Appeals Board ☎️",
+            "ct_app_com",
+        ),
+        (
+            "There's a problem in my dorm or building where I study 🏡",
+            "ct_cmp_or_drm_prb",
+        ),
+        (
+            "There's a problem with the educational process at my faculty 📖",
+            "ct_edu_prb",
+        ),
+        ("Other 💊", "ct_another_prb"),
+        ("Your applications 👀 (in development)", "in_dev"),
+        button_text_back_to_main_menu["en"],
+    ],
+}
 
-block_default_text = "Мы примим заявку в следующем виде:"
+button_text_back_to_topic: dict[str, tuple[str, str]] = {
+    "ru": ("Вернуться в меню выбора типа обращений🔙", "bck_to_tpc"),
+    "en": ("Back to the request type menu🔙", "bck_to_tpc"),
+}
 
-reqest_registred_text = "Будем решать данный вопрос!"
+write_campus_or_dormitory_text: dict[str, str] = {
+    "ru": "❔По поводу какого корпуса или общежития обращение? Напишите в чате полный адрес",
+    "en": "❔What is your request about? Write the full address in the chat",
+}
 
-unknown_user = "Errror: user is unknown"
+choose_faculty_text: dict[str, str] = {
+    "ru": "❔С каким факультетом связано обращение?",
+    "en": "❔What faculty is your request about?",
+}
 
-def recover_option_text(text: str) -> str:
-    if text == button_option_edu[:30]:
-        return button_option_edu
-    if text == button_option_support[:30]:
-        return button_option_support
-    return text
+button_text_faculties: dict[str, list[tuple[str, str]]] = {
+    "ru": [
+        ("🧬Школа физико-математических и компьютерных наук", "cf_spmcs"),
+        ("💰Школа экономики и менеджмента", "cf_sem"),
+        ("👥Школа социальных наук", "cf_sss"),
+        ("🎭Школа гуманитарных наук и искусств", "cf_sgas"),
+        ("🗺Институт востоковедения и африканистики", "cf_iva"),
+        ("🎨Школа дизайна", "cf_sd"),
+        ("👨‍⚖️Юридический факультет", "cf_law"),
+        ("🎒Факультет довузовского образования", "cf_pie"),
+        button_text_back_to_topic["ru"],
+    ],
+    "en": [
+        ("🧬School of Physics, Mathematics, and Computer Science", "cf_spmcs"),
+        ("💰School of Economics and Management", "cf_sem"),
+        ("👥School of Social Sciences", "cf_sss"),
+        ("🎭School of Humanities and Arts", "cf_sgas"),
+        ("🗺Institute of Oriental and African Studies", "cf_iva"),
+        ("🎨School of Design", "cf_sd"),
+        ("👨‍⚖️Faculty of Law", "cf_law"),
+        ("🎒Pre-university Education Faculty", "cf_pie"),
+        button_text_back_to_topic["en"],
+    ],
+}
+
+choose_course_text: dict[str, str] = {
+    "ru": "❔С каким курсом связано обращение?",
+    "en": "❔What course is your request about?",
+}
+
+button_text_courses: dict[str, list[tuple[str, str]]] = {
+    "ru": [
+        ("1️⃣Первый курс", "cr_1"),
+        ("2️⃣Второй курс", "cr_2"),
+        ("3️⃣Третий курс", "cr_3"),
+        ("4️⃣Четвёртый курс", "cr_4"),
+        ("5️⃣Пятый курс", "cr_5"),
+    ],
+    "en": [
+        ("1️⃣First year", "cr_1"),
+        ("2️⃣Second year", "cr_2"),
+        ("3️⃣Third year", "cr_3"),
+        ("4️⃣Fourth year", "cr_4"),
+        ("5️⃣Fifth year", "cr_5"),
+    ],
+}
+
+request_full_descr_text: dict[str, str] = {
+    "ru": """📝 Пожалуйста, максимально подробно опишите подробности своего обращения. Все делегаты и волонтёры Студсовета подписали Соглашение о Неразглашении и гарантируют твою <strong>анонимность</strong> (если ты укажешь о ней в своём обращении).
+
+<strong>Важно!</strong> Прикладывайте ссылки на подтверждающие описываемую ситуацию материалы (опросы, фото, видео, точные даты и время). Конкретика позволяет нам решить решить вашу запрос максимально эффективно. Загрузить всё можно для удобства на <a href=\"https://disk.yandex.ru/client/disk\">одну папку в облаке</a>, не забыв открыть доступ по ссылке.""",
+    "en": """📝 Please, describe your problem in detail. If you wish to remain anonymous, state it in the body of your request. Don't worry, no-one will disclose information about you and your request since all the delegates and volunteers have signed the Non-Disclosure Agreement.
+
+<strong>Note!</strong> We need you to attach materials (precise date when smth happened, photos, videos, polls etc.) that will help us with solving your problem. For convenience, create a folder using Google or Yandex drive and upload all of your files to it. Please, don't forget to make your folder accessible by link.""",
+}
+
+confirm_application_text: dict[str, str] = {
+    "ru": """👀 Проверьте, пожалуйста, корректность данных и наличие доступа по ссылке к вашим прикреплённым материалам. Обращение в Студсовет будет отправлено в следующем виде:
+
+————
+<strong>Обращение от {0} (@{1}):</strong>
+
+<strong>Тема: {2}{3}{4}</strong>
+
+{5}
+————""",
+    "en": """👀 Please check the correctness of the data and the availability of access via the link to your attached materials. The appeal to the Student Council will be sent in the following form:
+
+————
+<strong>Appeal from {0} (@{1}):</strong>
+
+<strong>Subject: {2}{3}{4}</strong>
+
+{5}
+————""",
+}
+
+campus_or_dormitory_text: dict[str, str] = {
+    "ru": "\nОбщежитие или корпус ВШЭ: ",
+    "en": "\nHSE dormitory or campus: ",
+}
+
+faculty: dict[str, str] = {
+    "ru": "\nФакультет: ",
+    "en": "\nFaculty: ",
+}
+
+course: dict[str, str] = {
+    "ru": "\nКурс: ",
+    "en": "\nCourse: ",
+}
+
+application_sent_text: str = """<strong>Обращение от {0} (@{1}):</strong>
+
+<strong>Тема: {2}{3}{4}</strong>
+
+{2}"""
+
+button_text_back_to_application: dict[str, tuple[str, str]] = {
+    "ru": ("Вернуться в меню составления текста обращения🔙", "bck_to_apl_wrt"),
+    "en": ("Back to the application text menu🔙", "bck_to_apl_wrt"),
+}
+button_text_approve_application: dict[str, tuple[str, str]] = {
+    "ru": ("Отправить обращение✅", "snd_appl"),
+    "en": ("Send application✅", "snd_appl"),
+}
+
+reqest_registred_text: dict[str, str] = {
+    "ru": """🎉 Готово! Ваш номер обращения:
+{0}
+
+Студсовет рассмотрит обращение и свяжется с вами в течение рабочей недели.""",
+    "en": """🎉 Done! Your application number:
+{0}
+
+The Student Council will consider the application and contact you within a working week.""",
+}
+
+unknown_user_text = "Errror: user is unknown"

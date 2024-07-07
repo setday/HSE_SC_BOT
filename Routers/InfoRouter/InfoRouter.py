@@ -7,12 +7,14 @@ from Routers.DefaultTexts import back_to_menu_text
 from Routers.KeyboardMaker import make_keyboard
 
 from .InfoRouterTexts import *
-from ..MainRouter.MainRouterTexts import button_option_info
+from ..MainRouter.MainRouterTexts import button_text_info_about_sc
 
 from ..Utils import answer_callback
 
+
 class InfoRouterState(StatesGroup):
     default = State()
+
 
 class InfoRouter(Router):
     def __init__(self, bot: Bot) -> None:
@@ -20,9 +22,17 @@ class InfoRouter(Router):
 
         self.bot = bot
 
-        self.callback_query.register(self.enter_handler, F.data == button_option_info)
-        self.callback_query.register(self.links_hndler, InfoRouterState.default, F.data == button_option_links)
-        self.callback_query.register(self.members_hndler, InfoRouterState.default, F.data == button_option_members)
+        self.callback_query.register(
+            self.enter_handler, F.data == button_text_info_about_sc["en"][1]
+        )
+        self.callback_query.register(
+            self.links_hndler, InfoRouterState.default, F.data == button_option_links
+        )
+        self.callback_query.register(
+            self.members_hndler,
+            InfoRouterState.default,
+            F.data == button_option_members,
+        )
 
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(InfoRouterState.default)
@@ -32,9 +42,7 @@ class InfoRouter(Router):
             callback=callback,
             text=block_enter_text,
             reply_markup=make_keyboard(
-                button_option_members,
-                button_option_links,
-                back_to_menu_text
+                button_option_members, button_option_links, back_to_menu_text
             ),
         )
 
@@ -45,10 +53,7 @@ class InfoRouter(Router):
             bot=self.bot,
             callback=callback,
             text=links_text,
-            reply_markup=make_keyboard(
-                button_option_members,
-                back_to_menu_text
-            )
+            reply_markup=make_keyboard(button_option_members, back_to_menu_text),
         )
         await callback.answer()
 
@@ -57,9 +62,6 @@ class InfoRouter(Router):
             bot=self.bot,
             callback=callback,
             text=members_text,
-            reply_markup=make_keyboard(
-                button_option_links,
-                back_to_menu_text
-            )
+            reply_markup=make_keyboard(button_option_links, back_to_menu_text),
         )
         await callback.answer()

@@ -11,8 +11,10 @@ from ..MainRouter.MainRouterTexts import button_text_work_with_us
 
 from ..Utils import answer_callback
 
+
 class WorkWithUsRouterState(StatesGroup):
     default = State()
+
 
 class WorkWithUsRouter(Router):
     def __init__(self, bot: Bot) -> None:
@@ -20,7 +22,9 @@ class WorkWithUsRouter(Router):
 
         self.bot = bot
 
-        self.callback_query.register(self.enter_handler, F.data == button_text_work_with_us["en"][1])
+        self.callback_query.register(
+            self.enter_handler, F.data == button_text_work_with_us["en"][1]
+        )
 
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(WorkWithUsRouterState.default)
@@ -32,5 +36,5 @@ class WorkWithUsRouter(Router):
             bot=self.bot,
             callback=callback,
             text=block_enter_text[lang],
-            reply_markup=make_back_to_main_menu_keyboard(lang)
+            reply_markup=make_back_to_main_menu_keyboard(lang),
         )

@@ -20,6 +20,7 @@ back_send_text = """📨Новое обращение! Номер:
 🔥 — выполнили
 👎 — игнорировать"""
 
+
 async def send_data_to_back(bot: Bot, data: str) -> int:
     number = random.randint(1, 9999999)
 
