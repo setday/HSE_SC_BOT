@@ -2,7 +2,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher, enums
 
-from keys import get_bot_key
+from keysLoader import get_bot_key
 from Routers.MainRouter.MainRouter import MainRouter
 from Routers.PartnershipRouter.PartnershipRouter import PartnershipRouter
 from Routers.WorkWithUsRouter.WorkWithUsRouter import WorkWithUsRouter

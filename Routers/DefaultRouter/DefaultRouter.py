@@ -5,6 +5,8 @@ from aiogram import Router, Bot
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
+from keysLoader import get_vote_id, get_back_id
+
 from Routers.DefaultTexts import get_lang_from_state
 from Routers.KeyboardMaker import make_back_to_main_menu_keyboard
 
@@ -59,8 +61,11 @@ class DefaultRouter(Router):
             )
 
     async def default_handler(self, message: Message, state: FSMContext) -> None:
-        if message.chat.id == 909582648 and message.document and message.document.mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        if message.chat.id == get_vote_id() and message.document and message.document.mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
             await self.create_bc_poll(message)
+            return
+        
+        if message.chat.id == get_vote_id() or message.chat.id == get_back_id():
             return
 
         print("Unhandeled message:", message.text, message.document, message.media_group_id)
@@ -73,6 +78,9 @@ class DefaultRouter(Router):
     async def default_callback_handler(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
+        if not callback.message or callback.message.chat.id == get_vote_id() or callback.message.chat.id == get_back_id():
+            return
+
         print("Unhandeled callback:", callback.data)
         lang = await get_lang_from_state(state)
         await callback.answer(unknown_action_text[lang])

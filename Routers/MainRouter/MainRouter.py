@@ -4,6 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.state import StatesGroup, State
 
+from keysLoader import get_back_id, get_vote_id
+
 from Routers.DefaultTexts import get_lang_from_state, button_text_back_to_main_menu
 from Routers.KeyboardMaker import make_keyboard
 
@@ -44,6 +46,9 @@ class MainRouter(Router):
 
     # Enter handlers
     async def enter_handler(self, message: Message, state: FSMContext) -> None:
+        if message.chat.id == get_back_id() or message.chat.id == get_vote_id():
+            return
+
         status = await state.get_state()
         if status:
             await message.delete()
