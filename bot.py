@@ -1,6 +1,7 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher, enums
+from aiogram.client.default import DefaultBotProperties
 
 from keysLoader import get_bot_key
 from Routers.MainRouter.MainRouter import MainRouter
@@ -10,7 +11,7 @@ from Routers.InfoRouter.InfoRouter import InfoRouter
 from Routers.RequestRouter.RequestRouter import RequestRouter
 from Routers.DefaultRouter.DefaultRouter import DefaultRouter
 
-bot = Bot(get_bot_key(), parse_mode=enums.ParseMode.HTML)
+bot = Bot(get_bot_key(), default=DefaultBotProperties(parse_mode=enums.ParseMode.HTML))
 dp = Dispatcher()
 
 main_router = MainRouter(bot)
@@ -31,7 +32,7 @@ async def main() -> None:
         default_router,
     )
 
-    await bot.delete_webhook()
+    # await bot.delete_webhook()
 
     poll = asyncio.create_task(dp.start_polling(bot))
 
