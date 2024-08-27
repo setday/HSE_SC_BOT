@@ -6,7 +6,7 @@ from aiogram.fsm.state import StatesGroup, State
 from Logger.BackChatUtils import send_data_to_back
 from .RequestRouterTexts import *
 
-from Routers.DefaultTexts import get_lang_from_state
+from Routers.DefaultTexts import get_lang_from_state, button_text_back_to_main_menu
 from Routers.KeyboardMaker import (
     make_keyboard,
     make_back_to_main_menu_keyboard,
@@ -77,6 +77,20 @@ class RequestRouter(Router):
             self.send_handler, F.data == button_text_approve_application["en"][1]
         )
 
+    async def reset_user(self, state: FSMContext, callback: CallbackQuery | None = None, message: Message | None = None) -> None:
+        lang = await get_lang_from_state(state)
+
+        await state.set_state(None)
+        if callback:
+            await callback.answer(unexpected_error_text)
+            await answer_callback(
+                bot=self.bot,
+                callback=callback,
+                text=something_went_wrong_text[lang],
+                reply_markup=make_keyboard(button_text_back_to_main_menu[lang]),
+                parse_mode="HTML",
+            )
+
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(RequestRouterState.topic_requested)
         await state.update_data(request=None)
@@ -99,6 +113,9 @@ class RequestRouter(Router):
     ) -> None:
         if callback.data is None:
             await callback.answer(unexpected_error_text)
+            return
+        if callback.data not in button_text_topics_ids.keys():
+            await self.reset_user(state, callback=callback)
             return
         
         await state.update_data(request_type=button_text_topics_ids[callback.data])
@@ -150,6 +167,9 @@ class RequestRouter(Router):
         if callback.data is None:
             await callback.answer(unexpected_error_text)
             return
+        if callback.data not in button_text_faculties_ids.keys():
+            await self.reset_user(state, callback=callback)
+            return
 
         await callback.answer()
         await state.update_data(faculty=button_text_faculties_ids[callback.data])
@@ -189,7 +209,10 @@ class RequestRouter(Router):
     async def application_reqest_handler_c(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
-        if callback.data and callback.data in button_text_courses_ids.keys():
+        if callback.data:
+            if callback.data not in button_text_courses_ids.keys():
+                await self.reset_user(state, callback=callback)
+                return
             await state.update_data(course=button_text_courses_ids[callback.data])
 
         await state.set_state(RequestRouterState.entering_application)

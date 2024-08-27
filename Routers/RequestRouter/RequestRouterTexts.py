@@ -1,5 +1,10 @@
 from Routers.DefaultTexts import button_text_back_to_main_menu
 
+something_went_wrong_text: dict[str, str] = {
+    "ru": "❔Что-то пошло не так. Попробуй вернуться в главное меню и попробовать снова.",
+    "en": "❔Something went wrong. Try to go back to the main menu and try again.",
+}
+
 block_enter_text: dict[str, str] = {
     "ru": "❔По какому поводу обращение?",
     "en": "❔What is your request about?",
