@@ -12,11 +12,11 @@ button_text_topics: dict[str, list[tuple[str, str]]] = {
             "ct_app_com"
         ),
         (
-            "По поводу общежития или корпуса ВШЭ 🏡",
+            "Общежития или корпуса ВШЭ 🏡",
             "ct_cmp_or_drm_prb"
         ),
         (
-            "По поводу образовательного процесса на факультете 📖",
+            "Образовательный процесс 📖",
             "ct_edu_prb"
         ),
         (
@@ -31,15 +31,15 @@ button_text_topics: dict[str, list[tuple[str, str]]] = {
     ],
     "en": [
         (
-            "I need a Student Council's representative at the Appeals Board ☎️",
+            "Student Council presence at the appeals commission ☎️",
             "ct_app_com",
         ),
         (
-            "There's a problem in my dorm or building where I study 🏡",
+            "Dormitory or HSE campus 🏡",
             "ct_cmp_or_drm_prb",
         ),
         (
-            "There's a problem with the educational process at my faculty 📖",
+            "Educational process 📖",
             "ct_edu_prb",
         ),
         (
@@ -58,7 +58,7 @@ button_text_topics_ids: dict[str, int] = {
 }
 
 button_text_back_to_topic: dict[str, tuple[str, str]] = {
-    "ru": ("Вернуться в меню выбора типа обращений🔙", "bck_to_tpc"),
+    "ru": ("Вернуться к выбору типа обращений🔙", "bck_to_tpc"),
     "en": ("Back to the request type menu🔙", "bck_to_tpc"),
 }
 
@@ -106,7 +106,7 @@ choose_course_text: dict[str, str] = {
 }
 
 button_text_back_to_faculty: dict[str, tuple[str, str]] = {
-    "ru": ("Вернуться в меню выбора факультета обращения🔙", "bck_to_fac"),
+    "ru": ("Вернуться к выбору факультета обращения🔙", "bck_to_fac"),
     "en": ("Back to the faculty selection menu🔙", "bck_to_fac"),
 }
 button_text_courses: dict[str, list[tuple[str, str]]] = {

@@ -26,11 +26,10 @@ class InfoRouter(Router):
             self.enter_handler, F.data == button_text_info_about_sc["en"][1]
         )
         self.callback_query.register(
-            self.links_hndler, InfoRouterState.default, F.data == button_text_links["en"][1]
+            self.links_hndler, F.data == button_text_links["en"][1]
         )
         self.callback_query.register(
             self.members_hndler,
-            InfoRouterState.default,
             F.data == button_text_member_list["en"][1],
         )
 
@@ -72,4 +71,5 @@ class InfoRouter(Router):
             callback=callback,
             text=members_text,
             reply_markup=make_keyboard(button_text_links[lang], button_text_back_to_main_menu[lang]),
+            disable_web_page_preview=True,
         )

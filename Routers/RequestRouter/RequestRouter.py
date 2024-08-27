@@ -79,6 +79,7 @@ class RequestRouter(Router):
 
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(RequestRouterState.topic_requested)
+        await state.update_data(request=None)
 
         await callback.answer()
 
