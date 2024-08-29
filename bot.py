@@ -29,7 +29,6 @@ default_router = DefaultRouter(bot)
 async def main() -> None:
     dp.include_routers(
         extra_router,
-        
         main_router,
         request_router,
         info_router,
@@ -49,4 +48,8 @@ async def main() -> None:
 
 if __name__ == "__main__":
     print("Initializing...")
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt as e:
+        asyncio.run(dp.storage.close())
+        print("Stopped")

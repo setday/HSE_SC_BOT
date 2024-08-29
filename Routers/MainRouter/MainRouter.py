@@ -11,7 +11,7 @@ from Routers.KeyboardMaker import make_keyboard
 
 from .MainRouterTexts import *
 
-from ..Utils import answer_callback, get_lang_from_state
+from ..Utils import answer_callback, get_lang_from_state, try_delete_message
 
 
 class MainRouterState(StatesGroup):
@@ -26,7 +26,9 @@ class MainRouter(Router):
 
         self.bot = bot
 
-        self.message.register(self.enter_handler, CommandStart(), SuperChatFilter(False))
+        self.message.register(
+            self.enter_handler, CommandStart(), SuperChatFilter(False)
+        )
         self.callback_query.register(
             self.language_selection_handler,
             F.data == button_text_change_language["en"][1],
@@ -42,7 +44,7 @@ class MainRouter(Router):
     async def enter_handler(self, message: Message, state: FSMContext) -> None:
         status = await state.get_state()
         if status:
-            await message.delete()
+            await try_delete_message(message)
             return
 
         await state.set_state(MainRouterState.language_selection)
@@ -86,7 +88,7 @@ class MainRouter(Router):
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
         await state.set_state(MainRouterState.main_menu)
-        
+
         await callback.answer()
 
         lang = await get_lang_from_state(state)

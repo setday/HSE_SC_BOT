@@ -16,6 +16,7 @@ class AdminChatFilter(BaseFilter):
             return message.chat.id == get_back_id()
         return message.chat.id != get_back_id()
 
+
 class VoteChatFilter(BaseFilter):
     def __init__(self, is_this_admin_chat: bool = True):
         super().__init__()
@@ -26,7 +27,8 @@ class VoteChatFilter(BaseFilter):
         if self.is_this_admin_chat:
             return message.chat.id == get_back_id()
         return message.chat.id != get_back_id()
-    
+
+
 class SuperChatFilter(BaseFilter):
     def __init__(self, is_this_admin_chat: bool = True):
         super().__init__()
@@ -37,10 +39,15 @@ class SuperChatFilter(BaseFilter):
         if self.is_this_admin_chat:
             return message.chat.id == get_back_id() or message.chat.id == get_back_id()
         return message.chat.id != get_back_id() and message.chat.id != get_back_id()
-    
+
+
 class WordDocFilter(BaseFilter):
     def __init__(self) -> None:
         super().__init__()
 
     async def __call__(self, message: Message) -> bool:
-        return message.document is not None and message.document.mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        return (
+            message.document is not None
+            and message.document.mime_type
+            == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )

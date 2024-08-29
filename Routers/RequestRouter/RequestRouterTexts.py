@@ -12,26 +12,11 @@ block_enter_text: dict[str, str] = {
 
 button_text_topics: dict[str, list[tuple[str, str]]] = {
     "ru": [
-        (
-            "Присутствие Студсовета на апелляционной комиссии ☎️",
-            "ct_app_com"
-        ),
-        (
-            "Общежития или корпуса ВШЭ 🏡",
-            "ct_cmp_or_drm_prb"
-        ),
-        (
-            "Образовательный процесс 📖",
-            "ct_edu_prb"
-        ),
-        (
-            "Другое 💊",
-            "ct_another_prb"
-        ),
-        (
-            "Ваши обращения 👀 (в разработке)",
-            "in_dev"
-        ),
+        ("Присутствие Студсовета на апелляционной комиссии ☎️", "ct_app_com"),
+        ("Общежития или корпуса ВШЭ 🏡", "ct_cmp_or_drm_prb"),
+        ("Образовательный процесс 📖", "ct_edu_prb"),
+        ("Другое 💊", "ct_another_prb"),
+        ("Ваши обращения 👀 (в разработке)", "in_dev"),
         button_text_back_to_main_menu["ru"],
     ],
     "en": [
@@ -47,14 +32,8 @@ button_text_topics: dict[str, list[tuple[str, str]]] = {
             "Educational process 📖",
             "ct_edu_prb",
         ),
-        (
-            "Other 💊",
-            "ct_another_prb"
-        ),
-        (
-            "Your applications 👀 (in development)",
-            "in_dev"
-        ),
+        ("Other 💊", "ct_another_prb"),
+        ("Your applications 👀 (in development)", "in_dev"),
         button_text_back_to_main_menu["en"],
     ],
 }

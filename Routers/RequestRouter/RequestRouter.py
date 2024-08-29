@@ -53,7 +53,8 @@ class RequestRouter(Router):
         )
 
         self.message.register(
-            self.application_reqest_handler_m, RequestRouterState.campus_or_dormitory_requested
+            self.application_reqest_handler_m,
+            RequestRouterState.campus_or_dormitory_requested,
         )
 
         self.callback_query.register(
@@ -64,7 +65,8 @@ class RequestRouter(Router):
             self.application_reqest_handler_c, RequestRouterState.application_requested
         )
         self.callback_query.register(
-            self.application_reqest_handler_c_from_cource, RequestRouterState.course_requested
+            self.application_reqest_handler_c_from_cource,
+            RequestRouterState.course_requested,
         )
 
         self.callback_query.register(
@@ -75,7 +77,12 @@ class RequestRouter(Router):
             self.application_applience_handler, RequestRouterState.entering_application
         )
 
-    async def reset_user(self, state: FSMContext, callback: CallbackQuery | None = None, message: Message | None = None) -> None:
+    async def reset_user(
+        self,
+        state: FSMContext,
+        callback: CallbackQuery | None = None,
+        message: Message | None = None,
+    ) -> None:
         lang = await get_lang_from_state(state)
 
         await state.set_state(None)
@@ -84,7 +91,7 @@ class RequestRouter(Router):
             await answer_callback(
                 bot=self.bot,
                 callback=callback,
-                text=f'{something_went_wrong_text[lang]} \n\n',
+                text=f"{something_went_wrong_text[lang]} \n\n",
                 reply_markup=make_keyboard(button_text_back_to_main_menu[lang]),
                 parse_mode="HTML",
             )
@@ -103,7 +110,9 @@ class RequestRouter(Router):
             ),
         )
 
-        await state.update_data(faculty=None, course=None, campus_or_dormitory=None, request_type=None)
+        await state.update_data(
+            faculty=None, course=None, campus_or_dormitory=None, request_type=None
+        )
 
         await callback.answer()
 
@@ -116,7 +125,7 @@ class RequestRouter(Router):
         if callback.data not in button_text_topics_ids.keys():
             await self.reset_user(state, callback=callback)
             return
-        
+
         await state.update_data(request_type=button_text_topics_ids[callback.data])
 
         if callback.data == "in_dev":
@@ -187,10 +196,12 @@ class RequestRouter(Router):
     ###
 
     async def application_reqest_handler_m(
-            self, message: Message, state: FSMContext
+        self, message: Message, state: FSMContext
     ) -> None:
         if not message.from_user:
-            await message.answer(unknown_user_text, reply_markup=make_back_to_main_menu_keyboard())
+            await message.answer(
+                unknown_user_text, reply_markup=make_back_to_main_menu_keyboard()
+            )
             return
 
         await state.set_state(RequestRouterState.entering_application)
@@ -228,7 +239,7 @@ class RequestRouter(Router):
         if not callback.data or callback.data not in button_text_courses_ids.keys():
             await self.reset_user(state, callback=callback)
             return
-        
+
         await state.update_data(course=button_text_courses_ids[callback.data])
 
         await self.application_reqest_handler_c(callback, state)
@@ -248,9 +259,7 @@ class RequestRouter(Router):
 
         second_row_ru = ""
         if data.get("campus_or_dormitory", None):
-            second_row_ru = (
-                campus_or_dormitory_text["ru"] + data["campus_or_dormitory"]
-            )
+            second_row_ru = campus_or_dormitory_text["ru"] + data["campus_or_dormitory"]
         elif data.get("faculty", None):
             second_row_ru = (
                 faculty["ru"] + button_text_faculties["ru"][data["faculty"]][0]
@@ -258,8 +267,9 @@ class RequestRouter(Router):
         else:
             second_row_ru = ""
         third_row_ru = (
-            course["ru"] +
-            button_text_courses["ru"][data["course"]][0] if data.get("course", None) else ""
+            course["ru"] + button_text_courses["ru"][data["course"]][0]
+            if data.get("course", None)
+            else ""
         )
 
         second_row_native = ""
@@ -274,8 +284,9 @@ class RequestRouter(Router):
         else:
             second_row_native = ""
         third_row_native = (
-            course[lang] +
-            button_text_courses["ru"][data["course"]][0] if data.get("course", None) else ""
+            course[lang] + button_text_courses["ru"][data["course"]][0]
+            if data.get("course", None)
+            else ""
         )
 
         request_text_to_send = application_sent_text.format(

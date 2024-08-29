@@ -1,23 +1,53 @@
-from typing import Any, Coroutine
+import sys
+
+from typing import Any
 
 from aiogram import Bot
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InaccessibleMessage
+from aiogram.fsm.context import FSMContext
 
 
-def answer_callback(
-    bot: Bot, callback: CallbackQuery, **kwargs: Any
-) -> Coroutine[Any, Any, Message | bool]:
+def check_if_message_has_photo(message: Message | InaccessibleMessage | None) -> bool:
+    if not message or isinstance(message, InaccessibleMessage) or not message.photo:
+        return False
+    return True
+
+
+async def answer_callback(bot: Bot, callback: CallbackQuery, **kwargs: Any) -> None:
     chat_id = callback.from_user.id
     message = callback.message
 
-    if message is None:
-        return bot.send_message(chat_id, **kwargs)
-    else:
-        return bot.edit_message_text(
-            **kwargs, chat_id=chat_id, message_id=message.message_id
-        )
+    if message:
+        is_photo_message = check_if_message_has_photo(message)
 
-async def get_lang_from_state(state: any) -> str:
+        if "photo" in kwargs and is_photo_message:
+            await bot.edit_message_media(
+                kwargs["media"], chat_id=chat_id, message_id=message.message_id
+            )
+            return
+        if "photo" not in kwargs and not is_photo_message:
+            await bot.edit_message_text(
+                **kwargs, chat_id=chat_id, message_id=message.message_id
+            )
+            return
+
+        await bot.delete_message(chat_id, message.message_id)
+
+    if "photo" in kwargs:
+        await bot.send_photo(chat_id, **kwargs)
+    else:
+        await bot.send_message(chat_id, **kwargs)
+
+
+async def try_delete_message(message: Message | InaccessibleMessage | None) -> None:
+    if message and not isinstance(message, InaccessibleMessage):
+        try:
+            await message.delete()
+        except:
+            print(f'Can\'t delete message "{message.text}"', file=sys.stderr)
+
+
+async def get_lang_from_state(state: FSMContext) -> str:
     try:
         data = await state.get_data()
         lang = data["language"]

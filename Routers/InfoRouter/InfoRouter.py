@@ -2,6 +2,7 @@ from aiogram import Router, Bot, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import FSInputFile
 
 from Routers.KeyboardMaker import make_keyboard, button_text_back_to_main_menu
 
@@ -32,6 +33,8 @@ class InfoRouter(Router):
             F.data == button_text_member_list["en"][1],
         )
 
+    photo_file = FSInputFile("./Assets/InfoProfile.jpg")
+
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(InfoRouterState.default)
 
@@ -40,10 +43,13 @@ class InfoRouter(Router):
         await answer_callback(
             bot=self.bot,
             callback=callback,
-            text=block_enter_text[lang],
+            caption=block_enter_text[lang],
             reply_markup=make_keyboard(
-                button_text_member_list[lang], button_text_links[lang], button_text_back_to_main_menu[lang]
+                button_text_member_list[lang],
+                button_text_links[lang],
+                button_text_back_to_main_menu[lang],
             ),
+            photo=self.photo_file,
         )
 
         await callback.answer()
@@ -57,18 +63,22 @@ class InfoRouter(Router):
             bot=self.bot,
             callback=callback,
             text=links_text[lang],
-            reply_markup=make_keyboard(button_text_member_list[lang], button_text_back_to_main_menu[lang]),
+            reply_markup=make_keyboard(
+                button_text_member_list[lang], button_text_back_to_main_menu[lang]
+            ),
         )
 
     async def members_hndler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await callback.answer()
 
         lang = await get_lang_from_state(state)
-        
+
         await answer_callback(
             bot=self.bot,
             callback=callback,
             text=members_text,
-            reply_markup=make_keyboard(button_text_links[lang], button_text_back_to_main_menu[lang]),
+            reply_markup=make_keyboard(
+                button_text_links[lang], button_text_back_to_main_menu[lang]
+            ),
             disable_web_page_preview=True,
         )

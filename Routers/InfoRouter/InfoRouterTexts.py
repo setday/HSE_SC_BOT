@@ -1,4 +1,4 @@
-block_enter_text : dict[str, str] = {
+block_enter_text: dict[str, str] = {
     "ru": """Студенческий совет НИУ ВШЭ Санкт-Петербург — выборный представительный орган Питерской Вышки и самая нестандартная внеучебка! 
 
 Основная наша задача — помощь студентам нашего вуза на всех уровнях, а также:
@@ -16,12 +16,12 @@ Our main task is to help students of our university at all levels, as well as:
 • Holding various cool events (more details in VK!)
 • Participation in solving cases delegated to the student council (pgas, appeals, disciplinary actions, social issues, etc.)
 
-And this is only a small part - join us, become a volunteer or a delegate of the next convocation!"""
+And this is only a small part - join us, become a volunteer or a delegate of the next convocation!""",
 }
 
-links_text : dict[str, str] = {
-    "ru": "🌐 Сайт: https://spb.hse.ru/studsovet/\n\n📱 <a href=\"https://vk.com/hsespbstudcouncil\">Страничка ВК</a> и <a href=\"https://t.me/studcouncil\">ТГ-канал</a>\n\n✉️ Почта: studsovet.spb@hse.ru",
-    "en": "🌐 Webpage: https://spb.hse.ru/studsovet/\n\n📱 <a href=\"https://vk.com/hsespbstudcouncil\">VK page</a> and <a href=\"https://t.me/studcouncil\">TG-channel</a>\n\n✉️ Email: studsovet.spb@hse.ru",
+links_text: dict[str, str] = {
+    "ru": '🌐 Сайт: https://spb.hse.ru/studsovet/\n\n📱 <a href="https://vk.com/hsespbstudcouncil">Страничка ВК</a> и <a href="https://t.me/studcouncil">ТГ-канал</a>\n\n✉️ Почта: studsovet.spb@hse.ru',
+    "en": '🌐 Webpage: https://spb.hse.ru/studsovet/\n\n📱 <a href="https://vk.com/hsespbstudcouncil">VK page</a> and <a href="https://t.me/studcouncil">TG-channel</a>\n\n✉️ Email: studsovet.spb@hse.ru',
 }
 
 # member_data_list = [
@@ -44,45 +44,152 @@ links_text : dict[str, str] = {
 # ]
 
 headmaster_member_data_list = [
-    ["Филиппова София Денисовна", "https://vk.com/filizhopss", "https://t.me/filizhops", "«Юриспруденция»", "И.О. Председателя"],
-    ["Богосьян Лариса Мироновна", "https://vk.com/lrsbog", "https://t.me/lrbog", "«Социология и социальная информатика»", "Бывший председатель"],
-    ["Саранская Екатерина", "https://vk.com/ekatia17", "https://t.me/ekatia17", "«Юриспруденция»", "Секретарь"],
+    [
+        "Филиппова София Денисовна",
+        "https://vk.com/filizhopss",
+        "https://t.me/filizhops",
+        "«Юриспруденция»",
+        "И.О. Председателя",
+    ],
+    [
+        "Богосьян Лариса Мироновна",
+        "https://vk.com/lrsbog",
+        "https://t.me/lrbog",
+        "«Социология и социальная информатика»",
+        "Бывший председатель",
+    ],
+    [
+        "Саранская Екатерина",
+        "https://vk.com/ekatia17",
+        "https://t.me/ekatia17",
+        "«Юриспруденция»",
+        "Секретарь",
+    ],
 ]
 
 head_member_data_list = [
-    ["Горшков Максим", "https://vk.com/flihten", "https://t.me/KiJhoTo", "«Политология и мировая политика»", "Комитет Event-менеджмента и PR"],
-    ["Архипов Данил", "https://vk.com/capnsoth", "https://t.me/CapnSoth", "«Юриспруденция»", "HR-комитет"],
-    ["Бахвалова Анита", "https://vk.com/abnnow", "https://t.me/anita_bn03", "«УАГС»", "SMM-комитет"],
-    ["Девицкий Иван", "https://vk.com/i.devitsky", "https://t.me/Ivatalks", "«Юриспруденция»", "Социальный комитет"],
-    ["Филиппова София Денисовна", "https://vk.com/filizhopss", "https://t.me/filizhops", "«Юриспруденция»", "Правовой комитет"],
+    [
+        "Горшков Максим",
+        "https://vk.com/flihten",
+        "https://t.me/KiJhoTo",
+        "«Политология и мировая политика»",
+        "Комитет Event-менеджмента и PR",
+    ],
+    [
+        "Архипов Данил",
+        "https://vk.com/capnsoth",
+        "https://t.me/CapnSoth",
+        "«Юриспруденция»",
+        "HR-комитет",
+    ],
+    [
+        "Бахвалова Анита",
+        "https://vk.com/abnnow",
+        "https://t.me/anita_bn03",
+        "«УАГС»",
+        "SMM-комитет",
+    ],
+    [
+        "Девицкий Иван",
+        "https://vk.com/i.devitsky",
+        "https://t.me/Ivatalks",
+        "«Юриспруденция»",
+        "Социальный комитет",
+    ],
+    [
+        "Филиппова София Денисовна",
+        "https://vk.com/filizhopss",
+        "https://t.me/filizhops",
+        "«Юриспруденция»",
+        "Правовой комитет",
+    ],
 ]
 
 other_member_data_list = [
-    ["Козин Георгий", "https://vk.com/waitforit", "https://t.me/Wait_For_lt", "«Межбак по экономике и бизнесу»", "Руководитель научного отдела"],
-    ["Дмитриева Ксения", "https://vk.com/queen_cordelia", "https://t.me/Ksenia_26", "«Межбак»", "Руководитель команды продвижения"],
-    ["Пшеничникова Анастасия", "https://vk.com/anastasiapsh", "https://t.me/you_no_you", "«Социология и социальная информатика»", "Руководитель отдела по партнерским связям"],
-    ["Серков Александр", "https://vk.com/setday", "https://t.me/", "«ПАДиИИ»", "IT-инфраструктура"],
-    ["Сударева Екатерина", "https://vk.com/kattyayaa", "https://t.me/kattyyaaa", "«Медиакоммуникации»", "Дизайнер SMM-комитета"],
-    ["Бекетова Софья", "https://vk.com/mirrrroh", "https://t.me/mirrr0h", "«Дизайн»", "Делегат"],
-    ["Слинкина Екатерина", "https://vk.com/katie_sss", "https://t.me/katie_sss", "«Востоковедение»", "Делегат"],
-    ["Вавилов Вячеслав", "https://vk.com/vvavilov04", "https://t.me/VaviLove14", "«Политология»", "Делегат"],
+    [
+        "Козин Георгий",
+        "https://vk.com/waitforit",
+        "https://t.me/Wait_For_lt",
+        "«Межбак по экономике и бизнесу»",
+        "Руководитель научного отдела",
+    ],
+    [
+        "Дмитриева Ксения",
+        "https://vk.com/queen_cordelia",
+        "https://t.me/Ksenia_26",
+        "«Межбак»",
+        "Руководитель команды продвижения",
+    ],
+    [
+        "Пшеничникова Анастасия",
+        "https://vk.com/anastasiapsh",
+        "https://t.me/you_no_you",
+        "«Социология и социальная информатика»",
+        "Руководитель отдела по партнерским связям",
+    ],
+    [
+        "Серков Александр",
+        "https://vk.com/setday",
+        "https://t.me/",
+        "«ПАДиИИ»",
+        "IT-инфраструктура",
+    ],
+    [
+        "Сударева Екатерина",
+        "https://vk.com/kattyayaa",
+        "https://t.me/kattyyaaa",
+        "«Медиакоммуникации»",
+        "Дизайнер SMM-комитета",
+    ],
+    [
+        "Бекетова Софья",
+        "https://vk.com/mirrrroh",
+        "https://t.me/mirrr0h",
+        "«Дизайн»",
+        "Делегат",
+    ],
+    [
+        "Слинкина Екатерина",
+        "https://vk.com/katie_sss",
+        "https://t.me/katie_sss",
+        "«Востоковедение»",
+        "Делегат",
+    ],
+    [
+        "Вавилов Вячеслав",
+        "https://vk.com/vvavilov04",
+        "https://t.me/VaviLove14",
+        "«Политология»",
+        "Делегат",
+    ],
 ]
 
-members_text = "".join([
-    "┌── Председатель и секретарь ──\n│\n",
-    *[f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n' for member in headmaster_member_data_list],
-    "\n┌── Главы комитетов ──\n│\n",
-    *[f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n' for member in head_member_data_list],
-    "\n",
-    *[f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n' for member in other_member_data_list],
-])
+members_text = "".join(
+    [
+        "┌── Председатель и секретарь ──\n│\n",
+        *[
+            f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n'
+            for member in headmaster_member_data_list
+        ],
+        "\n┌── Главы комитетов ──\n│\n",
+        *[
+            f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n'
+            for member in head_member_data_list
+        ],
+        "\n",
+        *[
+            f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n'
+            for member in other_member_data_list
+        ],
+    ]
+)
 
 
-button_text_member_list : dict[str, tuple[str, str]] = {
+button_text_member_list: dict[str, tuple[str, str]] = {
     "ru": ("Состав 👥", "inf_mbr_lst"),
     "en": ("Members 👥", "inf_mbr_lst"),
 }
-button_text_links : dict[str, tuple[str, str]] = {
+button_text_links: dict[str, tuple[str, str]] = {
     "ru": ("Ссылки 🔗", "inf_sc_lnks"),
     "en": ("Links 🔗", "inf_sc_lnks"),
 }
