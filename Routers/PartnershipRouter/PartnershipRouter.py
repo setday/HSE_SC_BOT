@@ -3,14 +3,13 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
-from Routers.DefaultTexts import get_lang_from_state
 from Routers.KeyboardMaker import make_keyboard, make_back_to_main_menu_keyboard
 
 from Logger.BackChatUtils import send_data_to_back
 from .PartnershipRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_text_partnership
 
-from ..Utils import answer_callback
+from ..Utils import answer_callback, get_lang_from_state
 
 
 class PartnershipRouterState(StatesGroup):

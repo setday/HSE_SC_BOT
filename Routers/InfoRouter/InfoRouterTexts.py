@@ -1,6 +1,22 @@
 block_enter_text : dict[str, str] = {
-    "ru": "Студенческий совет НИУ ВШЭ – Санкт-Петербург — выборный представительный орган НИУ ВШЭ – Санкт-Петербург. Основная наша задача — представление и отстаивание интересов студентов НИУ ВШЭ – Санкт-Петербург на всех уровнях.\n\nВ компетенцию Студсовета входит рассмотрение, формирование мнения и рекомендаций по всем вопросам, затрагивающим права и законные интересы студентов (повышенные стипендии, общежития, образовательный процесс и т.д.)",
-    "en": "The Student Council of HSE University - St. Petersburg is an elected representative body of HSE University - St. Petersburg. Our main task is to represent and defend the interests of students of HSE University - St. Petersburg at all levels.\n\nThe competence of the Student Council includes consideration, formation of opinions and recommendations on all issues affecting the rights and legitimate interests of students (increased scholarships, dormitories, educational process, etc.)",
+    "ru": """Студенческий совет НИУ ВШЭ Санкт-Петербург — выборный представительный орган Питерской Вышки и самая нестандартная внеучебка! 
+
+Основная наша задача — помощь студентам нашего вуза на всех уровнях, а также:
+
+• Представление интересов студентов в Учёном Совете НИУ ВШЭ;
+• Проведение различных крутых ивентов (подробнее в ВК!)  
+• Участие в решении делегированных студсовету кейсах (пгас, апелляции, дисциплинарные взыскания, социальные вопросы и пр.)
+
+И это только малая часть — присоединяйся к нам, стань волонтёром или делегатом следующего созыва!""",
+    "en": """The Student Council of HSE University Saint Petersburg is an elected representative body of the university and the most non-standard extracurricular activity!
+
+Our main task is to help students of our university at all levels, as well as:
+
+• Representing the interests of students in the Academic Council of HSE University;
+• Holding various cool events (more details in VK!)
+• Participation in solving cases delegated to the student council (pgas, appeals, disciplinary actions, social issues, etc.)
+
+And this is only a small part - join us, become a volunteer or a delegate of the next convocation!"""
 }
 
 links_text : dict[str, str] = {

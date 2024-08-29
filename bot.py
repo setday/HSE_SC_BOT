@@ -4,6 +4,8 @@ from aiogram import Bot, Dispatcher, enums
 from aiogram.client.default import DefaultBotProperties
 
 from keysLoader import get_bot_key
+
+from Routers.ExtraRouter.ExtraRouter import ExtraRouter
 from Routers.MainRouter.MainRouter import MainRouter
 from Routers.PartnershipRouter.PartnershipRouter import PartnershipRouter
 from Routers.WorkWithUsRouter.WorkWithUsRouter import WorkWithUsRouter
@@ -13,6 +15,8 @@ from Routers.DefaultRouter.DefaultRouter import DefaultRouter
 
 bot = Bot(get_bot_key(), default=DefaultBotProperties(parse_mode=enums.ParseMode.HTML))
 dp = Dispatcher()
+
+extra_router = ExtraRouter(bot)
 
 main_router = MainRouter(bot)
 partnership_router = PartnershipRouter(bot)
@@ -24,6 +28,8 @@ default_router = DefaultRouter(bot)
 
 async def main() -> None:
     dp.include_routers(
+        extra_router,
+        
         main_router,
         request_router,
         info_router,
@@ -32,7 +38,7 @@ async def main() -> None:
         default_router,
     )
 
-    # await bot.delete_webhook()
+    await bot.delete_webhook()
 
     poll = asyncio.create_task(dp.start_polling(bot))
 

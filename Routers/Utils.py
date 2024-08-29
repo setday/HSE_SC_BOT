@@ -16,3 +16,13 @@ def answer_callback(
         return bot.edit_message_text(
             **kwargs, chat_id=chat_id, message_id=message.message_id
         )
+
+async def get_lang_from_state(state: any) -> str:
+    try:
+        data = await state.get_data()
+        lang = data["language"]
+        if lang not in ["ru", "en"]:
+            return "ru"
+        return lang
+    except:
+        return "ru"

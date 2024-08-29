@@ -6,15 +6,12 @@ from aiogram.fsm.state import StatesGroup, State
 from Logger.BackChatUtils import send_data_to_back
 from .RequestRouterTexts import *
 
-from Routers.DefaultTexts import get_lang_from_state, button_text_back_to_main_menu
-from Routers.KeyboardMaker import (
-    make_keyboard,
-    make_back_to_main_menu_keyboard,
-)
+from Routers.DefaultTexts import button_text_back_to_main_menu
+from Routers.KeyboardMaker import make_keyboard, make_back_to_main_menu_keyboard
 
 from ..MainRouter.MainRouterTexts import button_text_leave_request_to_sc
 
-from ..Utils import answer_callback
+from ..Utils import answer_callback, get_lang_from_state
 
 
 class RequestRouterState(StatesGroup):
@@ -60,21 +57,22 @@ class RequestRouter(Router):
         )
 
         self.callback_query.register(
-            self.application_reqest_handler_c, RequestRouterState.course_requested
+            self.application_reqest_handler_c,
+            F.data == button_text_back_to_application["en"][1],
         )
         self.callback_query.register(
             self.application_reqest_handler_c, RequestRouterState.application_requested
         )
         self.callback_query.register(
-            self.application_reqest_handler_c,
-            F.data == button_text_back_to_application["en"][1],
+            self.application_reqest_handler_c_from_cource, RequestRouterState.course_requested
+        )
+
+        self.callback_query.register(
+            self.send_handler, F.data == button_text_approve_application["en"][1]
         )
 
         self.message.register(
             self.application_applience_handler, RequestRouterState.entering_application
-        )
-        self.callback_query.register(
-            self.send_handler, F.data == button_text_approve_application["en"][1]
         )
 
     async def reset_user(self, state: FSMContext, callback: CallbackQuery | None = None, message: Message | None = None) -> None:
@@ -86,16 +84,13 @@ class RequestRouter(Router):
             await answer_callback(
                 bot=self.bot,
                 callback=callback,
-                text=something_went_wrong_text[lang],
+                text=f'{something_went_wrong_text[lang]} \n\n',
                 reply_markup=make_keyboard(button_text_back_to_main_menu[lang]),
                 parse_mode="HTML",
             )
 
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(RequestRouterState.topic_requested)
-        await state.update_data(request=None)
-
-        await callback.answer()
 
         lang = await get_lang_from_state(state)
 
@@ -107,6 +102,10 @@ class RequestRouter(Router):
                 *button_text_topics[lang],
             ),
         )
+
+        await state.update_data(faculty=None, course=None, campus_or_dormitory=None, request_type=None)
+
+        await callback.answer()
 
     async def register_topic_handler(
         self, callback: CallbackQuery, state: FSMContext
@@ -209,12 +208,6 @@ class RequestRouter(Router):
     async def application_reqest_handler_c(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
-        if callback.data:
-            if callback.data not in button_text_courses_ids.keys():
-                await self.reset_user(state, callback=callback)
-                return
-            await state.update_data(course=button_text_courses_ids[callback.data])
-
         await state.set_state(RequestRouterState.entering_application)
 
         await callback.answer()
@@ -228,6 +221,17 @@ class RequestRouter(Router):
             reply_markup=make_keyboard(button_text_back_to_topic[lang]),
             parse_mode="HTML",
         )
+
+    async def application_reqest_handler_c_from_cource(
+        self, callback: CallbackQuery, state: FSMContext
+    ) -> None:
+        if not callback.data or callback.data not in button_text_courses_ids.keys():
+            await self.reset_user(state, callback=callback)
+            return
+        
+        await state.update_data(course=button_text_courses_ids[callback.data])
+
+        await self.application_reqest_handler_c(callback, state)
 
     async def application_applience_handler(
         self, message: Message, state: FSMContext

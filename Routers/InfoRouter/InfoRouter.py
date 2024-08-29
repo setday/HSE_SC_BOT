@@ -3,13 +3,12 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
-from Routers.DefaultTexts import back_to_menu_text, get_lang_from_state
 from Routers.KeyboardMaker import make_keyboard, button_text_back_to_main_menu
 
 from .InfoRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_text_info_about_sc
 
-from ..Utils import answer_callback
+from ..Utils import answer_callback, get_lang_from_state
 
 
 class InfoRouterState(StatesGroup):

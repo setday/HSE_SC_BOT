@@ -190,7 +190,7 @@ application_sent_text: str = """<strong>Обращение от {0} (@{1}):</str
 {5}"""
 
 button_text_back_to_application: dict[str, tuple[str, str]] = {
-    "ru": ("Вернуться в меню составления текста обращения🔙", "bck_to_apl_wrt"),
+    "ru": ("Вернуться к составлению текста обращения🔙", "bck_to_apl_wrt"),
     "en": ("Back to the application text menu🔙", "bck_to_apl_wrt"),
 }
 button_text_approve_application: dict[str, tuple[str, str]] = {

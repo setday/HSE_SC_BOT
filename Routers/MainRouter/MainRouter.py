@@ -1,17 +1,17 @@
 from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart
 from aiogram.fsm.state import StatesGroup, State
 
-from keysLoader import get_back_id, get_vote_id
+from ..Filters import SuperChatFilter
 
-from Routers.DefaultTexts import get_lang_from_state, button_text_back_to_main_menu
+from Routers.DefaultTexts import button_text_back_to_main_menu
 from Routers.KeyboardMaker import make_keyboard
 
 from .MainRouterTexts import *
 
-from ..Utils import answer_callback
+from ..Utils import answer_callback, get_lang_from_state
 
 
 class MainRouterState(StatesGroup):
@@ -26,9 +26,7 @@ class MainRouter(Router):
 
         self.bot = bot
 
-        self.message.register(self.get_chat_id_hnadler, Command("get_chat_id"))
-
-        self.message.register(self.enter_handler, CommandStart())
+        self.message.register(self.enter_handler, CommandStart(), SuperChatFilter(False))
         self.callback_query.register(
             self.language_selection_handler,
             F.data == button_text_change_language["en"][1],
@@ -40,15 +38,8 @@ class MainRouter(Router):
             self.main_menu_handler, F.data == button_text_back_to_main_menu["en"][1]
         )
 
-    async def get_chat_id_hnadler(self, message: Message) -> None:
-        await message.answer(str(message.chat.id))
-        await message.delete()
-
     # Enter handlers
     async def enter_handler(self, message: Message, state: FSMContext) -> None:
-        if message.chat.id == get_back_id() or message.chat.id == get_vote_id():
-            return
-
         status = await state.get_state()
         if status:
             await message.delete()
@@ -84,7 +75,7 @@ class MainRouter(Router):
     async def language_selected_handler(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
-        await state.set_state(MainRouterState.main_menu)
+        await state.set_state(MainRouterState.default)
 
         lang = callback.data if callback.data in ["ru", "en"] else "ru"
         await state.update_data(language=lang)
@@ -94,6 +85,8 @@ class MainRouter(Router):
     async def main_menu_handler(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
+        await state.set_state(MainRouterState.main_menu)
+        
         await callback.answer()
 
         lang = await get_lang_from_state(state)
