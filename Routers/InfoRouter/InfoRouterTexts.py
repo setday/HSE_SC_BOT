@@ -48,22 +48,31 @@ headmaster_member_data_list = [
         "Филиппова София Денисовна",
         "https://vk.com/filizhopss",
         "https://t.me/filizhops",
-        "«Юриспруденция»",
+        "Юриспруденция",
         "И.О. Председателя",
+        "Filippova Sofia Denisovna",
+        "Law",
+        "Acting President",
     ],
     [
         "Богосьян Лариса Мироновна",
         "https://vk.com/lrsbog",
         "https://t.me/lrbog",
-        "«Социология и социальная информатика»",
+        "Социология и социальная информатика",
         "Бывший председатель",
+        "Bogosyan Larisa Mironovna",
+        "Sociology and Social Informatics",
+        "Former President",
     ],
     [
         "Саранская Екатерина",
         "https://vk.com/ekatia17",
         "https://t.me/ekatia17",
-        "«Юриспруденция»",
+        "Юриспруденция",
         "Секретарь",
+        "Ekaterina Saranskaya",
+        "Law",
+        "Secretary",
     ],
 ]
 
@@ -72,36 +81,51 @@ head_member_data_list = [
         "Горшков Максим",
         "https://vk.com/flihten",
         "https://t.me/KiJhoTo",
-        "«Политология и мировая политика»",
+        "Политология и мировая политика",
         "Комитет Event-менеджмента и PR",
+        "Maxim Gorshkov",
+        "Political Science and World Politics",
+        "Event Management and PR Committee",
     ],
     [
         "Архипов Данил",
         "https://vk.com/capnsoth",
         "https://t.me/CapnSoth",
-        "«Юриспруденция»",
+        "Юриспруденция",
         "HR-комитет",
+        "Daniel Arkhipov",
+        "Law",
+        "HR Committee",
     ],
     [
         "Бахвалова Анита",
         "https://vk.com/abnnow",
         "https://t.me/anita_bn03",
-        "«УАГС»",
+        "УАГС",
         "SMM-комитет",
+        "Anita Bakhvalova",
+        "Public Policy and Analytics",
+        "SMM Committee",
     ],
     [
         "Девицкий Иван",
         "https://vk.com/i.devitsky",
         "https://t.me/Ivatalks",
-        "«Юриспруденция»",
+        "Юриспруденция",
         "Социальный комитет",
+        "Ivan Devitsky",
+        "Law",
+        "Social Committee",
     ],
     [
-        "Филиппова София Денисовна",
+        "Филиппова София",
         "https://vk.com/filizhopss",
         "https://t.me/filizhops",
-        "«Юриспруденция»",
+        "Юриспруденция",
         "Правовой комитет",
+        "Sofia Filippova",
+        "Law",
+        "Legal Committee",
     ],
 ]
 
@@ -110,79 +134,124 @@ other_member_data_list = [
         "Козин Георгий",
         "https://vk.com/waitforit",
         "https://t.me/Wait_For_lt",
-        "«Межбак по экономике и бизнесу»",
+        "Межбак по экономике и бизнесу",
         "Руководитель научного отдела",
+        "Georgy Kozin",
+        "Interbac",
+        "Head of the Scientific Department",
     ],
     [
         "Дмитриева Ксения",
         "https://vk.com/queen_cordelia",
         "https://t.me/Ksenia_26",
-        "«Межбак»",
+        "Межбак",
         "Руководитель команды продвижения",
+        "Ksenia Dmitrieva",
+        "Interbac",
+        "Promotion Team Leader",
     ],
     [
         "Пшеничникова Анастасия",
         "https://vk.com/anastasiapsh",
         "https://t.me/you_no_you",
-        "«Социология и социальная информатика»",
+        "Социология и социальная информатика",
         "Руководитель отдела по партнерским связям",
+        "Anastasia Pshenichnikova",
+        "Sociology and Social Informatics",
+        "Head of the Partnership Relations Department",
     ],
     [
         "Серков Александр",
         "https://vk.com/setday",
         "https://t.me/",
-        "«ПАДиИИ»",
+        "ПАДиИИ",
         "IT-инфраструктура",
+        "Alexander Serkov",
+        "ADAaAI",
+        "IT Infrastructure",
     ],
     [
         "Сударева Екатерина",
         "https://vk.com/kattyayaa",
         "https://t.me/kattyyaaa",
-        "«Медиакоммуникации»",
+        "Медиакоммуникации",
         "Дизайнер SMM-комитета",
+        "Ekaterina Sudareva",
+        "Media Communications",
+        "SMM Committee Designer",
     ],
     [
         "Бекетова Софья",
         "https://vk.com/mirrrroh",
         "https://t.me/mirrr0h",
-        "«Дизайн»",
+        "Дизайн",
         "Делегат",
+        "Sofia Beketova",
+        "Design",
+        "Delegate",
     ],
     [
         "Слинкина Екатерина",
         "https://vk.com/katie_sss",
         "https://t.me/katie_sss",
-        "«Востоковедение»",
+        "Востоковедение",
         "Делегат",
+        "Ekaterina Slinkina",
+        "Asian and African Studies",
+        "Delegate",
     ],
     [
         "Вавилов Вячеслав",
         "https://vk.com/vvavilov04",
         "https://t.me/VaviLove14",
-        "«Политология»",
+        "Политология",
         "Делегат",
+        "Vyacheslav Vavilov",
+        "Political Science",
+        "Delegate",
     ],
 ]
 
-members_text = "".join(
-    [
-        "┌── Председатель и секретарь ──\n│\n",
-        *[
-            f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n'
-            for member in headmaster_member_data_list
-        ],
-        "\n┌── Главы комитетов ──\n│\n",
-        *[
-            f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n'
-            for member in head_member_data_list
-        ],
-        "\n",
-        *[
-            f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> ({member[3]})\n'
-            for member in other_member_data_list
-        ],
-    ]
-)
+members_text: dict[str, str] = {
+    "ru": "".join(
+        [
+            "┌── Председатель и секретарь ──\n│\n",
+            *[
+                f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> («{member[3]}»)\n'
+                for member in headmaster_member_data_list
+            ],
+            "\n┌── Главы комитетов ──\n│\n",
+            *[
+                f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> («{member[3]}»)\n'
+                for member in head_member_data_list
+            ],
+            "\n",
+            *[
+                f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> («{member[3]}»)\n'
+                for member in other_member_data_list
+            ],
+        ]
+    ),
+    "en": "".join(
+        [
+            "┌── President and Secretary ──\n│\n",
+            *[
+                f'├ {member[7]} - <a href="{member[1]}">{member[5]}</a> ({member[6]})\n'
+                for member in headmaster_member_data_list
+            ],
+            "\n┌── Heads of Committees ──\n│\n",
+            *[
+                f'├ {member[7]} - <a href="{member[1]}">{member[5]}</a> ({member[6]})\n'
+                for member in head_member_data_list
+            ],
+            "\n",
+            *[
+                f'├ {member[7]} - <a href="{member[1]}">{member[5]}</a> ({member[6]})\n'
+                for member in other_member_data_list
+            ],
+        ]
+    ),
+}
 
 
 button_text_member_list: dict[str, tuple[str, str]] = {

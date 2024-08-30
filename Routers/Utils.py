@@ -17,6 +17,8 @@ async def answer_callback(bot: Bot, callback: CallbackQuery, **kwargs: Any) -> N
     chat_id = callback.from_user.id
     message = callback.message
 
+    should_message_be_deleted = False
+
     if message:
         is_photo_message = check_if_message_has_photo(message)
 
@@ -31,12 +33,15 @@ async def answer_callback(bot: Bot, callback: CallbackQuery, **kwargs: Any) -> N
             )
             return
 
-        await bot.delete_message(chat_id, message.message_id)
+        should_message_be_deleted = True
 
     if "photo" in kwargs:
         await bot.send_photo(chat_id, **kwargs)
     else:
         await bot.send_message(chat_id, **kwargs)
+
+    if should_message_be_deleted:
+        await bot.delete_message(chat_id, message.message_id)
 
 
 async def try_delete_message(message: Message | InaccessibleMessage | None) -> None:

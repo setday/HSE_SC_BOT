@@ -76,7 +76,7 @@ class InfoRouter(Router):
         await answer_callback(
             bot=self.bot,
             callback=callback,
-            text=members_text,
+            text=members_text[lang],
             reply_markup=make_keyboard(
                 button_text_links[lang], button_text_back_to_main_menu[lang]
             ),
