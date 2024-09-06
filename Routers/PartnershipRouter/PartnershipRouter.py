@@ -2,6 +2,7 @@ from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import FSInputFile
 
 from Routers.KeyboardMaker import make_keyboard, make_back_to_main_menu_keyboard
 
@@ -39,6 +40,8 @@ class PartnershipRouter(Router):
             self.send_handler, F.data == button_text_approve_application["en"][1]
         )
 
+        self.photo_file = FSInputFile("./Assets/PartnershipProfile.webp")
+
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(PartnershipRouterState.entering_application)
 
@@ -52,6 +55,7 @@ class PartnershipRouter(Router):
             text=block_enter_text[lang],
             reply_markup=make_back_to_main_menu_keyboard(lang),
             parse_mode="HTML",
+            photo=self.photo_file,
         )
 
     async def application_applience_handler(

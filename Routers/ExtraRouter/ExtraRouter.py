@@ -9,6 +9,7 @@ from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.types import User
 
 from ..Filters import VoteChatFilter, WordDocFilter
 
@@ -38,7 +39,7 @@ class ExtraRouter(Router):
         super().__init__()
 
         self.bot = bot
-        self.bot_info = None
+        self.bot_info: User | None = None
 
         self.message.register(self.get_chat_id_handler, Command("chat_id"))
         self.message.register(self.get_bot_id_handler, Command("bot_id"))

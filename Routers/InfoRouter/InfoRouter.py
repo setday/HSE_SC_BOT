@@ -33,7 +33,7 @@ class InfoRouter(Router):
             F.data == button_text_member_list["en"][1],
         )
 
-    photo_file = FSInputFile("./Assets/InfoProfile.jpg")
+        self.photo_file = FSInputFile("./Assets/AboutUsProfile.webp")
 
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(InfoRouterState.default)

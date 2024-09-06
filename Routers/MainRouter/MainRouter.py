@@ -3,6 +3,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import FSInputFile
 
 from ..Filters import SuperChatFilter
 
@@ -40,6 +41,8 @@ class MainRouter(Router):
             self.main_menu_handler, F.data == button_text_back_to_main_menu["en"][1]
         )
 
+        self.photo_file = FSInputFile("./Assets/GlobalProfile.webp")
+
     # Enter handlers
     async def enter_handler(self, message: Message, state: FSMContext) -> None:
         status = await state.get_state()
@@ -55,6 +58,7 @@ class MainRouter(Router):
                 button_text_lang["ru"],
                 button_text_lang["en"],
             ),
+            photo=self.photo_file,
         )
 
     async def language_selection_handler(

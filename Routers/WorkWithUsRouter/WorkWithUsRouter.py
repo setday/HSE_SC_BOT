@@ -2,6 +2,7 @@ from aiogram import Router, Bot, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import FSInputFile
 
 from Routers.KeyboardMaker import make_back_to_main_menu_keyboard
 
@@ -25,6 +26,8 @@ class WorkWithUsRouter(Router):
             self.enter_handler, F.data == button_text_work_with_us["en"][1]
         )
 
+        self.photo_file = FSInputFile("./Assets/WorkWithUsProfile.webp")
+
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(WorkWithUsRouterState.default)
         await callback.answer()
@@ -36,4 +39,5 @@ class WorkWithUsRouter(Router):
             callback=callback,
             text=block_enter_text[lang],
             reply_markup=make_back_to_main_menu_keyboard(lang),
+            photo=self.photo_file,
         )

@@ -32,7 +32,8 @@ class DefaultRouter(Router):
 
         lang = await get_lang_from_state(state)
         await message.answer(
-            unknown_action_text[lang], reply_markup=make_back_to_main_menu_keyboard()
+            unknown_action_text[lang],
+            reply_markup=make_back_to_main_menu_keyboard(),
         )
 
     async def default_callback_handler(

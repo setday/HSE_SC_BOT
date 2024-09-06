@@ -2,6 +2,7 @@ from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.types import FSInputFile
 
 from Logger.BackChatUtils import send_data_to_back
 from .RequestRouterTexts import *
@@ -77,6 +78,8 @@ class RequestRouter(Router):
             self.application_applience_handler, RequestRouterState.entering_application
         )
 
+        self.photo_file = FSInputFile("./Assets/RequestProfile.webp")
+
     async def reset_user(
         self,
         state: FSMContext,
@@ -94,6 +97,7 @@ class RequestRouter(Router):
                 text=f"{something_went_wrong_text[lang]} \n\n",
                 reply_markup=make_keyboard(button_text_back_to_main_menu[lang]),
                 parse_mode="HTML",
+                saveMedia=False,
             )
 
     async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
@@ -108,6 +112,7 @@ class RequestRouter(Router):
             reply_markup=make_keyboard(
                 *button_text_topics[lang],
             ),
+            photo=self.photo_file,
         )
 
         await state.update_data(
