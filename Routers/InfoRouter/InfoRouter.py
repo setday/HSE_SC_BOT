@@ -1,3 +1,4 @@
+import dis
 from aiogram import Router, Bot, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
@@ -43,7 +44,7 @@ class InfoRouter(Router):
         await answer_callback(
             bot=self.bot,
             callback=callback,
-            caption=block_enter_text[lang],
+            text=block_enter_text[lang],
             reply_markup=make_keyboard(
                 button_text_member_list[lang],
                 button_text_links[lang],
@@ -80,5 +81,7 @@ class InfoRouter(Router):
             reply_markup=make_keyboard(
                 button_text_links[lang], button_text_back_to_main_menu[lang]
             ),
+            saveMedia=False,
             disable_web_page_preview=True,
+            parse_mode="Markdown",
         )

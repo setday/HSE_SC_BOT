@@ -5,45 +5,70 @@ from typing import Any
 from aiogram import Bot
 from aiogram.types import Message, CallbackQuery, InaccessibleMessage
 from aiogram.fsm.context import FSMContext
+from aiogram.types import InputMediaPhoto, InputFile
+from torch import le
 
 
 def check_if_message_has_photo(message: Message | InaccessibleMessage | None) -> bool:
-    if not message or isinstance(message, InaccessibleMessage) or not message.photo:
+    if not message or isinstance(message, InaccessibleMessage) or message.content_type == "text":
         return False
     return True
 
 
 async def answer_callback(
-    bot: Bot, callback: CallbackQuery, saveMedia: bool = True, **kwargs: Any
+    bot: Bot,
+    callback: CallbackQuery,
+    text: str | None = None,
+    photo: InputFile | None = None,
+    saveMedia: bool = True,
+    **kwargs: Any
 ) -> None:
+    if text and len(text) > 1024:
+        saveMedia = False
+        photo = None
+
     chat_id = callback.from_user.id
     message = callback.message
 
-    message_id_to_be_deleted = None
+    message_has_media = check_if_message_has_photo(message)
+    data_has_media = photo is not None
 
-    if message:
-        is_photo_message = check_if_message_has_photo(message)
+    should_message_be_changed = (not message_has_media and data_has_media) or (not saveMedia and message_has_media and not data_has_media)
 
-        if "photo" in kwargs and is_photo_message:
+    if should_message_be_changed or message is None:
+        if data_has_media:
+            await bot.send_photo(chat_id, caption=text, photo=photo, **kwargs)
+        else:
+            await bot.send_message(chat_id, text=(text or ""), **kwargs)
+
+        if message:
+            try:
+                await bot.delete_message(chat_id, message.message_id)
+            except:
+                print(f'Can\'t delete message', file=sys.stderr)
+        
+        return
+
+    if message_has_media:
+        if data_has_media:
             await bot.edit_message_media(
-                kwargs["media"], chat_id=chat_id, message_id=message.message_id
+                media=InputMediaPhoto(media=photo),
+                chat_id=chat_id,
+                message_id=message.message_id
             )
-            return
-        if "photo" not in kwargs and (not is_photo_message or saveMedia):
-            await bot.edit_message_text(
-                **kwargs, chat_id=chat_id, message_id=message.message_id
-            )
-            return
-
-        message_id_to_be_deleted = message.message_id
-
-    if "photo" in kwargs:
-        await bot.send_photo(chat_id, **kwargs)
-    else:
-        await bot.send_message(chat_id, **kwargs)
-
-    if message_id_to_be_deleted:
-        await bot.delete_message(chat_id, message_id_to_be_deleted)
+        await bot.edit_message_caption(
+            caption=text,
+            chat_id=chat_id,
+            message_id=message.message_id,
+            **kwargs,
+        )
+    elif text:
+        await bot.edit_message_text(
+            text=text,
+            chat_id=chat_id,
+            message_id=message.message_id,
+            **kwargs,
+        )
 
 
 async def try_delete_message(message: Message | InaccessibleMessage | None) -> None:

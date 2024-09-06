@@ -47,7 +47,20 @@ class MainRouter(Router):
     async def enter_handler(self, message: Message, state: FSMContext) -> None:
         status = await state.get_state()
         if status:
-            await try_delete_message(message)
+            await state.set_state(MainRouterState.main_menu)
+            lang = await get_lang_from_state(state)
+            await self.bot.send_photo(
+                chat_id=message.chat.id,
+                photo=self.photo_file,
+                caption=navigation_text[lang],
+                reply_markup=make_keyboard(
+                    button_text_leave_request_to_sc[lang],
+                    button_text_work_with_us[lang],
+                    button_text_info_about_sc[lang],
+                    button_text_change_language[lang],
+                    button_text_partnership[lang],
+                ),
+            )
             return
 
         await state.set_state(MainRouterState.language_selection)
@@ -58,7 +71,6 @@ class MainRouter(Router):
                 button_text_lang["ru"],
                 button_text_lang["en"],
             ),
-            photo=self.photo_file,
         )
 
     async def language_selection_handler(
@@ -108,4 +120,5 @@ class MainRouter(Router):
                 button_text_change_language[lang],
                 button_text_partnership[lang],
             ),
+            photo=self.photo_file,
         )

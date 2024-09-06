@@ -217,17 +217,17 @@ members_text: dict[str, str] = {
         [
             "┌── Председатель и секретарь ──\n│\n",
             *[
-                f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> («{member[3]}»)\n'
+                f'├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n'
                 for member in headmaster_member_data_list
             ],
             "\n┌── Главы комитетов ──\n│\n",
             *[
-                f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> («{member[3]}»)\n'
+                f'├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n'
                 for member in head_member_data_list
             ],
             "\n",
             *[
-                f'├ {member[4]} - <a href="{member[1]}">{member[0]}</a> («{member[3]}»)\n'
+                f'├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n'
                 for member in other_member_data_list
             ],
         ]

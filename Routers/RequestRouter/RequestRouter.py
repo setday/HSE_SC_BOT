@@ -96,7 +96,6 @@ class RequestRouter(Router):
                 callback=callback,
                 text=f"{something_went_wrong_text[lang]} \n\n",
                 reply_markup=make_keyboard(button_text_back_to_main_menu[lang]),
-                parse_mode="HTML",
                 saveMedia=False,
             )
 
