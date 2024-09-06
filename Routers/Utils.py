@@ -6,7 +6,6 @@ from aiogram import Bot
 from aiogram.types import Message, CallbackQuery, InaccessibleMessage
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InputMediaPhoto, InputFile
-from torch import le
 
 
 def check_if_message_has_photo(message: Message | InaccessibleMessage | None) -> bool:
