@@ -14,7 +14,7 @@ button_text_lang: dict[str, tuple[str, str]] = {
     "en": ("English 🌍", "chng_lang_en"),
 }
 
-button_lang_datas = [lang_data[0] for lang_data in button_text_lang.values()]
+button_lang_datas = [lang_data[1] for lang_data in button_text_lang.values()]
 
 # Navigation
 navigation_text: dict[str, str] = {

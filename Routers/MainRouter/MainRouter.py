@@ -35,7 +35,7 @@ class MainRouter(Router):
             F.data == button_text_change_language["en"][1],
         )
         self.callback_query.register(
-            self.language_selected_handler, F.data.in_(button_lang_datas)
+            self.language_selected_handler, F.data.in_(button_lang_datas + ["ru", "en"])
         )
         self.callback_query.register(
             self.main_menu_handler, F.data == button_text_back_to_main_menu["en"][1]
@@ -95,7 +95,7 @@ class MainRouter(Router):
     ) -> None:
         await state.set_state(MainRouterState.default)
 
-        lang = callback.data[-2:] if callback.data in ["chng_lang_ru", "chng_lang_en"] else "ru"
+        lang = callback.data[-2:] if callback.data else "ru"
         await state.update_data(language=lang)
 
         await self.main_menu_handler(callback, state)

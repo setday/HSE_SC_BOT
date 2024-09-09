@@ -26,10 +26,12 @@ def get_dead_list(file):
     doc = Document(file)
     for para in doc.paragraphs:
         re_res = re.findall(
-            r"римен.ть в отношении студент.*мер. дисциплинарного взыскания", para.text
+            r"римен.ть в отношении студент.* мер.? дисциплинарного взыскания", para.text
         )
         for r in re_res:
-            res.append(r[30:-31].strip())
+            r = r.split(" ", 4)[4]
+            r = r.rsplit(" ", 3)[0]
+            res.append(r)
 
     return res
 
