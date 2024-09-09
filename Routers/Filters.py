@@ -2,7 +2,7 @@ from typing import Any
 from aiogram.types import Message
 from aiogram.filters import BaseFilter
 
-from keysLoader import get_back_id
+from keysLoader import get_back_id, get_vote_id
 
 
 class AdminChatFilter(BaseFilter):
@@ -25,8 +25,8 @@ class VoteChatFilter(BaseFilter):
 
     async def __call__(self, message: Message) -> bool:
         if self.is_this_admin_chat:
-            return message.chat.id == get_back_id()
-        return message.chat.id != get_back_id()
+            return message.chat.id == get_vote_id()
+        return message.chat.id != get_vote_id()
 
 
 class SuperChatFilter(BaseFilter):
@@ -37,8 +37,8 @@ class SuperChatFilter(BaseFilter):
 
     async def __call__(self, message: Message) -> bool:
         if self.is_this_admin_chat:
-            return message.chat.id == get_back_id() or message.chat.id == get_back_id()
-        return message.chat.id != get_back_id() and message.chat.id != get_back_id()
+            return message.chat.id == get_back_id() or message.chat.id == get_vote_id()
+        return message.chat.id != get_back_id() and message.chat.id != get_vote_id()
 
 
 class WordDocFilter(BaseFilter):

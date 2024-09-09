@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+import pytz
 import sys
 
 from typing import Any
@@ -9,9 +11,18 @@ from aiogram.types import InputMediaPhoto, InputFile
 
 
 def check_if_message_has_photo(message: Message | InaccessibleMessage | None) -> bool:
-    if not message or isinstance(message, InaccessibleMessage) or message.content_type == "text":
+    if not message:
         return False
-    return True
+    if isinstance(message, InaccessibleMessage):
+        return False
+    return message.content_type != "text"
+
+def check_if_date_has_expired(message: Message | InaccessibleMessage | None) -> bool:
+    if not message:
+        return True
+    if isinstance(message, InaccessibleMessage):
+        return True
+    return message.date + timedelta(hours=48) < datetime.now(pytz.UTC)
 
 
 async def answer_callback(
@@ -33,6 +44,10 @@ async def answer_callback(
     data_has_media = photo is not None
 
     should_message_be_changed = (not message_has_media and data_has_media) or (not saveMedia and message_has_media and not data_has_media)
+
+    message_is_dead = check_if_date_has_expired(message)
+    if message_is_dead:
+        message = None
 
     if should_message_be_changed or message is None:
         if data_has_media:

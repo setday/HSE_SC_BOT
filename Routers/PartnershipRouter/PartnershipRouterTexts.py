@@ -12,28 +12,27 @@ confirm_application_text: dict[str, str] = {
     "ru": """👀 Проверьте, пожалуйста, корректность данных и наличие доступа по ссылке к вашим прикреплённым материалам. Обращение в Студсовет будет отправлено в следующем виде:
 
 ————
-<strong>Обращение от {0} (@{1}):</strong>
-
-<strong>Тема: Сотрудничество</strong>
-
-{2}
+{0}
 ————""",
     "en": """👀 Please check the correctness of the data and the availability of access via the link to your attached materials. The appeal to the Student Council will be sent in the following form:
 
 ————
-<strong>Appeal from {0} (@{1}):</strong>
-
-<strong>Subject: Cooperation</strong>
-
-{2}
+{0}
 ————""",
 }
 
-application_sent_text: str = """<strong>Обращение от {0} (@{1}):</strong>
+application_sent_text: dict[str, str] = {
+    "ru": """<strong>Обращение от {0} (@{1}):</strong>
 
 <strong>Тема: Сотрудничество</strong>
 
-{2}"""
+{2}""",
+    "en": """<strong>Application from {0} (@{1}):</strong>
+
+<strong>Topic: Cooperation</strong>
+    
+{2}""",
+}
 
 button_text_back_to_application: dict[str, tuple[str, str]] = {
     "ru": ("Вернуться в меню составления текста обращения🔙", "bck_to_prv_stg"),

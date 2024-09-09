@@ -1,5 +1,5 @@
 from aiogram import Router, Bot, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, User
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
@@ -247,6 +247,28 @@ class RequestRouter(Router):
         await state.update_data(course=button_text_courses_ids[callback.data])
 
         await self.application_reqest_handler_c(callback, state)
+        
+    def combine_reqest(self, data: dict, user: User, lang: str = "ru") -> str:
+        second_row_ru = ""
+        if "campus_or_dormitory" in data:
+            second_row_ru = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
+        elif "faculty" in data:
+            second_row_ru = faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
+        else:
+            second_row_ru = ""
+
+        third_row_ru = ""
+        if "course" in data:
+            third_row_ru = course[lang] + button_text_courses[lang][data["course"]][0]
+
+        return application_sent_text[lang].format(
+            user.full_name,
+            user.username or "",
+            button_text_topics[lang][data.get("request_type", 3)][0],
+            second_row_ru,
+            third_row_ru,
+            data.get("request_text", ""),
+        )
 
     async def application_applience_handler(
         self, message: Message, state: FSMContext
@@ -258,62 +280,16 @@ class RequestRouter(Router):
         await state.set_state(RequestRouterState.confirm_application)
 
         data = await state.get_data()
+        data.update(request_text=message.html_text)
 
         lang = await get_lang_from_state(state)
 
-        second_row_ru = ""
-        if data.get("campus_or_dormitory", None):
-            second_row_ru = campus_or_dormitory_text["ru"] + data["campus_or_dormitory"]
-        elif data.get("faculty", None):
-            second_row_ru = (
-                faculty["ru"] + button_text_faculties["ru"][data["faculty"]][0]
-            )
-        else:
-            second_row_ru = ""
-        third_row_ru = (
-            course["ru"] + button_text_courses["ru"][data["course"]][0]
-            if data.get("course", None)
-            else ""
-        )
-
-        second_row_native = ""
-        if data.get("campus_or_dormitory", None):
-            second_row_native = (
-                campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
-            )
-        elif data.get("faculty", None):
-            second_row_native = (
-                faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
-            )
-        else:
-            second_row_native = ""
-        third_row_native = (
-            course[lang] + button_text_courses["ru"][data["course"]][0]
-            if data.get("course", None)
-            else ""
-        )
-
-        request_text_to_send = application_sent_text.format(
-            f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}",
-            message.from_user.username or "",
-            button_text_topics["ru"][data.get("request_type", 3)][0],
-            second_row_ru,
-            third_row_ru,
-            message.html_text,
-        )
+        request_text_to_send = self.combine_reqest(data, message.from_user)
         await state.update_data(request=request_text_to_send)
 
-        request_text = confirm_application_text[lang].format(
-            f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}",
-            message.from_user.username or "",
-            button_text_topics[lang][data.get("request_type", 3)][0],
-            second_row_native,
-            third_row_native,
-            message.html_text,
-        )
-
+        request_text = self.combine_reqest(data, message.from_user, lang)
         await message.answer(
-            request_text,
+            confirm_application_text[lang].format(request_text),
             reply_markup=make_keyboard(
                 button_text_approve_application[lang],
                 button_text_back_to_application[lang],

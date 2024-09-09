@@ -35,7 +35,7 @@ class MainRouter(Router):
             F.data == button_text_change_language["en"][1],
         )
         self.callback_query.register(
-            self.language_selected_handler, MainRouterState.language_selection
+            self.language_selected_handler, F.data.in_(button_lang_datas)
         )
         self.callback_query.register(
             self.main_menu_handler, F.data == button_text_back_to_main_menu["en"][1]
@@ -95,7 +95,7 @@ class MainRouter(Router):
     ) -> None:
         await state.set_state(MainRouterState.default)
 
-        lang = callback.data if callback.data in ["ru", "en"] else "ru"
+        lang = callback.data[-2:] if callback.data in ["chng_lang_ru", "chng_lang_en"] else "ru"
         await state.update_data(language=lang)
 
         await self.main_menu_handler(callback, state)
@@ -114,11 +114,11 @@ class MainRouter(Router):
             callback=callback,
             text=navigation_text[lang],
             reply_markup=make_keyboard(
+                button_text_info_about_sc[lang],
                 button_text_leave_request_to_sc[lang],
                 button_text_work_with_us[lang],
-                button_text_info_about_sc[lang],
-                button_text_change_language[lang],
                 button_text_partnership[lang],
+                button_text_change_language[lang],
             ),
             photo=self.photo_file,
         )

@@ -10,9 +10,11 @@ block_default_text: str = (
 
 # Language selection
 button_text_lang: dict[str, tuple[str, str]] = {
-    "ru": ("Русский ⚪🔵🔴", "ru"),
-    "en": ("English 🌍", "en"),
+    "ru": ("Русский ⚪🔵🔴", "chng_lang_ru"),
+    "en": ("English 🌍", "chng_lang_en"),
 }
+
+button_lang_datas = [lang_data[0] for lang_data in button_text_lang.values()]
 
 # Navigation
 navigation_text: dict[str, str] = {

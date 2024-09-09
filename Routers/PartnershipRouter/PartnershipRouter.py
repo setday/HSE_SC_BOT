@@ -1,5 +1,5 @@
 from aiogram import Router, Bot, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, User
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
@@ -58,6 +58,28 @@ class PartnershipRouter(Router):
             photo=self.photo_file,
         )
 
+    def combine_reqest(self, text: str, user: User, lang: str = "ru") -> str:
+        # second_row_ru = ""
+        # if "campus_or_dormitory" in data:
+        #     second_row_ru = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
+        # elif "faculty" in data:
+        #     second_row_ru = faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
+        # else:
+        #     second_row_ru = ""
+
+        # third_row_ru = ""
+        # if "course" in data:
+        #     third_row_ru = course[lang] + button_text_courses[lang][data["course"]][0]
+
+        return application_sent_text[lang].format(
+            user.full_name,
+            user.username or "",
+            # button_text_topics[lang][data.get("request_type", 3)][0],
+            # second_row_ru,
+            # third_row_ru,
+            text,
+        )
+
     async def application_applience_handler(
         self, message: Message, state: FSMContext
     ) -> None:
@@ -67,22 +89,14 @@ class PartnershipRouter(Router):
 
         await state.set_state(PartnershipRouterState.confirm_application)
 
-        request_text_to_send = application_sent_text.format(
-            f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}",
-            message.from_user.username or "",
-            message.html_text,
-        )
+        request_text_to_send = self.combine_reqest(message.html_text, message.from_user)
         await state.update_data(request=request_text_to_send)
 
         lang = await get_lang_from_state(state)
-        request_text = confirm_application_text[lang].format(
-            f"{message.from_user.first_name or ''} {message.from_user.last_name or ''}",
-            message.from_user.username or "",
-            message.html_text,
-        )
+        request_text = self.combine_reqest(message.html_text, message.from_user, lang)
 
         await message.answer(
-            request_text,
+            confirm_application_text[lang].format(request_text),
             reply_markup=make_keyboard(
                 button_text_approve_application[lang],
                 button_text_back_to_application[lang],
