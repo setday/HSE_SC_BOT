@@ -28,8 +28,8 @@ button_text_leave_request_to_sc: dict[str, tuple[str, str]] = {
     "en": ("Leave a request for the Student Council 💬", "wrt_to_sc"),
 }
 button_text_work_with_us: dict[str, tuple[str, str]] = {
-    "ru": ("Хочу работать с вами 💼", "wrk_wth_sc"),
-    "en": ("I want to work with you 💼", "wrk_wth_sc"),
+    "ru": ("Присоединиться к нам 💼", "wrk_wth_sc"),
+    "en": ("Join us 💼", "wrk_wth_sc"),
 }
 button_text_info_about_sc: dict[str, tuple[str, str]] = {
     "ru": ("Информация про нас 🤓", "abt_us"),
