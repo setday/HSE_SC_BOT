@@ -4,12 +4,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
 
-from Routers.KeyboardMaker import make_back_to_main_menu_keyboard
+from Utils.KeyboardMaker import make_back_to_main_menu_keyboard
 
 from .WorkWithUsRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_text_work_with_us
 
-from ..Utils import answer_callback, get_lang_from_state
+from Utils.Utils import answer_callback, get_lang_from_state
 
 
 class WorkWithUsRouterState(StatesGroup):

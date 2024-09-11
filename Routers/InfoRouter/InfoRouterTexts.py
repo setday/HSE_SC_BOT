@@ -54,16 +54,16 @@ headmaster_member_data_list = [
         "Law",
         "Acting President",
     ],
-    [
-        "Богосьян Лариса Мироновна",
-        "https://vk.com/lrsbog",
-        "https://t.me/lrbog",
-        "Социология и социальная информатика",
-        "Бывший председатель",
-        "Bogosyan Larisa Mironovna",
-        "Sociology and Social Informatics",
-        "Former President",
-    ],
+    # [
+    #     "Богосьян Лариса Мироновна",
+    #     "https://vk.com/lrsbog",
+    #     "https://t.me/lrbog",
+    #     "Социология и социальная информатика",
+    #     "Бывший председатель",
+    #     "Bogosyan Larisa Mironovna",
+    #     "Sociology and Social Informatics",
+    #     "Former President",
+    # ],
     [
         "Саранская Екатерина",
         "https://vk.com/ekatia17",
@@ -217,17 +217,17 @@ members_text: dict[str, str] = {
         [
             "┌── Председатель и секретарь ──\n│\n",
             *[
-                f'├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n'
+                f"├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n"
                 for member in headmaster_member_data_list
             ],
             "\n┌── Главы комитетов ──\n│\n",
             *[
-                f'├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n'
+                f"├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n"
                 for member in head_member_data_list
             ],
             "\n",
             *[
-                f'├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n'
+                f"├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n"
                 for member in other_member_data_list
             ],
         ]

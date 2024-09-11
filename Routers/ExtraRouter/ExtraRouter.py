@@ -11,13 +11,13 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import User
 
-from ..Filters import VoteChatFilter, WordDocFilter
+from Utils.Filters import VoteChatFilter, WordDocFilter, SuperChatFilter
 
-from Routers.KeyboardMaker import make_back_to_main_menu_keyboard
+from Utils.KeyboardMaker import make_back_to_main_menu_keyboard
 
-from .ExtraRouterInfo import *
+from .ExtraRouterTexts import *
 
-from ..Utils import try_delete_message
+from Utils.Utils import try_delete_message
 
 
 def get_dead_list(file):
@@ -26,7 +26,8 @@ def get_dead_list(file):
     doc = Document(file)
     for para in doc.paragraphs:
         re_res = re.findall(
-            r"римен.ть в отношении студент.* мер.? дисциплинарного взыскания", para.text
+            r"римен.ть в отношении студент..? .* мер.? дисциплинарного взыскания",
+            para.text,
         )
         for r in re_res:
             r = r.split(" ", 4)[4]
@@ -51,7 +52,7 @@ class ExtraRouter(Router):
         self.message.register(self.get_fact_handler, Command("fact"))
         self.message.register(self.del_handler, Command("del"))
         self.message.register(
-            self.create_mm_poll_handler, VoteChatFilter(), WordDocFilter()
+            self.create_mm_poll_handler, VoteChatFilter(True), WordDocFilter()
         )
 
     async def get_chat_id_handler(self, message: Message) -> None:
@@ -105,7 +106,7 @@ class ExtraRouter(Router):
 
             return
 
-        fact_id = random.randint(1, len(facts_text))
+        fact_id = random.randint(1, len(facts_text) - 1)
 
         await message.answer(
             facts_format_text.format(fact_id) + facts_text[fact_id],
@@ -113,6 +114,7 @@ class ExtraRouter(Router):
         )
 
     async def create_mm_poll_handler(self, message: Message) -> None:
+        print("New vote candidate", message.document)
         if not message.document:
             return
 
@@ -125,7 +127,7 @@ class ExtraRouter(Router):
 
         for dead in dead_list:
             await message.answer_poll(
-                question=dead + "?",
+                question="ММ " + dead,
                 options=[
                     "Устное замечание",
                     "Замечание",

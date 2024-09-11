@@ -1,4 +1,4 @@
-from Routers.DefaultTexts import button_text_back_to_main_menu
+from Utils.DefaultTexts import button_text_back_to_main_menu
 
 something_went_wrong_text: dict[str, str] = {
     "ru": "❔Что-то пошло не так. Попробуй вернуться в главное меню и попробовать снова.",

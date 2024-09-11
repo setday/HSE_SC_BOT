@@ -17,6 +17,7 @@ def check_if_message_has_photo(message: Message | InaccessibleMessage | None) ->
         return False
     return message.content_type != "text"
 
+
 def check_if_date_has_expired(message: Message | InaccessibleMessage | None) -> bool:
     if not message:
         return True
@@ -31,7 +32,7 @@ async def answer_callback(
     text: str | None = None,
     photo: InputFile | None = None,
     saveMedia: bool = True,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> None:
     if text and len(text) > 1024:
         saveMedia = False
@@ -43,7 +44,9 @@ async def answer_callback(
     message_has_media = check_if_message_has_photo(message)
     data_has_media = photo is not None
 
-    should_message_be_changed = (not message_has_media and data_has_media) or (not saveMedia and message_has_media and not data_has_media)
+    should_message_be_changed = (not message_has_media and data_has_media) or (
+        not saveMedia and message_has_media and not data_has_media
+    )
 
     message_is_dead = check_if_date_has_expired(message)
     if message_is_dead:
@@ -59,8 +62,8 @@ async def answer_callback(
             try:
                 await bot.delete_message(chat_id, message.message_id)
             except:
-                print(f'Can\'t delete message', file=sys.stderr)
-        
+                print(f"Can't delete message", file=sys.stderr)
+
         return
 
     if message_has_media:
@@ -68,7 +71,7 @@ async def answer_callback(
             await bot.edit_message_media(
                 media=InputMediaPhoto(media=photo),
                 chat_id=chat_id,
-                message_id=message.message_id
+                message_id=message.message_id,
             )
         await bot.edit_message_caption(
             caption=text,

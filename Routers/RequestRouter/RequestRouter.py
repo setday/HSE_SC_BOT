@@ -4,15 +4,15 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
 
-from Logger.BackChatUtils import send_data_to_back
+from Utils.BackChatUtils import send_data_to_back
 from .RequestRouterTexts import *
 
-from Routers.DefaultTexts import button_text_back_to_main_menu
-from Routers.KeyboardMaker import make_keyboard, make_back_to_main_menu_keyboard
+from Utils.DefaultTexts import button_text_back_to_main_menu
+from Utils.KeyboardMaker import make_keyboard, make_back_to_main_menu_keyboard
 
 from ..MainRouter.MainRouterTexts import button_text_leave_request_to_sc
 
-from ..Utils import answer_callback, get_lang_from_state
+from Utils.Utils import answer_callback, get_lang_from_state
 
 
 class RequestRouterState(StatesGroup):
@@ -247,13 +247,15 @@ class RequestRouter(Router):
         await state.update_data(course=button_text_courses_ids[callback.data])
 
         await self.application_reqest_handler_c(callback, state)
-        
+
     def combine_reqest(self, data: dict, user: User, lang: str = "ru") -> str:
         second_row_ru = ""
         if "campus_or_dormitory" in data:
             second_row_ru = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
         elif "faculty" in data:
-            second_row_ru = faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
+            second_row_ru = (
+                faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
+            )
         else:
             second_row_ru = ""
 

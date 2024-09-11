@@ -1,4 +1,3 @@
-from typing import Any
 from aiogram.types import Message
 from aiogram.filters import BaseFilter
 

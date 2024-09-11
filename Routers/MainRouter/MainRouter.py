@@ -5,14 +5,14 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
 
-from ..Filters import SuperChatFilter
+from Utils.Filters import SuperChatFilter
 
-from Routers.DefaultTexts import button_text_back_to_main_menu
-from Routers.KeyboardMaker import make_keyboard
+from Utils.DefaultTexts import button_text_back_to_main_menu
+from Utils.KeyboardMaker import make_keyboard
 
 from .MainRouterTexts import *
 
-from ..Utils import answer_callback, get_lang_from_state, try_delete_message
+from Utils.Utils import answer_callback, get_lang_from_state
 
 
 class MainRouterState(StatesGroup):

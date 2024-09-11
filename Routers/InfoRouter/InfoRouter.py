@@ -1,16 +1,15 @@
-import dis
 from aiogram import Router, Bot, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
 
-from Routers.KeyboardMaker import make_keyboard, button_text_back_to_main_menu
+from Utils.KeyboardMaker import make_keyboard, button_text_back_to_main_menu
 
 from .InfoRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_text_info_about_sc
 
-from ..Utils import answer_callback, get_lang_from_state
+from Utils.Utils import answer_callback, get_lang_from_state
 
 
 class InfoRouterState(StatesGroup):
