@@ -119,10 +119,12 @@ class ExtraRouter(Router):
             return
 
         file = await self.bot.download(message.document.file_id)
+        print(file)
         if file is None:
             return
 
         dead_list = get_dead_list(file)
+        print(dead_list)
         file.close()
 
         for dead in dead_list:

@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
 
-from Utils.KeyboardMaker import make_back_to_main_menu_keyboard
+from Utils.KeyboardMaker import make_keyboard, button_text_back_to_main_menu
 
 from .WorkWithUsRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_text_work_with_us
@@ -25,6 +25,9 @@ class WorkWithUsRouter(Router):
         self.callback_query.register(
             self.enter_handler, F.data == button_text_work_with_us["en"][1]
         )
+        self.callback_query.register(
+            self.option_is_unavailable, F.data == "ju_unvbl"
+        )
 
         self.photo_file = FSInputFile("./Assets/WorkWithUsProfile.webp")
 
@@ -38,6 +41,14 @@ class WorkWithUsRouter(Router):
             bot=self.bot,
             callback=callback,
             text=block_enter_text[lang],
-            reply_markup=make_back_to_main_menu_keyboard(lang),
+            reply_markup=make_keyboard(
+                button_text_become_delegate[lang],
+                button_text_become_volunteer[lang],
+                button_text_back_to_main_menu[lang],
+            ),
             photo=self.photo_file,
         )
+    
+    async def option_is_unavailable(self, callback: CallbackQuery, state: FSMContext) -> None:
+        lang = await get_lang_from_state(state)
+        await callback.answer(option_is_temporarily_unavailable_text[lang])

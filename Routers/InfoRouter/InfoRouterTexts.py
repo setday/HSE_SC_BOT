@@ -1,22 +1,22 @@
 block_enter_text: dict[str, str] = {
-    "ru": """Студенческий совет НИУ ВШЭ Санкт-Петербург — выборный представительный орган Питерской Вышки и самая нестандартная внеучебка! 
+    "ru": """Студенческий совет НИУ ВШЭ — Санкт-Петербург — выборный представительный орган Питерской Вышки и самая внеучебная организация! 
 
-Основная наша задача — помощь студентам нашего вуза на всех уровнях, а также:
+Основная наша задача — помощь студентам вуза на всех уровнях, а также:
 
 • Представление интересов студентов в Учёном Совете НИУ ВШЭ;
-• Проведение различных крутых ивентов (подробнее в ВК!)  
-• Участие в решении делегированных студсовету кейсах (пгас, апелляции, дисциплинарные взыскания, социальные вопросы и пр.)
+• Проведение различных крутых ивентов (<a href="https://vk.com/hsespbstudcouncil">подробнее в ВК!</a>)  
+• Участие в решении делегированных Студсовету кейсах (ПГАС, апелляции, дисциплинарные взыскания, социальные вопросы и пр.)
 
-И это только малая часть — присоединяйся к нам, стань волонтёром или делегатом следующего созыва!""",
-    "en": """The Student Council of HSE University Saint Petersburg is an elected representative body of the university and the most non-standard extracurricular activity!
+И это только малая часть! Присоединяйся к нам, стань волонтёром или делегатом следующего созыва!""",
+    "en": """The Student Council of HSE University in St. Petersburg is the elected representative body of the university and the most non-standard extracurricular organization!
 
-Our main task is to help students of our university at all levels, as well as:
+Our main task is to help students of the university at all levels, as well as:
 
 • Representing the interests of students in the Academic Council of HSE University;
-• Holding various cool events (more details in VK!)
-• Participation in solving cases delegated to the student council (pgas, appeals, disciplinary actions, social issues, etc.)
+• Holding various cool events (<a href="https://vk.com/hsespbstudcouncil">more details in VK!</a>)
+• Participation in solving cases delegated to the Student Council (PGAS, appeals, disciplinary actions, social issues, etc.)
 
-And this is only a small part - join us, become a volunteer or a delegate of the next convocation!""",
+And this is only a small part! Join us, become a volunteer or a delegate of the next convocation!""",
 }
 
 links_text: dict[str, str] = {
@@ -54,16 +54,6 @@ headmaster_member_data_list = [
         "Law",
         "Acting President",
     ],
-    # [
-    #     "Богосьян Лариса Мироновна",
-    #     "https://vk.com/lrsbog",
-    #     "https://t.me/lrbog",
-    #     "Социология и социальная информатика",
-    #     "Бывший председатель",
-    #     "Bogosyan Larisa Mironovna",
-    #     "Sociology and Social Informatics",
-    #     "Former President",
-    # ],
     [
         "Саранская Екатерина",
         "https://vk.com/ekatia17",
@@ -127,6 +117,16 @@ head_member_data_list = [
         "Law",
         "Legal Committee",
     ],
+    [
+        "Богосьян Лариса",
+        "https://vk.com/lrsbog",
+        "https://t.me/lrbog",
+        "Социология и социальная информатика",
+        "Аналитический комитет",
+        "Bogosyan Larisa Mironovna",
+        "Sociology and Social Informatics",
+        "Analytical Committee",
+    ],
 ]
 
 other_member_data_list = [
@@ -144,7 +144,7 @@ other_member_data_list = [
         "Дмитриева Ксения",
         "https://vk.com/queen_cordelia",
         "https://t.me/Ksenia_26",
-        "Межбак",
+        "Межбак по экономике и бизнесу",
         "Руководитель команды продвижения",
         "Ksenia Dmitrieva",
         "Interbac",
@@ -204,10 +204,10 @@ other_member_data_list = [
         "Вавилов Вячеслав",
         "https://vk.com/vvavilov04",
         "https://t.me/VaviLove14",
-        "Политология",
+        "Политология и мировая политика",
         "Делегат",
         "Vyacheslav Vavilov",
-        "Political Science",
+        "Political Science and World Politics",
         "Delegate",
     ],
 ]
@@ -217,17 +217,17 @@ members_text: dict[str, str] = {
         [
             "┌── Председатель и секретарь ──\n│\n",
             *[
-                f"├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n"
+                f"├ {member[4]} — [{member[0]}]({member[1]}) («{member[3]}»)\n"
                 for member in headmaster_member_data_list
             ],
             "\n┌── Главы комитетов ──\n│\n",
             *[
-                f"├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n"
+                f"├ {member[4]} — [{member[0]}]({member[1]}) («{member[3]}»)\n"
                 for member in head_member_data_list
             ],
             "\n",
             *[
-                f"├ {member[4]} - [{member[0]}]({member[1]}) («{member[3]}»)\n"
+                f"├ {member[4]} — [{member[0]}]({member[1]}) («{member[3]}»)\n"
                 for member in other_member_data_list
             ],
         ]
@@ -236,17 +236,17 @@ members_text: dict[str, str] = {
         [
             "┌── President and Secretary ──\n│\n",
             *[
-                f'├ {member[7]} - <a href="{member[1]}">{member[5]}</a> ({member[6]})\n'
+                f'├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n'
                 for member in headmaster_member_data_list
             ],
             "\n┌── Heads of Committees ──\n│\n",
             *[
-                f'├ {member[7]} - <a href="{member[1]}">{member[5]}</a> ({member[6]})\n'
+                f'├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n'
                 for member in head_member_data_list
             ],
             "\n",
             *[
-                f'├ {member[7]} - <a href="{member[1]}">{member[5]}</a> ({member[6]})\n'
+                f'├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n'
                 for member in other_member_data_list
             ],
         ]

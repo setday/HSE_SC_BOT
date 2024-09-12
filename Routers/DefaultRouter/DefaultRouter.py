@@ -23,7 +23,7 @@ class DefaultRouter(Router):
         self.bot = bot
 
         self.message.register(self.default_handler, SuperChatFilter(False))
-        # self.message.register(self.s_default_handler, SuperChatFilter(True))
+        self.message.register(self.s_default_handler, SuperChatFilter(True))
         self.callback_query.register(self.default_callback_handler)
 
     async def default_handler(self, message: Message, state: FSMContext) -> None:
@@ -46,19 +46,19 @@ class DefaultRouter(Router):
             reply_markup=make_back_to_main_menu_keyboard(),
         )
 
-    # async def s_default_handler(self, message: Message, state: FSMContext) -> None:
-    #     print(
-    #         "Unhandeled message:",
-    #         message.text,
-    #         " | DOC -> | ",
-    #         message.document,
-    #         " | MIM -> | ",
-    #         message.document.mime_type if message.document else None,
-    #         " | MID -> | ",
-    #         message.media_group_id,
-    #         " | CID -> | ",
-    #         message.chat.id,
-    #     )
+    async def s_default_handler(self, message: Message, state: FSMContext) -> None:
+        print(
+            "Unhandeled message:",
+            message.text,
+            " | DOC -> | ",
+            message.document,
+            " | MIM -> | ",
+            message.document.mime_type if message.document else None,
+            " | MID -> | ",
+            message.media_group_id,
+            " | CID -> | ",
+            message.chat.id,
+        )
 
     async def default_callback_handler(
         self, callback: CallbackQuery, state: FSMContext

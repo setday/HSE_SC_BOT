@@ -1,12 +1,9 @@
 # Welcome message
-block_enter_text: str = """✨ Привет! На связи официальный Студсовета Питерской Вышки! Пожалуйста, выберите предпочитаемый язык общения:
+block_enter_text: str = """✨ Привет! На связи официальный чат-бот Студсовета Питерской Вышки! Пожалуйста, выбери предпочитаемый язык общения:
 
 —
 
-✨ Hi! It's the official Student Council of HSE - St. Petersburg. Please select your preferred language:"""
-block_default_text: str = (
-    "Вы хотите создать обращение (нам будет проще решить вопрос если вы сначала выберите категорию)?"
-)
+✨ Hi! It's the official chatbot of the Student Council of HSE SPb! Please select your preferred language:"""
 
 # Language selection
 button_text_lang: dict[str, tuple[str, str]] = {
@@ -18,8 +15,8 @@ button_lang_datas = [lang_data[1] for lang_data in button_text_lang.values()]
 
 # Navigation
 navigation_text: dict[str, str] = {
-    "ru": "=== Навигация ===",
-    "en": "=== Navigation ===",
+    "ru": "Навигация",
+    "en": "Navigation",
 }
 
 # Navigation buttons
