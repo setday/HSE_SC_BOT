@@ -5,7 +5,8 @@ from Utils.DefaultTexts import button_text_back_to_main_menu
 
 
 def make_keyboard(
-    *buttons: tuple[str, str, str] | tuple[str, str] | str, sizes: list[int] | None = None
+    *buttons: tuple[str, str, str] | tuple[str, str] | str,
+    sizes: list[int] | None = None
 ) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
@@ -14,7 +15,9 @@ def make_keyboard(
             builder.add(InlineKeyboardButton(text=button, callback_data=button[:30]))
         else:
             url = None if len(button) < 3 else button[2]
-            builder.add(InlineKeyboardButton(text=button[0], callback_data=button[1], url=url))
+            builder.add(
+                InlineKeyboardButton(text=button[0], callback_data=button[1], url=url)
+            )
 
     builder.adjust(*(sizes or [1] * len(buttons)))
     return builder.as_markup()

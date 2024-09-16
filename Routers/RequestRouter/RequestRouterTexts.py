@@ -124,7 +124,10 @@ button_text_courses: dict[str, list[tuple[str, str]]] = {
         ("3️⃣Третий курс", course_selection_callback_prefix + "3"),
         ("4️⃣Четвёртый курс", course_selection_callback_prefix + "4"),
         ("5️⃣Пятый курс", course_selection_callback_prefix + "5"),
-        ("🔄 Магистратура/Аспирантура/Другое", course_selection_callback_prefix + "mpo"),
+        (
+            "🔄 Магистратура/Аспирантура/Другое",
+            course_selection_callback_prefix + "mpo",
+        ),
         button_text_back_to_faculty["ru"],
     ],
     "en": [

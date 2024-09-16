@@ -104,6 +104,7 @@ async def check_lang_in_state(state: FSMContext) -> bool:
     except:
         return False
 
+
 async def get_lang_from_state(state: FSMContext) -> str:
     try:
         data = await state.get_data()

@@ -45,12 +45,8 @@ class RequestRouter(Router):
             self.enter_handler, F.data == button_text_back_to_topic["en"][1]
         )
 
-        self.callback_query.register(
-            self.show_sent_requests, F.data == "shw_appls"
-        )
-        self.callback_query.register(
-            self.print_request_n, F.data.startswith("req_")
-        )
+        self.callback_query.register(self.show_sent_requests, F.data == "shw_appls")
+        self.callback_query.register(self.print_request_n, F.data.startswith("req_"))
 
         self.callback_query.register(
             self.register_topic_handler, RequestRouterState.topic_requested
@@ -125,7 +121,12 @@ class RequestRouter(Router):
         )
 
         await state.update_data(
-            faculty=None, course=None, campus_or_dormitory=None, request_type=None, request_to_send=None, request=None,
+            faculty=None,
+            course=None,
+            campus_or_dormitory=None,
+            request_type=None,
+            request_to_send=None,
+            request=None,
         )
 
         await callback.answer()
@@ -150,7 +151,9 @@ class RequestRouter(Router):
             await state.set_state(RequestRouterState.application_requested)
             await self.application_reqest_handler_c(callback, state)
 
-    async def show_sent_requests(self, callback: CallbackQuery, state: FSMContext) -> None:
+    async def show_sent_requests(
+        self, callback: CallbackQuery, state: FSMContext
+    ) -> None:
         await callback.answer()
 
         lang = await get_lang_from_state(state)
@@ -164,7 +167,9 @@ class RequestRouter(Router):
                 "".join(
                     [
                         sent_request_text[lang].format(
-                            request["number"], str(request["date"])[:-7], request["topic"]
+                            request["number"],
+                            str(request["date"])[:-7],
+                            request["topic"],
                         )
                         for request in request_queue[-3:]
                     ]
@@ -177,7 +182,8 @@ class RequestRouter(Router):
             text=answer_text,
             reply_markup=make_keyboard(
                 *[
-                    (str(req["number"]), f"req_{i}") for i, req in enumerate(request_queue[-3:])
+                    (str(req["number"]), f"req_{i}")
+                    for i, req in enumerate(request_queue[-3:])
                 ],
                 button_text_back_to_main_menu[lang],
             ),
@@ -187,7 +193,7 @@ class RequestRouter(Router):
         if not callback.data:
             await self.reset_user(state, callback=callback)
             return
-        
+
         lang = await get_lang_from_state(state)
 
         data = await state.get_data()
@@ -373,7 +379,9 @@ class RequestRouter(Router):
         data = await state.get_data()
         request_queue = data.get("request_queue", [])
 
-        if len(request_queue) > 0 and request_queue[-1]["date"] > datetime.now() + timedelta(seconds=-6):
+        if len(request_queue) > 0 and request_queue[-1][
+            "date"
+        ] > datetime.now() + timedelta(seconds=-6):
             await callback.answer(wait_a_little_text[lang])
             return
 
@@ -384,12 +392,14 @@ class RequestRouter(Router):
         if data["request_type"] in button_text_topics[lang]:
             topic = button_text_topics[lang][data["request_type"]][0]
 
-        request_queue.append({
-            "number": number,
-            "date": datetime.now(),
-            "request": data["request"],
-            "topic": topic,
-            })
+        request_queue.append(
+            {
+                "number": number,
+                "date": datetime.now(),
+                "request": data["request"],
+                "topic": topic,
+            }
+        )
         await state.update_data(request_queue=request_queue)
 
         await answer_callback(

@@ -61,7 +61,12 @@ class PartnershipRouter(Router):
         )
 
         await state.update_data(
-            faculty=None, course=None, campus_or_dormitory=None, request_type=None, request_to_send=None, request=None,
+            faculty=None,
+            course=None,
+            campus_or_dormitory=None,
+            request_type=None,
+            request_to_send=None,
+            request=None,
         )
 
     def combine_reqest(self, text: str, user: User, lang: str = "ru") -> str:
@@ -117,19 +122,23 @@ class PartnershipRouter(Router):
         data = await state.get_data()
         request_queue = data.get("request_queue", [])
 
-        if len(request_queue) > 0 and request_queue[-1]["date"] > datetime.now() + timedelta(seconds=-6):
+        if len(request_queue) > 0 and request_queue[-1][
+            "date"
+        ] > datetime.now() + timedelta(seconds=-6):
             await callback.answer(wait_a_little_text[lang])
             return
 
         number = await send_data_to_back(self.bot, data["request"])
         await callback.answer()
 
-        request_queue.append({
-            "number": number,
-            "date": datetime.now(),
-            "request": data["request"],
-            "topic": "Cooperation",
-            })
+        request_queue.append(
+            {
+                "number": number,
+                "date": datetime.now(),
+                "request": data["request"],
+                "topic": "Cooperation",
+            }
+        )
         await state.update_data(request_queue=request_queue)
 
         await answer_callback(
