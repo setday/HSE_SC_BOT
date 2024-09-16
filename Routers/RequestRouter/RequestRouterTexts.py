@@ -10,13 +10,17 @@ block_enter_text: dict[str, str] = {
     "en": "❔What is your request about?",
 }
 
+button_your_requests_text: dict[str, tuple[str, str]] = {
+    "ru": ("Твои обращения 👀", "shw_appls"),
+    "en": ("Your requests 👀", "shw_appls"),
+}
 button_text_topics: dict[str, list[tuple[str, str]]] = {
     "ru": [
         ("Присутствие Студсовета на апелляционной комиссии ☎️", "ct_app_com"),
         ("Общежития или корпуса ВШЭ 🏡", "ct_cmp_or_drm_prb"),
         ("Образовательный процесс 📖", "ct_edu_prb"),
         ("Другое 💊", "ct_another_prb"),
-        ("Твои обращения 👀 (в разработке)", "in_dev"),
+        button_your_requests_text["ru"],
         button_text_back_to_main_menu["ru"],
     ],
     "en": [
@@ -33,12 +37,31 @@ button_text_topics: dict[str, list[tuple[str, str]]] = {
             "ct_edu_prb",
         ),
         ("Other 💊", "ct_another_prb"),
-        ("Your applications 👀 (in development)", "in_dev"),
+        button_your_requests_text["en"],
         button_text_back_to_main_menu["en"],
     ],
 }
 button_text_topics_ids: dict[str, int] = {
     key: i for i, (_, key) in enumerate(button_text_topics["ru"])
+}
+
+no_sent_requests_text: dict[str, str] = {
+    "ru": "📜 У тебя пока нет обращений!",
+    "en": "📜 You have no requests yet!",
+}
+sent_requests_text: dict[str, str] = {
+    "ru": "📜 Твои обращения:{0}\n\nПоказаны три последних обращения!",
+    "en": "📜 Your requests:{0}\n\nOnly last three requests shown!",
+}
+sent_request_text: dict[str, str] = {
+    "ru": """
+    
+<strong>Обращение #{0} ({1}):</strong>
+Тема: {2}""",
+    "en": """
+    
+<strong>Request #{0} ({1}):</strong>
+Topic: {2}""",
 }
 
 button_text_back_to_topic: dict[str, tuple[str, str]] = {
@@ -93,23 +116,24 @@ button_text_back_to_faculty: dict[str, tuple[str, str]] = {
     "ru": ("Вернуться к выбору факультета обращения🔙", "bck_to_fac"),
     "en": ("Back to the faculty selection menu🔙", "bck_to_fac"),
 }
+course_selection_callback_prefix: str = "cr_slc_"
 button_text_courses: dict[str, list[tuple[str, str]]] = {
     "ru": [
-        ("1️⃣Первый курс", "cr_1"),
-        ("2️⃣Второй курс", "cr_2"),
-        ("3️⃣Третий курс", "cr_3"),
-        ("4️⃣Четвёртый курс", "cr_4"),
-        ("5️⃣Пятый курс", "cr_5"),
-        ("🔄 Магистратура/Аспирантура/Другое", "cr_cc"),
+        ("1️⃣Первый курс", course_selection_callback_prefix + "1"),
+        ("2️⃣Второй курс", course_selection_callback_prefix + "2"),
+        ("3️⃣Третий курс", course_selection_callback_prefix + "3"),
+        ("4️⃣Четвёртый курс", course_selection_callback_prefix + "4"),
+        ("5️⃣Пятый курс", course_selection_callback_prefix + "5"),
+        ("🔄 Магистратура/Аспирантура/Другое", course_selection_callback_prefix + "mpo"),
         button_text_back_to_faculty["ru"],
     ],
     "en": [
-        ("1️⃣First year", "cr_1"),
-        ("2️⃣Second year", "cr_2"),
-        ("3️⃣Third year", "cr_3"),
-        ("4️⃣Fourth year", "cr_4"),
-        ("5️⃣Fifth year", "cr_5"),
-        ("🔄 Master's/PhD/Other", "cr_cc"),
+        ("1️⃣First year", course_selection_callback_prefix + "1"),
+        ("2️⃣Second year", course_selection_callback_prefix + "2"),
+        ("3️⃣Third year", course_selection_callback_prefix + "3"),
+        ("4️⃣Fourth year", course_selection_callback_prefix + "4"),
+        ("5️⃣Fifth year", course_selection_callback_prefix + "5"),
+        ("🔄 Master's/PhD/Other", course_selection_callback_prefix + "mpo"),
         button_text_back_to_faculty["en"],
     ],
 }
@@ -174,6 +198,11 @@ button_text_back_to_application: dict[str, tuple[str, str]] = {
 button_text_approve_application: dict[str, tuple[str, str]] = {
     "ru": ("Отправить обращение✅", "snd_appl"),
     "en": ("Send application✅", "snd_appl"),
+}
+
+wait_a_little_text: dict[str, str] = {
+    "ru": "Подожди немного, прежде чем отправить новый запрос",
+    "en": "Wait a little before sending a new request",
 }
 
 reqest_registred_text: dict[str, str] = {

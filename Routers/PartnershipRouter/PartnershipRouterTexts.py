@@ -43,6 +43,11 @@ button_text_approve_application: dict[str, tuple[str, str]] = {
     "en": ("Send application✅", "snd_appl"),
 }
 
+wait_a_little_text: dict[str, str] = {
+    "ru": "Подожди немного, прежде чем отправить новый запрос",
+    "en": "Wait a little before sending a new request",
+}
+
 reqest_registred_text: dict[str, str] = {
     "ru": """🎉 Готово! Ваш номер обращения:
 {0}

@@ -9,7 +9,7 @@ from keysLoader import get_bot_key
 from Routers.ExtraRouter.ExtraRouter import ExtraRouter
 from Routers.MainRouter.MainRouter import MainRouter
 from Routers.PartnershipRouter.PartnershipRouter import PartnershipRouter
-from Routers.WorkWithUsRouter.WorkWithUsRouter import WorkWithUsRouter
+from Routers.JoinUsRouter.JoinUsRouter import JoinUsRouter
 from Routers.InfoRouter.InfoRouter import InfoRouter
 from Routers.RequestRouter.RequestRouter import RequestRouter
 from Routers.DefaultRouter.DefaultRouter import DefaultRouter
@@ -28,7 +28,7 @@ extra_router = ExtraRouter(bot)
 
 main_router = MainRouter(bot)
 partnership_router = PartnershipRouter(bot)
-work_with_us_router = WorkWithUsRouter(bot)
+work_with_us_router = JoinUsRouter(bot)
 info_router = InfoRouter(bot)
 request_router = RequestRouter(bot)
 default_router = DefaultRouter(bot)
@@ -36,9 +36,12 @@ default_router = DefaultRouter(bot)
 
 def poll_keyboard() -> None:
     while True:
-        command = input("Enter 'exit' to stop: ")
+        print("Enter 'exit' to stop: ")
+        command = input()
         if command == "exit":
             break
+        else:
+            print(f"Unknown command {command}")
 
 
 async def main() -> None:
@@ -58,7 +61,7 @@ async def main() -> None:
     keyboard_poll = asyncio.to_thread(poll_keyboard)
 
     print("Bot started")
-    
+
     await keyboard_poll
 
     print("Stopping bot...")

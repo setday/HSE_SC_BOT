@@ -12,7 +12,7 @@ from Utils.KeyboardMaker import make_keyboard
 
 from .MainRouterTexts import *
 
-from Utils.Utils import answer_callback, get_lang_from_state
+from Utils.Utils import answer_callback, get_lang_from_state, check_lang_in_state
 
 
 class MainRouterState(StatesGroup):
@@ -45,33 +45,29 @@ class MainRouter(Router):
 
     # Enter handlers
     async def enter_handler(self, message: Message, state: FSMContext) -> None:
-        status = await state.get_state()
-        if status:
-            await state.set_state(MainRouterState.main_menu)
-            lang = await get_lang_from_state(state)
-            await self.bot.send_photo(
-                chat_id=message.chat.id,
-                photo=self.photo_file,
-                caption=navigation_text[lang],
-                reply_markup=make_keyboard(
-                    button_text_leave_request_to_sc[lang],
-                    button_text_work_with_us[lang],
-                    button_text_info_about_sc[lang],
-                    button_text_change_language[lang],
-                    button_text_partnership[lang],
-                ),
-            )
-            return
+        if not check_lang_in_state(state):
+            lang = "ru"
+            if message.from_user and message.from_user.language_code:
+                lang = message.from_user.language_code
+            if lang not in ["ru", "en"]:
+                lang = "en"
+            await state.update_data(language=lang)
 
-        await state.set_state(MainRouterState.language_selection)
-
-        await message.answer(
-            block_enter_text,
+        await state.set_state(MainRouterState.main_menu)
+        lang = await get_lang_from_state(state)
+        await self.bot.send_photo(
+            chat_id=message.chat.id,
+            photo=self.photo_file,
+            caption=navigation_text[lang],
             reply_markup=make_keyboard(
-                button_text_lang["ru"],
-                button_text_lang["en"],
+                button_text_leave_request_to_sc[lang],
+                button_text_work_with_us[lang],
+                button_text_info_about_sc[lang],
+                button_text_change_language[lang],
+                button_text_partnership[lang],
             ),
         )
+        return
 
     async def language_selection_handler(
         self, callback: CallbackQuery, state: FSMContext

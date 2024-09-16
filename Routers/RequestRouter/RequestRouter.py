@@ -1,8 +1,11 @@
+from datetime import datetime, timedelta
+
 from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery, User
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
+from flask import request
 
 from Utils.BackChatUtils import send_data_to_back
 from .RequestRouterTexts import *
@@ -40,6 +43,13 @@ class RequestRouter(Router):
         )
         self.callback_query.register(
             self.enter_handler, F.data == button_text_back_to_topic["en"][1]
+        )
+
+        self.callback_query.register(
+            self.show_sent_requests, F.data == "shw_appls"
+        )
+        self.callback_query.register(
+            self.print_request_n, F.data.startswith("req_")
         )
 
         self.callback_query.register(
@@ -115,7 +125,7 @@ class RequestRouter(Router):
         )
 
         await state.update_data(
-            faculty=None, course=None, campus_or_dormitory=None, request_type=None
+            faculty=None, course=None, campus_or_dormitory=None, request_type=None, request_to_send=None, request=None,
         )
 
         await callback.answer()
@@ -132,16 +142,73 @@ class RequestRouter(Router):
 
         await state.update_data(request_type=button_text_topics_ids[callback.data])
 
-        if callback.data == "in_dev":
-            await callback.answer("This feature is in development")
-            return
-        elif callback.data == "ct_cmp_or_drm_prb":
+        if callback.data == "ct_cmp_or_drm_prb":
             await self.ask_for_campus_or_dormitory(callback, state)
         elif callback.data == "ct_edu_prb" or callback.data == "ct_app_com":
             await self.ask_for_faculty(callback, state)
         else:
             await state.set_state(RequestRouterState.application_requested)
             await self.application_reqest_handler_c(callback, state)
+
+    async def show_sent_requests(self, callback: CallbackQuery, state: FSMContext) -> None:
+        await callback.answer()
+
+        lang = await get_lang_from_state(state)
+
+        data = await state.get_data()
+        request_queue = data.get("request_queue", [])
+
+        answer_text = no_sent_requests_text[lang]
+        if len(request_queue):
+            answer_text = sent_requests_text[lang].format(
+                "".join(
+                    [
+                        sent_request_text[lang].format(
+                            request["number"], str(request["date"])[:-7], request["topic"]
+                        )
+                        for request in request_queue[-3:]
+                    ]
+                )
+            )
+
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=answer_text,
+            reply_markup=make_keyboard(
+                *[
+                    (str(req["number"]), f"req_{i}") for i, req in enumerate(request_queue[-3:])
+                ],
+                button_text_back_to_main_menu[lang],
+            ),
+        )
+
+    async def print_request_n(self, callback: CallbackQuery, state: FSMContext) -> None:
+        if not callback.data:
+            await self.reset_user(state, callback=callback)
+            return
+        
+        lang = await get_lang_from_state(state)
+
+        data = await state.get_data()
+        request_queue = data.get("request_queue", [])
+
+        request = request_queue[int(callback.data.split("_")[1])]
+
+        if not request:
+            await self.reset_user(state, callback=callback)
+            return
+
+        await callback.answer()
+
+        await answer_callback(
+            bot=self.bot,
+            callback=callback,
+            text=request["request"],
+            reply_markup=make_keyboard(
+                button_your_requests_text[lang],
+            ),
+        )
 
     async def ask_for_campus_or_dormitory(
         self, callback: CallbackQuery, state: FSMContext
@@ -248,11 +315,11 @@ class RequestRouter(Router):
 
         await self.application_reqest_handler_c(callback, state)
 
-    def combine_reqest(self, data: dict, user: User, lang: str = "ru") -> str:
+    def assemble_reqest(self, data: dict, user: User, lang: str = "ru") -> str:
         second_row_ru = ""
-        if "campus_or_dormitory" in data:
+        if data.get("campus_or_dormitory"):
             second_row_ru = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
-        elif "faculty" in data:
+        elif data.get("faculty"):
             second_row_ru = (
                 faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
             )
@@ -260,7 +327,7 @@ class RequestRouter(Router):
             second_row_ru = ""
 
         third_row_ru = ""
-        if "course" in data:
+        if data.get("course"):
             third_row_ru = course[lang] + button_text_courses[lang][data["course"]][0]
 
         return application_sent_text[lang].format(
@@ -284,12 +351,13 @@ class RequestRouter(Router):
         data = await state.get_data()
         data.update(request_text=message.html_text)
 
+        request_text_to_send = self.assemble_reqest(data, message.from_user)
+        await state.update_data(request_to_send=request_text_to_send)
+
         lang = await get_lang_from_state(state)
 
-        request_text_to_send = self.combine_reqest(data, message.from_user)
-        await state.update_data(request=request_text_to_send)
-
-        request_text = self.combine_reqest(data, message.from_user, lang)
+        request_text = self.assemble_reqest(data, message.from_user, lang)
+        await state.update_data(request=request_text)
         await message.answer(
             confirm_application_text[lang].format(request_text),
             reply_markup=make_keyboard(
@@ -300,11 +368,29 @@ class RequestRouter(Router):
         )
 
     async def send_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        data = await state.get_data()
-
         lang = await get_lang_from_state(state)
+
+        data = await state.get_data()
+        request_queue = data.get("request_queue", [])
+
+        if len(request_queue) > 0 and request_queue[-1]["date"] > datetime.now() + timedelta(seconds=-6):
+            await callback.answer(wait_a_little_text[lang])
+            return
+
         number = await send_data_to_back(self.bot, data["request"])
         await callback.answer()
+
+        topic = "Cooperation"
+        if data["request_type"] in button_text_topics[lang]:
+            topic = button_text_topics[lang][data["request_type"]][0]
+
+        request_queue.append({
+            "number": number,
+            "date": datetime.now(),
+            "request": data["request"],
+            "topic": topic,
+            })
+        await state.update_data(request_queue=request_queue)
 
         await answer_callback(
             bot=self.bot,

@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery, User
 from aiogram.fsm.context import FSMContext
@@ -58,6 +60,10 @@ class PartnershipRouter(Router):
             photo=self.photo_file,
         )
 
+        await state.update_data(
+            faculty=None, course=None, campus_or_dormitory=None, request_type=None, request_to_send=None, request=None,
+        )
+
     def combine_reqest(self, text: str, user: User, lang: str = "ru") -> str:
         # second_row_ru = ""
         # if "campus_or_dormitory" in data:
@@ -90,10 +96,11 @@ class PartnershipRouter(Router):
         await state.set_state(PartnershipRouterState.confirm_application)
 
         request_text_to_send = self.combine_reqest(message.html_text, message.from_user)
-        await state.update_data(request=request_text_to_send)
+        await state.update_data(request_to_send=request_text_to_send)
 
         lang = await get_lang_from_state(state)
         request_text = self.combine_reqest(message.html_text, message.from_user, lang)
+        await state.update_data(request=request_text)
 
         await message.answer(
             confirm_application_text[lang].format(request_text),
@@ -105,11 +112,25 @@ class PartnershipRouter(Router):
         )
 
     async def send_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        data = await state.get_data()
-
         lang = await get_lang_from_state(state)
+
+        data = await state.get_data()
+        request_queue = data.get("request_queue", [])
+
+        if len(request_queue) > 0 and request_queue[-1]["date"] > datetime.now() + timedelta(seconds=-6):
+            await callback.answer(wait_a_little_text[lang])
+            return
+
         number = await send_data_to_back(self.bot, data["request"])
         await callback.answer()
+
+        request_queue.append({
+            "number": number,
+            "date": datetime.now(),
+            "request": data["request"],
+            "topic": "Cooperation",
+            })
+        await state.update_data(request_queue=request_queue)
 
         await answer_callback(
             bot=self.bot,

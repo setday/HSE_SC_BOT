@@ -134,7 +134,7 @@ other_member_data_list = [
         "Козин Георгий",
         "https://vk.com/waitforit",
         "https://t.me/Wait_For_lt",
-        "Межбак по экономике и бизнесу",
+        "Межбак по бизнесу и экономике",
         "Руководитель научного отдела",
         "Georgy Kozin",
         "Interbac",
@@ -144,7 +144,7 @@ other_member_data_list = [
         "Дмитриева Ксения",
         "https://vk.com/queen_cordelia",
         "https://t.me/Ksenia_26",
-        "Межбак по экономике и бизнесу",
+        "Межбак по бизнесу и экономике",
         "Руководитель команды продвижения",
         "Ksenia Dmitrieva",
         "Interbac",
@@ -236,17 +236,17 @@ members_text: dict[str, str] = {
         [
             "┌── President and Secretary ──\n│\n",
             *[
-                f'├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n'
+                f"├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n"
                 for member in headmaster_member_data_list
             ],
             "\n┌── Heads of Committees ──\n│\n",
             *[
-                f'├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n'
+                f"├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n"
                 for member in head_member_data_list
             ],
             "\n",
             *[
-                f'├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n'
+                f"├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n"
                 for member in other_member_data_list
             ],
         ]

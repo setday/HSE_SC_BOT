@@ -96,6 +96,14 @@ async def try_delete_message(message: Message | InaccessibleMessage | None) -> N
             print(f'Can\'t delete message "{message.text}"', file=sys.stderr)
 
 
+async def check_lang_in_state(state: FSMContext) -> bool:
+    try:
+        data = await state.get_data()
+        lang = data["language"]
+        return lang in ["ru", "en"]
+    except:
+        return False
+
 async def get_lang_from_state(state: FSMContext) -> str:
     try:
         data = await state.get_data()
