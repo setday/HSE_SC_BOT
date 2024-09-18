@@ -5,9 +5,9 @@ from aiogram.types import Message, CallbackQuery, User
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
-from flask import request
 
-from Utils.BackChatUtils import send_data_to_back
+from Utils.BotStorage import BotStorage
+from Utils.BackChatUtils import send_request_to_back
 from .RequestRouterTexts import *
 
 from Utils.DefaultTexts import button_text_back_to_main_menu
@@ -322,27 +322,26 @@ class RequestRouter(Router):
         await self.application_reqest_handler_c(callback, state)
 
     def assemble_reqest(self, data: dict, user: User, lang: str = "ru") -> str:
-        second_row_ru = ""
+        second_row = ""
         if data.get("campus_or_dormitory"):
-            second_row_ru = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
+            second_row = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
         elif data.get("faculty"):
-            second_row_ru = (
+            second_row = (
                 faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
             )
-        else:
-            second_row_ru = ""
 
-        third_row_ru = ""
+        third_row = ""
         if data.get("course"):
-            third_row_ru = course[lang] + button_text_courses[lang][data["course"]][0]
+            third_row = course[lang] + button_text_courses[lang][data["course"]][0]
 
         return application_sent_text[lang].format(
-            user.full_name,
-            user.username or "",
-            button_text_topics[lang][data.get("request_type", 3)][0],
-            second_row_ru,
-            third_row_ru,
-            data.get("request_text", ""),
+            user_name=user.full_name,
+            user_nick=user.username or "",
+            user_id=user.id,
+            topic=button_text_topics[lang][data.get("request_type", 3)][0],
+            second_row=second_row,
+            third_row=third_row,
+            text=data.get("request_text", ""),
         )
 
     async def application_applience_handler(
@@ -385,27 +384,34 @@ class RequestRouter(Router):
             await callback.answer(wait_a_little_text[lang])
             return
 
-        number = await send_data_to_back(self.bot, data["request"])
+        request_id = await send_request_to_back(self.bot, data["request"])
         await callback.answer()
 
         topic = "Cooperation"
-        if data["request_type"] in button_text_topics[lang]:
+        if data["request_type"]:
             topic = button_text_topics[lang][data["request_type"]][0]
 
         request_queue.append(
             {
-                "number": number,
+                "number": request_id,
                 "date": datetime.now(),
                 "request": data["request"],
                 "topic": topic,
             }
         )
+        BotStorage().add_request({
+            "request_id": request_id,
+            "date": datetime.now(),
+            "user_id": callback.from_user.id,
+            "topic": topic,
+            "request": data["request"],
+        }, request_id)
         await state.update_data(request_queue=request_queue)
 
         await answer_callback(
             bot=self.bot,
             callback=callback,
-            text=reqest_registred_text[lang].format(number),
+            text=reqest_registred_text[lang].format(request_id),
             reply_markup=make_back_to_main_menu_keyboard(lang),
         )
         await state.update_data(request=None)

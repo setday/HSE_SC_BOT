@@ -22,16 +22,16 @@ confirm_application_text: dict[str, str] = {
 }
 
 application_sent_text: dict[str, str] = {
-    "ru": """<strong>Обращение от {0} (@{1}):</strong>
+    "ru": """<strong>Обращение от {user_name} (@{user_nick} | id={user_id}):</strong>
 
 <strong>Тема: Сотрудничество</strong>
 
-{2}""",
-    "en": """<strong>Application from {0} (@{1}):</strong>
+{text}""",
+    "en": """<strong>Application from {user_name} (@{user_nick} | id={user_id}):</strong>
 
 <strong>Topic: Cooperation</strong>
     
-{2}""",
+{text}""",
 }
 
 button_text_back_to_application: dict[str, tuple[str, str]] = {

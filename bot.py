@@ -6,6 +6,8 @@ from aiogram.client.default import DefaultBotProperties
 
 from keysLoader import get_bot_key
 
+from Utils.BotStorage import BotStorage
+
 from Routers.ExtraRouter.ExtraRouter import ExtraRouter
 from Routers.MainRouter.MainRouter import MainRouter
 from Routers.PartnershipRouter.PartnershipRouter import PartnershipRouter
@@ -14,14 +16,15 @@ from Routers.InfoRouter.InfoRouter import InfoRouter
 from Routers.RequestRouter.RequestRouter import RequestRouter
 from Routers.DefaultRouter.DefaultRouter import DefaultRouter
 
-user_storage = None
-try:
-    with open("Data/user_storage.pickle", "rb") as f:
-        user_storage = pickle.load(f)
-except FileNotFoundError:
-    print("No data found. Creating new storage...")
 
-bot = Bot(get_bot_key(), default=DefaultBotProperties(parse_mode=enums.ParseMode.HTML))
+default_properties = DefaultBotProperties(parse_mode=enums.ParseMode.HTML)
+bot_token = get_bot_key()
+
+bot = Bot(bot_token, default=default_properties)
+
+BotStorage().load_data()
+user_storage = BotStorage().load_storage()
+
 dp = Dispatcher(storage=user_storage)
 
 extra_router = ExtraRouter(bot)
@@ -38,6 +41,10 @@ def poll_keyboard() -> None:
     while True:
         print("Enter 'exit' to stop: ")
         command = input()
+        if not command:
+            continue
+        elif command == "unload_data":
+            BotStorage().unload_data(dp)
         if command == "exit":
             break
         else:
@@ -69,10 +76,9 @@ async def main() -> None:
     await bot_poll
 
     print("Bot stopped. Saving data...")
-    with open("Data/user_storage.pickle", "wb") as f:
-        pickle.dump(dp.storage, f)
+    BotStorage().unload_data(dp)
 
-    print("Data saved. Exiting...")
+    print("Exiting...")
 
 
 if __name__ == "__main__":

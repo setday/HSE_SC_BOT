@@ -6,9 +6,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
 
+from Utils.BotStorage import BotStorage
 from Utils.KeyboardMaker import make_keyboard, make_back_to_main_menu_keyboard
 
-from Utils.BackChatUtils import send_data_to_back
+from Utils.BackChatUtils import send_request_to_back
 from .PartnershipRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_text_partnership
 
@@ -70,25 +71,24 @@ class PartnershipRouter(Router):
         )
 
     def combine_reqest(self, text: str, user: User, lang: str = "ru") -> str:
-        # second_row_ru = ""
+        # second_row = ""
         # if "campus_or_dormitory" in data:
-        #     second_row_ru = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
+        #     second_row = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
         # elif "faculty" in data:
-        #     second_row_ru = faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
-        # else:
-        #     second_row_ru = ""
+        #     second_row = faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
 
-        # third_row_ru = ""
+        # third_row = ""
         # if "course" in data:
-        #     third_row_ru = course[lang] + button_text_courses[lang][data["course"]][0]
+        #     third_row = course[lang] + button_text_courses[lang][data["course"]][0]
 
         return application_sent_text[lang].format(
-            user.full_name,
-            user.username or "",
-            # button_text_topics[lang][data.get("request_type", 3)][0],
-            # second_row_ru,
-            # third_row_ru,
-            text,
+            user_name=user.full_name,
+            user_nick=user.username or "",
+            user_id=user.id,
+            # topic=button_text_topics[lang][data.get("request_type", 3)][0],
+            # second_row=second_row,
+            # third_row=third_row,
+            text=text,
         )
 
     async def application_applience_handler(
@@ -128,23 +128,30 @@ class PartnershipRouter(Router):
             await callback.answer(wait_a_little_text[lang])
             return
 
-        number = await send_data_to_back(self.bot, data["request"])
+        request_id = await send_request_to_back(self.bot, data["request"])
         await callback.answer()
 
         request_queue.append(
             {
-                "number": number,
+                "number": request_id,
                 "date": datetime.now(),
                 "request": data["request"],
                 "topic": "Cooperation",
             }
         )
+        BotStorage().add_request({
+            "request_id": request_id,
+            "date": datetime.now(),
+            "user_id": callback.from_user.id,
+            "topic": "Cooperation",
+            "request": data["request"],
+        }, request_id)
         await state.update_data(request_queue=request_queue)
 
         await answer_callback(
             bot=self.bot,
             callback=callback,
-            text=reqest_registred_text[lang].format(number),
+            text=reqest_registred_text[lang].format(request_id),
             reply_markup=make_back_to_main_menu_keyboard(lang),
         )
         await state.update_data(request=None)

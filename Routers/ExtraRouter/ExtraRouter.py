@@ -11,7 +11,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import User
 
-from Utils.Filters import VoteChatFilter, WordDocFilter, SuperChatFilter
+from Utils.Filters import VoteChatFilter, WordDocFilter, SuperChatFilter, AdminChatFilter
 
 from Utils.KeyboardMaker import make_back_to_main_menu_keyboard
 
@@ -54,6 +54,7 @@ class ExtraRouter(Router):
         self.message.register(
             self.create_mm_poll_handler, VoteChatFilter(True), WordDocFilter()
         )
+        self.message.register(self.answer_user, AdminChatFilter(), Command("answer"))
 
     async def get_chat_id_handler(self, message: Message) -> None:
         await message.answer(
@@ -153,3 +154,24 @@ class ExtraRouter(Router):
             return
         await try_delete_message(message.reply_to_message)
         await try_delete_message(message)
+
+    async def answer_user(self, message: Message) -> None:
+        if not message.text:
+            return
+        
+        parts = message.text.split(maxsplit=2)
+
+        if len(parts) < 3:
+            await message.answer("Команда должна быть в формате `/answer [user id] [text]`", parse_mode="Markdown")
+            return
+
+        user_id = parts[1]
+        if not user_id.isdigit():
+            await message.answer("Команда должна быть в формате `/answer [user id] [text]`. `[user id]` должен быть числом", parse_mode="Markdown")
+            return
+        text = parts[2]
+
+        print(user_id, text)
+        
+        await self.bot.send_message(user_id, f"Сообщение по одному из ваших обращений:\n\n{text}")
+        await message.answer(f"Ответ отправлен пользователю {user_id}")
