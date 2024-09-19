@@ -12,8 +12,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import User
 
 from Utils.Filters import (
-    VoteChatFilter,
-    WordDocFilter,
     AdminChatFilter,
 )
 
@@ -56,10 +54,11 @@ class ExtraRouter(Router):
         self.message.register(self.get_credits_handler, Command("credits"))
         self.message.register(self.get_fact_handler, Command("fact"))
         self.message.register(self.del_handler, Command("del"))
-        self.message.register(
-            self.create_mm_poll_handler, VoteChatFilter(True), WordDocFilter()
-        )
-        self.message.register(self.answer_user, AdminChatFilter(), Command("answer"))
+        # TODO: Transfer to new bot
+        # self.message.register(
+        #     self.create_mm_poll_handler, VoteChatFilter(True), WordDocFilter()
+        # )
+        self.message.register(self.answer_user, AdminChatFilter(), Command("ans"))
 
     async def get_chat_id_handler(self, message: Message) -> None:
         await message.answer(
@@ -119,34 +118,35 @@ class ExtraRouter(Router):
             reply_markup=make_back_to_main_menu_keyboard(),
         )
 
-    async def create_mm_poll_handler(self, message: Message) -> None:
-        print("New vote candidate", message.document)
-        if not message.document:
-            return
+    # TODO: Transfer to new bot
+    # async def create_mm_poll_handler(self, message: Message) -> None:
+    #     print("New vote candidate", message.document)
+    #     if not message.document:
+    #         return
 
-        file = await self.bot.download(message.document.file_id)
-        print(file)
-        if file is None:
-            return
+    #     file = await self.bot.download(message.document.file_id)
+    #     print(file)
+    #     if file is None:
+    #         return
 
-        dead_list = get_dead_list(file)
-        print(dead_list)
-        file.close()
+    #     dead_list = get_dead_list(file)
+    #     print(dead_list)
+    #     file.close()
 
-        for dead in dead_list:
-            await message.answer_poll(
-                question="ММ " + dead,
-                options=[
-                    "Устное замечание",
-                    "Замечание",
-                    "Выговор",
-                    "Отчисление",
-                    "Против мер дисциплинарного взыскания",
-                    "Воздержаться",
-                ],
-                is_anonymous=False,
-                allows_multiple_answers=False,
-            )
+    #     for dead in dead_list:
+    #         await message.answer_poll(
+    #             question="ММ " + dead,
+    #             options=[
+    #                 "Устное замечание",
+    #                 "Замечание",
+    #                 "Выговор",
+    #                 "Отчисление",
+    #                 "Против мер дисциплинарного взыскания",
+    #                 "Воздержаться",
+    #             ],
+    #             is_anonymous=False,
+    #             allows_multiple_answers=False,
+    #         )
 
     async def del_handler(self, message: Message) -> None:
         if not self.bot_info:
@@ -164,32 +164,56 @@ class ExtraRouter(Router):
         if not message.text:
             return
 
-        parts = message.text.split(maxsplit=2)
+        if message.reply_to_message and message.reply_to_message.text:
+            user_id = message.reply_to_message.text.split("\n", 2)[1]
+            text = message.text.split(maxsplit=1)[1]
+        else:
+            parts = message.text.split(maxsplit=2)
 
-        if len(parts) < 3:
-            await message.answer(
-                "Команда должна быть в формате `/answer [(u){user id} | {request id}] [text]` (u{user id} - отправить сообщение пользователю, {request id} - отправить сообщение по запросу)\n\nНапример, /answer u909582648 Когда долг вернёшь?\n\n или /answer 35935192 Ваше обращение не будет рассмотрено!",
-                parse_mode="Markdown",
-            )
-            return
+            if len(parts) < 3:
+                await message.answer(
+                    "Команда должна быть в формате `/ans [(u){user id} | {request id}] [text]` (u{user id} - отправить сообщение пользователю, {request id} - отправить сообщение по запросу)\nИли должна отвечать на запрос и написана в виде `/ans [text]`\nНапример, /ans u909582648 Когда долг вернёшь?\n\n или /ans 35935192 Ваше обращение не будет рассмотрено!",
+                    parse_mode="Markdown",
+                )
+                return
 
-        user_id = parts[1]
-        text = parts[2]
+            user_id = parts[1]
+            text = parts[2]
 
         if user_id.startswith("u"):
             user_id = user_id[1:]
             await self.bot.send_message(
                 user_id, f"Сообщение по одному из ваших обращений:\n\n{text}"
             )
-            await message.answer(f"Ответ отправлен пользователю {user_id}")
+            await message.answer(f"Ответ отправлен пользователю {user_id}: \n {text}")
+            await try_delete_message(message)
             return
 
         try:
             request_sender = BotStorage().get_request(int(user_id))["user_id"]
+            BotStorage().add_request_answer(int(user_id), text)
             await self.bot.send_message(
                 request_sender, f"Ответ по вашему обращению {user_id}:\n\n{text}"
             )
-            await message.answer(f"Ответ отправлен пользователю {request_sender}")
+            if message.reply_to_message and message.reply_to_message.text:
+                reply_sender = (
+                    (message.from_user.username or message.from_user.id)
+                    if message.from_user
+                    else "Аноним"
+                )
+                reply_parts = message.reply_to_message.text.rsplit("————", 1)
+                reply_text = f"{reply_parts[0]}————\n\nОтвет от @{reply_sender}:\n{text}\n\n————{reply_parts[1]}"
+                await self.bot.edit_message_text(
+                    text=reply_text,
+                    chat_id=message.reply_to_message.chat.id,
+                    message_id=message.reply_to_message.message_id,
+                )
+                await try_delete_message(message)
+            else:
+                await message.answer(
+                    f"Ответ отправлен пользователю {request_sender}: \n {text}"
+                )
+                await try_delete_message(message)
         except ValueError:
             await message.answer(f"Запроса номер {user_id} не существует")
             return

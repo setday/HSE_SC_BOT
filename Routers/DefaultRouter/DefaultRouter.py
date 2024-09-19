@@ -47,18 +47,19 @@ class DefaultRouter(Router):
         )
 
     async def s_default_handler(self, message: Message, state: FSMContext) -> None:
-        print(
-            "Unhandeled message:",
-            message.text,
-            " | DOC -> | ",
-            message.document,
-            " | MIM -> | ",
-            message.document.mime_type if message.document else None,
-            " | MID -> | ",
-            message.media_group_id,
-            " | CID -> | ",
-            message.chat.id,
-        )
+        # print(
+        #     "Unhandeled message from SuperChat:",
+        #     message.text,
+        #     " | DOC -> | ",
+        #     message.document,
+        #     " | MIM -> | ",
+        #     message.document.mime_type if message.document else None,
+        #     " | MID -> | ",
+        #     message.media_group_id,
+        #     " | CID -> | ",
+        #     message.chat.id,
+        # )
+        pass
 
     async def default_callback_handler(
         self, callback: CallbackQuery, state: FSMContext

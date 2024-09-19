@@ -19,6 +19,7 @@ def check_if_message_has_photo(message: Message | InaccessibleMessage | None) ->
 
 
 def check_if_date_has_expired(message: Message | InaccessibleMessage | None) -> bool:
+    return False
     if not message:
         return True
     if isinstance(message, InaccessibleMessage):
@@ -32,6 +33,7 @@ async def answer_callback(
     text: str | None = None,
     photo: InputFile | None = None,
     saveMedia: bool = True,
+    force_recreate: bool = False,
     **kwargs: Any,
 ) -> None:
     if text and len(text) > 1024:
@@ -52,7 +54,7 @@ async def answer_callback(
     if message_is_dead:
         message = None
 
-    if should_message_be_changed or message is None:
+    if force_recreate or should_message_be_changed or message is None:
         if data_has_media:
             await bot.send_photo(chat_id, caption=text, photo=photo, **kwargs)
         else:
@@ -66,24 +68,36 @@ async def answer_callback(
 
         return
 
-    if message_has_media:
-        if data_has_media:
-            await bot.edit_message_media(
-                media=InputMediaPhoto(media=photo),
+    try:
+        if message_has_media:
+            if data_has_media:
+                await bot.edit_message_media(
+                    media=InputMediaPhoto(media=photo),
+                    chat_id=chat_id,
+                    message_id=message.message_id,
+                )
+            await bot.edit_message_caption(
+                caption=text,
                 chat_id=chat_id,
                 message_id=message.message_id,
+                **kwargs,
             )
-        await bot.edit_message_caption(
-            caption=text,
-            chat_id=chat_id,
-            message_id=message.message_id,
-            **kwargs,
-        )
-    elif text:
-        await bot.edit_message_text(
+        elif text:
+            await bot.edit_message_text(
+                text=text,
+                chat_id=chat_id,
+                message_id=message.message_id,
+                **kwargs,
+            )
+    except:
+        print(f"Can't edit message", file=sys.stderr)
+        await answer_callback(
+            bot,
+            callback,
             text=text,
-            chat_id=chat_id,
-            message_id=message.message_id,
+            photo=photo,
+            saveMedia=saveMedia,
+            force_recreate=True,
             **kwargs,
         )
 

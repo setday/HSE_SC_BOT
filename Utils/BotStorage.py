@@ -58,6 +58,14 @@ class BotStorage:
 
         return request_id
 
+    def add_request_answer(self, request_id: int, answer: str) -> None:
+        if request_id not in self.request_dict:
+            raise ValueError("No request found")
+
+        self.request_dict[request_id][-1]["answer"] = self.request_dict[request_id][
+            -1
+        ].get("answer", "") + ("\n=> " + answer)
+
     def get_request(self, request_id: int) -> dict:
         if len(self.request_dict.get(request_id, [])) == 0:
             raise ValueError("No request found")
