@@ -326,9 +326,7 @@ class RequestRouter(Router):
         if data.get("campus_or_dormitory"):
             second_row = campus_or_dormitory_text[lang] + data["campus_or_dormitory"]
         elif data.get("faculty"):
-            second_row = (
-                faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
-            )
+            second_row = faculty[lang] + button_text_faculties[lang][data["faculty"]][0]
 
         third_row = ""
         if data.get("course"):
@@ -399,13 +397,16 @@ class RequestRouter(Router):
                 "topic": topic,
             }
         )
-        BotStorage().add_request({
-            "request_id": request_id,
-            "date": datetime.now(),
-            "user_id": callback.from_user.id,
-            "topic": topic,
-            "request": data["request"],
-        }, request_id)
+        BotStorage().add_request(
+            {
+                "request_id": request_id,
+                "date": datetime.now(),
+                "user_id": callback.from_user.id,
+                "topic": topic,
+                "request": data["request"],
+            },
+            request_id,
+        )
         await state.update_data(request_queue=request_queue)
 
         await answer_callback(

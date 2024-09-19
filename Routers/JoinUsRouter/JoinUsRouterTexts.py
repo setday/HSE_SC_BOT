@@ -33,7 +33,7 @@ block_enter_text_vu: dict[str, str] = {
 
 Волонтёры Студсовета помогают в решении важных вопросов в зависимости от комитета — аналитика, проведение крупных мероприятий, разработка собственных программ обучения, ведение социальных сетей и многое другое.
 
-❗️Дедлайн <a href="https://forms.gle/Chfps8LqVsWYiCby8">подачи заявки</a>: 18 сентября до 23:59.
+❗️Дедлайн <a href="https://forms.gle/Chfps8LqVsWYiCby8">подачи заявки</a>: 20 сентября до 23:59.
 
 Если же ты хочешь стать делегатом и получить мандат на принятие важных решений в жизни НИУ ВШЭ, подавайся на ежегодные октябрьские выборы. Мы обязательно сообщим тебе все детали!
 
@@ -42,7 +42,7 @@ block_enter_text_vu: dict[str, str] = {
 
 Student Council's volunteers help us with all kinds of tasks: from maintaining our social networks to organising events.
 
-❗️Application <a href="https://forms.gle/Chfps8LqVsWYiCby8">deadline</a>: September 18th, 23:59.
+❗️Application <a href="https://forms.gle/Chfps8LqVsWYiCby8">deadline</a>: September 20th, 23:59.
 
 If you'd like to become a representative and participate in making important decisions, you can apply for the annual elections, which are held in October. We will inform you about all the details!
 

@@ -139,13 +139,16 @@ class PartnershipRouter(Router):
                 "topic": "Cooperation",
             }
         )
-        BotStorage().add_request({
-            "request_id": request_id,
-            "date": datetime.now(),
-            "user_id": callback.from_user.id,
-            "topic": "Cooperation",
-            "request": data["request"],
-        }, request_id)
+        BotStorage().add_request(
+            {
+                "request_id": request_id,
+                "date": datetime.now(),
+                "user_id": callback.from_user.id,
+                "topic": "Cooperation",
+                "request": data["request"],
+            },
+            request_id,
+        )
         await state.update_data(request_queue=request_queue)
 
         await answer_callback(

@@ -11,13 +11,18 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import User
 
-from Utils.Filters import VoteChatFilter, WordDocFilter, SuperChatFilter, AdminChatFilter
+from Utils.Filters import (
+    VoteChatFilter,
+    WordDocFilter,
+    AdminChatFilter,
+)
 
 from Utils.KeyboardMaker import make_back_to_main_menu_keyboard
 
 from .ExtraRouterTexts import *
 
 from Utils.Utils import try_delete_message
+from Utils.BotStorage import BotStorage
 
 
 def get_dead_list(file):
@@ -158,20 +163,33 @@ class ExtraRouter(Router):
     async def answer_user(self, message: Message) -> None:
         if not message.text:
             return
-        
+
         parts = message.text.split(maxsplit=2)
 
         if len(parts) < 3:
-            await message.answer("Команда должна быть в формате `/answer [user id] [text]`", parse_mode="Markdown")
+            await message.answer(
+                "Команда должна быть в формате `/answer [(u){user id} | {request id}] [text]` (u{user id} - отправить сообщение пользователю, {request id} - отправить сообщение по запросу)\n\nНапример, /answer u909582648 Когда долг вернёшь?\n\n или /answer 35935192 Ваше обращение не будет рассмотрено!",
+                parse_mode="Markdown",
+            )
             return
 
         user_id = parts[1]
-        if not user_id.isdigit():
-            await message.answer("Команда должна быть в формате `/answer [user id] [text]`. `[user id]` должен быть числом", parse_mode="Markdown")
-            return
         text = parts[2]
 
-        print(user_id, text)
-        
-        await self.bot.send_message(user_id, f"Сообщение по одному из ваших обращений:\n\n{text}")
-        await message.answer(f"Ответ отправлен пользователю {user_id}")
+        if user_id.startswith("u"):
+            user_id = user_id[1:]
+            await self.bot.send_message(
+                user_id, f"Сообщение по одному из ваших обращений:\n\n{text}"
+            )
+            await message.answer(f"Ответ отправлен пользователю {user_id}")
+            return
+
+        try:
+            request_sender = BotStorage().get_request(int(user_id))["user_id"]
+            await self.bot.send_message(
+                request_sender, f"Ответ по вашему обращению {user_id}:\n\n{text}"
+            )
+            await message.answer(f"Ответ отправлен пользователю {request_sender}")
+        except ValueError:
+            await message.answer(f"Запроса номер {user_id} не существует")
+            return

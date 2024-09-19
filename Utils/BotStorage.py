@@ -7,7 +7,7 @@ from aiogram import Dispatcher
 from aiogram.fsm.storage.base import BaseStorage
 
 
-class BotStorage():
+class BotStorage:
     instance: "BotStorage | None" = None
     request_dict: dict[int, list] = {}
 
@@ -15,11 +15,11 @@ class BotStorage():
         if cls.instance is None:
             cls.instance = super(BotStorage, cls).__new__(cls)
         return cls.instance
-    
+
     def __init__(self):
         pass
-    
-    def unload_data(self, dp : Dispatcher) -> None:
+
+    def unload_data(self, dp: Dispatcher) -> None:
         try:
             with open("Data/request_dict.pickle", "wb") as f:
                 pickle.dump(self.request_dict, f)
@@ -27,7 +27,7 @@ class BotStorage():
             if dp is None:
                 print("No dispatcher found")
                 return
-            
+
             with open("Data/user_storage.pickle", "wb") as f:
                 pickle.dump(dp.storage, f)
             print("Data unloaded")
@@ -48,8 +48,8 @@ class BotStorage():
         except FileNotFoundError:
             print("No data found. Creating new storage...")
             return None
-        
-    def add_request(self, request: Any, request_id: Optional[int] = None) -> int:
+
+    def add_request(self, request: dict, request_id: Optional[int] = None) -> int:
         request_id = request_id or random.randint(1, 999999999)
 
         if request_id not in self.request_dict:
@@ -58,7 +58,7 @@ class BotStorage():
 
         return request_id
 
-    def get_request(self, request_id: int) -> Any:
+    def get_request(self, request_id: int) -> dict:
         if len(self.request_dict.get(request_id, [])) == 0:
             raise ValueError("No request found")
         return self.request_dict[request_id][-1]
