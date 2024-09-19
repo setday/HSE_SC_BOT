@@ -164,11 +164,11 @@ class ExtraRouter(Router):
         if not message.text:
             return
 
-        if message.reply_to_message and message.reply_to_message.text:
-            user_id = message.reply_to_message.text.split("\n", 2)[1]
-            text = message.text.split(maxsplit=1)[1]
+        if message.reply_to_message and message.reply_to_message.html_text:
+            user_id = message.reply_to_message.md_text.split("\n", 2)[1]
+            text = message.html_text.split(maxsplit=1)[1]
         else:
-            parts = message.text.split(maxsplit=2)
+            parts = message.html_text.split(maxsplit=2)
 
             if len(parts) < 3:
                 await message.answer(
@@ -195,13 +195,13 @@ class ExtraRouter(Router):
             await self.bot.send_message(
                 request_sender, f"Ответ по вашему обращению {user_id}:\n\n{text}"
             )
-            if message.reply_to_message and message.reply_to_message.text:
+            if message.reply_to_message and message.reply_to_message.html_text:
                 reply_sender = (
                     (message.from_user.username or message.from_user.id)
                     if message.from_user
                     else "Аноним"
                 )
-                reply_parts = message.reply_to_message.text.rsplit("————", 1)
+                reply_parts = message.reply_to_message.html_text.rsplit("————", 1)
                 reply_text = f"{reply_parts[0]}————\n\nОтвет от @{reply_sender}:\n{text}\n\n————{reply_parts[1]}"
                 await self.bot.edit_message_text(
                     text=reply_text,
