@@ -38,10 +38,10 @@ class JoinUsRouter(Router):
         await answer_callback(
             bot=self.bot,
             callback=callback,
-            text=block_enter_text_vu[lang],
+            text=block_enter_text_uu[lang],
             reply_markup=make_keyboard(
                 button_text_become_delegate_u[lang],
-                button_text_become_volunteer_a[lang],
+                button_text_become_volunteer_u[lang],
                 button_text_back_to_main_menu[lang],
             ),
             photo=self.photo_file,

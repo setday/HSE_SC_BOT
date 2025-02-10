@@ -19,7 +19,7 @@ from Utils.KeyboardMaker import make_back_to_main_menu_keyboard
 
 from .ExtraRouterTexts import *
 
-from Utils.Utils import try_delete_message
+from Utils.Utils import try_delete_message, get_lang_from_state
 from Utils.BotStorage import BotStorage
 
 
@@ -54,10 +54,6 @@ class ExtraRouter(Router):
         self.message.register(self.get_credits_handler, Command("credits"))
         self.message.register(self.get_fact_handler, Command("fact"))
         self.message.register(self.del_handler, Command("del"))
-        # TODO: Transfer to new bot
-        # self.message.register(
-        #     self.create_mm_poll_handler, VoteChatFilter(True), WordDocFilter()
-        # )
         self.message.register(self.answer_user, AdminChatFilter(), Command("ans"))
 
     async def get_chat_id_handler(self, message: Message) -> None:
@@ -83,9 +79,11 @@ class ExtraRouter(Router):
             reply_markup=make_back_to_main_menu_keyboard(),
         )
 
-    async def get_credits_handler(self, message: Message) -> None:
+    async def get_credits_handler(self, message: Message, state: FSMContext) -> None:
+        lang = await get_lang_from_state(state)
+
         await message.answer(
-            credits_text,
+            credits_text[lang],
             reply_markup=make_back_to_main_menu_keyboard(),
         )
 
@@ -94,7 +92,9 @@ class ExtraRouter(Router):
     )
     secret_trash = os.getenv("SECRET_TRASH")
 
-    async def get_fact_handler(self, message: Message) -> None:
+    async def get_fact_handler(self, message: Message, state: FSMContext) -> None:
+        lang = await get_lang_from_state(state)
+
         if (
             datetime.today().replace(microsecond=0, second=0, month=1)
             == self.datetime_event_start
@@ -105,48 +105,18 @@ class ExtraRouter(Router):
 
             user_hash = hash(message.from_user.username + self.secret_trash)
             await message.answer(
-                facts_format_text.format("?") + facts_text[0].format(user_hash),
+                facts_format_text[lang].format("?") + facts_text[lang][0].format(user_hash),
                 reply_markup=make_back_to_main_menu_keyboard(),
             )
 
             return
 
-        fact_id = random.randint(1, len(facts_text) - 1)
+        fact_id = random.randint(1, len(facts_text[lang]) - 1)
 
         await message.answer(
-            facts_format_text.format(fact_id) + facts_text[fact_id],
+            facts_format_text[lang].format(fact_id) + facts_text[lang][fact_id],
             reply_markup=make_back_to_main_menu_keyboard(),
         )
-
-    # TODO: Transfer to new bot
-    # async def create_mm_poll_handler(self, message: Message) -> None:
-    #     print("New vote candidate", message.document)
-    #     if not message.document:
-    #         return
-
-    #     file = await self.bot.download(message.document.file_id)
-    #     print(file)
-    #     if file is None:
-    #         return
-
-    #     dead_list = get_dead_list(file)
-    #     print(dead_list)
-    #     file.close()
-
-    #     for dead in dead_list:
-    #         await message.answer_poll(
-    #             question="ММ " + dead,
-    #             options=[
-    #                 "Устное замечание",
-    #                 "Замечание",
-    #                 "Выговор",
-    #                 "Отчисление",
-    #                 "Против мер дисциплинарного взыскания",
-    #                 "Воздержаться",
-    #             ],
-    #             is_anonymous=False,
-    #             allows_multiple_answers=False,
-    #         )
 
     async def del_handler(self, message: Message) -> None:
         if not self.bot_info:

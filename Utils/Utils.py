@@ -19,7 +19,6 @@ def check_if_message_has_photo(message: Message | InaccessibleMessage | None) ->
 
 
 def check_if_date_has_expired(message: Message | InaccessibleMessage | None) -> bool:
-    return False
     if not message:
         return True
     if isinstance(message, InaccessibleMessage):
@@ -49,10 +48,6 @@ async def answer_callback(
     should_message_be_changed = (not message_has_media and data_has_media) or (
         not saveMedia and message_has_media and not data_has_media
     )
-
-    message_is_dead = check_if_date_has_expired(message)
-    if message_is_dead:
-        message = None
 
     if force_recreate or should_message_be_changed or message is None:
         if data_has_media:
