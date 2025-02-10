@@ -27,3 +27,11 @@ button_text_back_to_main_menu: dict[str, tuple[str, str]] = {
     "ru": ("Вернуться в главное меню🔙", "bck_to_mm"),
     "en": ("Back to main menu🔙", "bck_to_mm"),
 }
+
+button_text_back_to_main_menu_new: tuple[str, dict[str, str]] = (
+    "bck_to_mm",
+    {
+        "ru": "Вернуться в главное меню🔙",
+        "en": "Back to main menu🔙",
+    },
+)

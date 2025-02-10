@@ -1,11 +1,11 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from Utils.DefaultTexts import button_text_back_to_main_menu
+from Utils.DefaultTexts import button_text_back_to_main_menu, button_text_back_to_main_menu_new
 
 
 def make_keyboard(
-    *buttons: tuple[str, str, str] | tuple[str, str] | str,
+    *buttons: tuple[str, str, str | None] | tuple[str, str] | str,
     sizes: list[int] | None = None
 ) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()

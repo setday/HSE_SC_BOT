@@ -28,7 +28,7 @@ class MainRouter(Router):
         self.bot = bot
 
         self.message.register(
-            self.enter_handler, CommandStart(), SuperChatFilter(False)
+            self.enter_handler, CommandStart()#, SuperChatFilter(False)
         )
         self.callback_query.register(
             self.language_selection_handler,
@@ -63,8 +63,8 @@ class MainRouter(Router):
                 button_text_leave_request_to_sc[lang],
                 button_text_work_with_us[lang],
                 button_text_info_about_sc[lang],
-                button_text_change_language[lang],
                 button_text_partnership[lang],
+                button_text_change_language[lang],
             ),
         )
         return

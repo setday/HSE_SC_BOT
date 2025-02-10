@@ -49,27 +49,28 @@ If you'd like to become a representative and participate in making important dec
 <a href="https://t.me/studcouncil">Join our social networks and stay tuned!🔔</a>""",
 }
 
-button_text_become_delegate_u: dict[str, tuple[str, str]] = {
-    "ru": ("Стать делегатом 🗳 (недоступно)", "ju_unvbl"),
-    "en": ("Become a delegate 🗳 (unavailable)", "ju_unvbl"),
+button_text_become_delegate_u: dict[str, str] = {
+    "ru": "Стать делегатом 🗳 (недоступно)",
+    "en": "Become a delegate 🗳 (unavailable)",
 }
-button_text_become_delegate_a: dict[str, tuple[str, str]] = {
-    "ru": ("Стать делегатом 🗳", "ju_del"),
-    "en": ("Become a delegate 🗳", "ju_del"),
+button_text_become_delegate_a: dict[str, str] = {
+    "ru": "Стать делегатом 🗳",
+    "en": "Become a delegate 🗳",
 }
-button_text_become_volunteer_u: dict[str, tuple[str, str]] = {
-    "ru": ("Стать волонтёром 🤝 (недоступно)", "ju_unvbl"),
-    "en": ("Become a volunteer 🤝 (unavailable)", "ju_unvbl"),
+button_text_become_volunteer_u: dict[str, str] = {
+    "ru": "Стать волонтёром 🤝 (недоступно)",
+    "en": "Become a volunteer 🤝 (unavailable)",
 }
-button_text_become_volunteer_a: dict[str, tuple[str, str, str]] = {
-    "ru": ("Стать волонтёром 🤝", "ju_vol", "https://forms.gle/Chfps8LqVsWYiCby8"),
-    "en": ("Become a volunteer 🤝", "ju_vol", "https://forms.gle/Chfps8LqVsWYiCby8"),
+button_text_become_volunteer_a: dict[str, str] = {
+    "ru": "Стать волонтёром 🤝",
+    "en": "Become a volunteer 🤝",
 }
 
 option_is_temporarily_unavailable_text: dict[str, str] = {
     "ru": "Этот вариант в данный момент недоступен",
     "en": "This option is unavailable at the moment",
 }
+
 
 # block_enter_text = "Мы очень рады, что ты хочешь присоединиться к нам!\n\n"\
 #                    "Для этого напиши заяку в формате:\n"\

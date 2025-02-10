@@ -22,7 +22,9 @@ class DefaultRouter(Router):
 
         self.bot = bot
 
-        self.message.register(self.default_handler, SuperChatFilter(False))
+        self.message.register(
+            self.default_handler#, SuperChatFilter(False)
+        )
         self.callback_query.register(self.default_callback_handler)
 
     async def default_handler(self, message: Message, state: FSMContext) -> None:

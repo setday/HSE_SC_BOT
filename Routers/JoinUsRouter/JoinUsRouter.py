@@ -1,54 +1,34 @@
-from aiogram import Router, Bot, F
-from aiogram.types import CallbackQuery
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import FSInputFile
-
-from Utils.KeyboardMaker import make_keyboard, button_text_back_to_main_menu
+from aiogram import Bot
 
 from .JoinUsRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_text_work_with_us
 
-from Utils.Utils import answer_callback, get_lang_from_state
+from lib.base.AutoNode import AutoNodeAnswerType
+from lib.base.AutoRouter import AutoRouter, ExtraAutoNodes
 
 
-class JoinUsRouterState(StatesGroup):
-    default = State()
-
-
-class JoinUsRouter(Router):
+class JoinUsRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
-        super().__init__()
+        super().__init__(bot)
 
-        self.bot = bot
+        ju_entry_name = button_text_work_with_us["en"][1]
 
-        self.callback_query.register(
-            self.enter_handler, F.data == button_text_work_with_us["en"][1]
-        )
-        self.callback_query.register(self.option_is_unavailable, F.data == "ju_unvbl")
+        # delegate_link = "https://forms.gle/Chfps8LqVsWYiCby8" # Invalide for now (volunteer link)
+        # volunteer_link = "https://forms.gle/Chfps8LqVsWYiCby8" # Invalide for now (expired at 20.09.2024)
 
-        self.photo_file = FSInputFile("./Assets/WorkWithUsProfile.webp")
+        # ..._uu - Both delegate and volunteer are unavailable
+        # ..._vu - Volunteer is available, delegate is unavailable
+        # ..._uv - Delegate is available, volunteer is unavailable
+        # ..._av - Both delegate and volunteer are available
+        self.add_node(ju_entry_name, block_enter_text_uu, "./Assets/WorkWithUsProfile.webp")
+        self.add_node("ju_unvbl", option_is_temporarily_unavailable_text, answer_type=AutoNodeAnswerType.TOAST)
 
-    async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        await state.set_state(JoinUsRouterState.default)
-        await callback.answer()
+        self.convert_to_entry_node(ju_entry_name)
 
-        lang = await get_lang_from_state(state)
+        self.add_button_edge(ju_entry_name, "ju_unvbl", button_text_become_delegate_u)
+        # self.add_button_edge(ju_entry_name, volunteer_link, button_text_become_delegate_a)
 
-        await answer_callback(
-            bot=self.bot,
-            callback=callback,
-            text=block_enter_text_uu[lang],
-            reply_markup=make_keyboard(
-                button_text_become_delegate_u[lang],
-                button_text_become_volunteer_u[lang],
-                button_text_back_to_main_menu[lang],
-            ),
-            photo=self.photo_file,
-        )
+        self.add_button_edge(ju_entry_name, "ju_unvbl", button_text_become_volunteer_u)
+        # self.add_button_edge(ju_entry_name, delegate_link, button_text_become_volunteer_a)
 
-    async def option_is_unavailable(
-        self, callback: CallbackQuery, state: FSMContext
-    ) -> None:
-        lang = await get_lang_from_state(state)
-        await callback.answer(option_is_temporarily_unavailable_text[lang])
+        self.add_button_edge(ju_entry_name, ExtraAutoNodes.HOME_NODE)

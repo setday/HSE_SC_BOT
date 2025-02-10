@@ -1,0 +1,157 @@
+from enum import Enum
+from typing import Callable
+
+from aiogram import Router, Bot, F
+from aiogram.types import CallbackQuery, Message
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State
+from aiogram.types import FSInputFile
+
+from Utils.KeyboardMaker import make_keyboard
+
+from Utils.Utils import answer_callback, get_lang_from_state
+
+
+class AutoNodeAnswerType(Enum):
+    NEW_MESSAGE = 0
+    TOAST = 1
+
+
+class AutoNode:
+    def __init__(
+            self,
+            bot: Bot,
+            router: Router,
+
+            node_name: str,
+            
+            text: dict[str, str] | None = None,
+            media: FSInputFile | None = None,
+            
+            node_trigger_callback: Callable[["AutoNode", FSMContext, str | None], None] | None = None,
+
+            answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE
+        ) -> None:
+        assert not (answer_type == AutoNodeAnswerType.TOAST and media is not None), "Can't send media with toast"
+
+        self._bot: Bot = bot
+        self._router: Router = router
+        
+        self._node_name: str = node_name
+        self._node_state: State | None = None
+
+        self._is_callback_handler_registered: bool = False
+        self._is_message_handler_registered: bool = False
+
+        self._text = text
+        self._media = media
+
+        self._node_trigger_callback = node_trigger_callback
+
+        self._answer_type = answer_type
+
+        self._keyboard_buttons: list[tuple[dict[str, str], str, str | None]] = []
+
+        self._next_node_state: State | None = None
+
+    def get_node_state(self) -> State:
+        if self._node_state is None:
+            self._node_state = State(self._node_name)
+    
+        return self._node_state
+
+    def has_next_message_node(self) -> bool:
+        return self._next_node_state is not None
+
+    def register_message_handler(self) -> None:
+        if not self._is_message_handler_registered:
+            self._router.message.register(
+                self.message_handler,
+                self.get_node_state()
+            )
+            self._is_message_handler_registered = True
+
+    def register_callback_handler(self) -> None:
+        if not self._is_callback_handler_registered:
+            self._router.callback_query.register(
+                self.callback_handler,
+                F.data == self._node_name
+            )
+            self._is_callback_handler_registered = True
+
+    def add_keyboard_button(self, next_node_name: str, button_text: dict[str, str]) -> None:
+        assert self._answer_type == AutoNodeAnswerType.NEW_MESSAGE, "Can't add button to toast"
+
+        if next_node_name.startswith("http"):
+            self._keyboard_buttons.append((button_text, "url_destination", next_node_name))
+        else:
+            self._keyboard_buttons.append((button_text, next_node_name, None))
+
+    def add_state_changer(self, next_node_state: State) -> None:
+        self._next_node_state = next_node_state
+
+    async def callback_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
+        if self._node_trigger_callback:
+            self._node_trigger_callback(self, state, callback.data)
+
+        if self._next_node_state:
+            await state.set_state(self._next_node_state)
+        
+        lang: str = await get_lang_from_state(state)
+
+        text_to_send: str | None = None
+        if self._text:
+            text_to_send = self._text[lang]
+
+        keyboard_buttons: list[tuple[str, str, str | None]] = []
+        for button_text, next_node_name, link in self._keyboard_buttons:
+            keyboard_buttons.append((
+                button_text[lang],
+                next_node_name,
+                link
+            ))
+
+        if self._answer_type == AutoNodeAnswerType.NEW_MESSAGE:
+            await callback.answer()
+
+            await answer_callback(
+                bot=self._bot,
+                callback=callback,
+                text=text_to_send,
+                reply_markup=make_keyboard(*keyboard_buttons),
+                photo=self._media,
+            )
+        elif self._answer_type == AutoNodeAnswerType.TOAST:
+            await callback.answer(text=text_to_send or "")
+        else:
+            raise ValueError("Unknown answer type")
+
+    async def message_handler(self, message: Message, state: FSMContext) -> None:
+        if self._node_trigger_callback:
+            self._node_trigger_callback(self, state, message.text)
+        
+        if self._next_node_state:
+            await state.set_state(self._next_node_state)
+
+        lang: str = await get_lang_from_state(state)
+
+        text_to_send: str | None = None
+        if self._text:
+            text_to_send = self._text[lang]
+
+        keyboard_buttons: list[tuple[str, str, str | None]] = []
+        for button_text, next_node_name, link in self._keyboard_buttons:
+            keyboard_buttons.append((
+                button_text[lang],
+                next_node_name,
+                link
+            ))
+
+        if self._answer_type == AutoNodeAnswerType.NEW_MESSAGE:
+            await message.answer(
+                text=text_to_send or "No text",
+                bot=self._bot,
+                reply_markup=make_keyboard(*keyboard_buttons),
+            )
+        else:
+            raise ValueError("Unknown answer type")
