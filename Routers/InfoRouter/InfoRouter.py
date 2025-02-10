@@ -1,86 +1,30 @@
-from aiogram import Router, Bot, F
-from aiogram.types import CallbackQuery
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import FSInputFile
-
-from Utils.KeyboardMaker import make_keyboard, button_text_back_to_main_menu
+from aiogram import Bot
 
 from .InfoRouterTexts import *
 from ..MainRouter.MainRouterTexts import button_text_info_about_sc
 
-from Utils.Utils import answer_callback, get_lang_from_state
+from lib.base.AutoRouter import AutoRouter, ExtraAutoNodes
 
 
-class InfoRouterState(StatesGroup):
-    default = State()
-
-
-class InfoRouter(Router):
+class InfoRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
-        super().__init__()
+        super().__init__(bot)
+        
 
-        self.bot = bot
+        info_entry_name = button_text_info_about_sc["en"][1]
 
-        self.callback_query.register(
-            self.enter_handler, F.data == button_text_info_about_sc["en"][1]
-        )
-        self.callback_query.register(
-            self.links_hndler, F.data == button_text_links["en"][1]
-        )
-        self.callback_query.register(
-            self.members_hndler,
-            F.data == button_text_member_list["en"][1],
-        )
+        self.add_node(info_entry_name, block_enter_text, "./Assets/AboutUsProfile.webp")
+        self.add_node("info_member_list", members_text, saveMedia=False, disable_web_page_preview=True, parse_mode="Markdown")
+        self.add_node("info_links", links_text)
 
-        self.photo_file = FSInputFile("./Assets/AboutUsProfile.webp")
+        self.convert_to_entry_node(info_entry_name)
 
-    async def enter_handler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        await state.set_state(InfoRouterState.default)
+        self.add_button_edge(info_entry_name, "info_member_list", button_text_member_list)
+        self.add_button_edge(info_entry_name, "info_links", button_text_links)
 
-        lang = await get_lang_from_state(state)
+        self.add_button_edge("info_links", "info_member_list", button_text_member_list)
+        self.add_button_edge("info_member_list", "info_links", button_text_links)
 
-        await answer_callback(
-            bot=self.bot,
-            callback=callback,
-            text=block_enter_text[lang],
-            reply_markup=make_keyboard(
-                button_text_member_list[lang],
-                button_text_links[lang],
-                button_text_back_to_main_menu[lang],
-            ),
-            photo=self.photo_file,
-        )
-
-        await callback.answer()
-
-    async def links_hndler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        await callback.answer()
-
-        lang = await get_lang_from_state(state)
-
-        await answer_callback(
-            bot=self.bot,
-            callback=callback,
-            text=links_text[lang],
-            reply_markup=make_keyboard(
-                button_text_member_list[lang], button_text_back_to_main_menu[lang]
-            ),
-        )
-
-    async def members_hndler(self, callback: CallbackQuery, state: FSMContext) -> None:
-        await callback.answer()
-
-        lang = await get_lang_from_state(state)
-
-        await answer_callback(
-            bot=self.bot,
-            callback=callback,
-            text=members_text[lang],
-            reply_markup=make_keyboard(
-                button_text_links[lang], button_text_back_to_main_menu[lang]
-            ),
-            saveMedia=False,
-            disable_web_page_preview=True,
-            parse_mode="Markdown",
-        )
+        self.add_button_edge(info_entry_name, ExtraAutoNodes.HOME_NODE)
+        self.add_button_edge("info_member_list", ExtraAutoNodes.HOME_NODE)
+        self.add_button_edge("info_links", ExtraAutoNodes.HOME_NODE)

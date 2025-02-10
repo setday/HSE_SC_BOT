@@ -11,23 +11,6 @@ Student Council's volunteers help us with all kinds of tasks: from maintaining o
 <a href="https://t.me/studcouncil">Join our social networks and stay tuned!🔔</a>""",
 }
 
-block_enter_text_vu_o: dict[str, str] = {
-    "ru": """🙂 В данный момент проходит набор в состав волонтеров Студсовета!
-
-Волонтёры Студсовета помогают в решении важных вопросов в зависимости от комитета — аналитика, проведение крупных мероприятий, разработка собственных программ обучения, ведение социальных сетей и многое другое. И сейчас тот момент, когда ты можешь присоединиться к нашей команде!
-
-Если ты хочешь стать делегатом и получить мандат на принятие важных решений в жизни НИУ ВШЭ — подавайся на ежегодные октябрьские выборы, о которых мы обязательно тебе сообщим!
-
-<a href="https://t.me/studcouncil">Вступай в наши соцсети и stay tuned!🔔</a>""",
-    "en": """🙂 We are currently accepting applications for volunteers!
-
-Student Council's volunteers help us with all kinds of tasks: from maintaining our social networks to organising events. This is the moment when you can join our team!
-
-If you'd like to become a representative and participate in making important decisions, you can apply for the annual elections, which are held in October.
-
-<a href="https://t.me/studcouncil">Join our social networks and stay tuned!🔔</a>""",
-}
-
 block_enter_text_vu: dict[str, str] = {
     "ru": """🌟 В данный момент открыт набор волонтеров в состав Студенческого совета! 
 
@@ -70,14 +53,3 @@ option_is_temporarily_unavailable_text: dict[str, str] = {
     "ru": "Этот вариант в данный момент недоступен",
     "en": "This option is unavailable at the moment",
 }
-
-
-# block_enter_text = "Мы очень рады, что ты хочешь присоединиться к нам!\n\n"\
-#                    "Для этого напиши заяку в формате:\n"\
-#                    "```\n"\
-#                    "ФИО:\n"\
-#                    "Желаемая должность:\n\n"\
-#                    "Курс:\n"\
-#                    "Программа:\n"\
-#                    "О себе:\n"\
-#                    "```\n"

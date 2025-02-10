@@ -30,7 +30,9 @@ class AutoNode:
             
             node_trigger_callback: Callable[["AutoNode", FSMContext, str | None], None] | None = None,
 
-            answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE
+            answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE,
+
+            **message_kwargs
         ) -> None:
         assert not (answer_type == AutoNodeAnswerType.TOAST and media is not None), "Can't send media with toast"
 
@@ -49,6 +51,8 @@ class AutoNode:
         self._node_trigger_callback = node_trigger_callback
 
         self._answer_type = answer_type
+
+        self._message_kwargs = message_kwargs
 
         self._keyboard_buttons: list[tuple[dict[str, str], str, str | None]] = []
 
@@ -120,6 +124,7 @@ class AutoNode:
                 text=text_to_send,
                 reply_markup=make_keyboard(*keyboard_buttons),
                 photo=self._media,
+                **self._message_kwargs
             )
         elif self._answer_type == AutoNodeAnswerType.TOAST:
             await callback.answer(text=text_to_send or "")
@@ -152,6 +157,7 @@ class AutoNode:
                 text=text_to_send or "No text",
                 bot=self._bot,
                 reply_markup=make_keyboard(*keyboard_buttons),
+                **self._message_kwargs
             )
         else:
             raise ValueError("Unknown answer type")

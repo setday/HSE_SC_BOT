@@ -254,11 +254,11 @@ members_text: dict[str, str] = {
 }
 
 
-button_text_member_list: dict[str, tuple[str, str]] = {
-    "ru": ("Состав 👥", "inf_mbr_lst"),
-    "en": ("Members 👥", "inf_mbr_lst"),
+button_text_member_list: dict[str, str] = {
+    "ru": "Состав 👥",
+    "en": "Members 👥",
 }
-button_text_links: dict[str, tuple[str, str]] = {
-    "ru": ("Ссылки 🔗", "inf_sc_lnks"),
-    "en": ("Links 🔗", "inf_sc_lnks"),
+button_text_links: dict[str, str] = {
+    "ru": "Ссылки 🔗",
+    "en": "Links 🔗",
 }

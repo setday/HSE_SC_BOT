@@ -26,12 +26,13 @@ class AutoRouter(Router):
             node_name: str,
             text: dict[str, str] | None = None,
             media: FSInputFile | str | None = None,
-            answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE
+            answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE,
+            **node_message_kwargs
         ) -> AutoNode:
         if isinstance(media, str):
             media = FSInputFile(media)
 
-        node = AutoNode(self.bot, self, node_name, text, media, answer_type=answer_type)
+        node = AutoNode(self.bot, self, node_name, text, media, answer_type=answer_type, **node_message_kwargs)
         self.node_dict[node_name] = node
         return node
     
