@@ -1,7 +1,10 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from Utils.DefaultTexts import button_text_back_to_main_menu, button_text_back_to_main_menu_new
+from Utils.DefaultTexts import (
+    button_text_back_to_main_menu,
+    button_text_back_to_main_menu_new,
+)
 
 
 def make_keyboard(

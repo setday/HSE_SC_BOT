@@ -28,7 +28,7 @@ class MainRouter(Router):
         self.bot = bot
 
         self.message.register(
-            self.enter_handler, CommandStart()#, SuperChatFilter(False)
+            self.enter_handler, CommandStart()  # , SuperChatFilter(False)
         )
         self.callback_query.register(
             self.language_selection_handler,

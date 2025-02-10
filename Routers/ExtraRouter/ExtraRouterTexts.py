@@ -8,7 +8,7 @@ facts_format_text: dict[str, str] = {
 }
 
 facts_text: dict[str, list[str]] = {
-    "ru":[
+    "ru": [
         "Ты нашёл секретный факт!\n\nТвой код: {0}",
         "Самым сложным при создании бота было не написание кода и не создание его структуры, а написание описания Студсовета 😁",
         "Для того, чтобы улучшить свои оценки нужно просто принести на экзамен ..... себя с выученным материалом",
@@ -23,7 +23,7 @@ facts_text: dict[str, list[str]] = {
         "В апреле мы планируем запустить криптовалюту, но вам об этом не расскажем =D",
         "Мы так и не определились с картинками =D",
     ],
-    "en":[
+    "en": [
         "You found a secret fact!\n\nYour code: {0}",
         "The most difficult thing in creating a bot was not writing the code and not creating its structure, but writing a description of the Student Council 😁",
         "In order to improve your grades, you just need to bring to the exam ..... yourself with the material learned",

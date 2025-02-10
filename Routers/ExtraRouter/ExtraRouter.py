@@ -105,7 +105,8 @@ class ExtraRouter(Router):
 
             user_hash = hash(message.from_user.username + self.secret_trash)
             await message.answer(
-                facts_format_text[lang].format("?") + facts_text[lang][0].format(user_hash),
+                facts_format_text[lang].format("?")
+                + facts_text[lang][0].format(user_hash),
                 reply_markup=make_back_to_main_menu_keyboard(),
             )
 
