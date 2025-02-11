@@ -29,7 +29,7 @@ button_text_back_to_main_menu: dict[str, tuple[str, str]] = {
 }
 
 button_text_back_to_main_menu_new: tuple[str, dict[str, str]] = (
-    "bck_to_mm",
+    "home_node",
     {
         "ru": "Вернуться в главное меню🔙",
         "en": "Back to main menu🔙",

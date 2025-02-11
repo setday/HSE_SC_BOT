@@ -15,6 +15,7 @@ from Utils.Utils import answer_callback, get_lang_from_state
 class AutoNodeAnswerType(Enum):
     NEW_MESSAGE = 0
     TOAST = 1
+    NOTHING = 2
 
 
 class AutoNode:
@@ -46,7 +47,10 @@ class AutoNode:
         self._node_state: State | None = None
 
         self._is_callback_handler_registered: bool = False
+        self._is_callback_with_information_handler_registered: bool = False
         self._is_message_handler_registered: bool = False
+
+        self._callback_with_information_destination: str | None = None
 
         self._text = text
         self._media = media
@@ -61,18 +65,32 @@ class AutoNode:
 
         self._next_node_state: State | None = None
 
-    def get_node_state(self) -> State:
+    @property
+    def node_name(self) -> str:
+        return self._node_name
+    
+    @property
+    def node_state(self) -> State:
         if self._node_state is None:
             self._node_state = State(self._node_name)
 
         return self._node_state
+    
+    @property
+    def bot(self) -> Bot:
+        return self._bot
 
+    @property
     def has_next_message_node(self) -> bool:
         return self._next_node_state is not None
+    
+    @property
+    def has_callback_with_information_handler(self) -> bool:
+        return self._is_callback_with_information_handler_registered
 
     def register_message_handler(self) -> None:
         if not self._is_message_handler_registered:
-            self._router.message.register(self.message_handler, self.get_node_state())
+            self._router.message.register(self.message_handler, self.node_state)
             self._is_message_handler_registered = True
 
     def register_callback_handler(self) -> None:
@@ -81,6 +99,14 @@ class AutoNode:
                 self.callback_handler, F.data == self._node_name
             )
             self._is_callback_handler_registered = True
+
+    def register_callback_with_information_handler(self, destination: str | None = None) -> None:
+        if not self._is_callback_with_information_handler_registered:
+            self._router.callback_query.register(
+                self.callback_handler, F.data.contains(f"{self._node_name}_dr:")
+            )
+            self._is_callback_with_information_handler_registered = True
+            self._callback_with_information_destination = destination
 
     def add_keyboard_button(
         self, next_node_name: str, button_text: dict[str, str]
@@ -146,6 +172,15 @@ class AutoNode:
             await callback.answer(text=text_to_send or "")
         else:
             raise ValueError("Unknown answer type")
+        
+    async def callback_with_information_handler(
+        self, callback: CallbackQuery, state: FSMContext
+    ) -> None:
+        if self._callback_with_information_destination:
+            data = callback.data.split(":")[-1] if callback.data else None
+            await state.update_data({self._callback_with_information_destination: data})
+
+        await self.callback_handler(callback, state)
 
     async def message_handler(self, message: Message, state: FSMContext) -> None:
 
@@ -179,10 +214,19 @@ class AutoNode:
             keyboard_buttons.append((button_text[lang], next_node_name, link))
 
         if self._answer_type == AutoNodeAnswerType.NEW_MESSAGE:
-            await message.answer(
-                text=text_to_send or "No text",
-                reply_markup=make_keyboard(*keyboard_buttons),
-                **self._message_kwargs
-            )
+            if not self._media:
+                await message.answer(
+                    text=text_to_send or "No text",
+                    reply_markup=make_keyboard(*keyboard_buttons),
+                    **self._message_kwargs
+                )
+            else:
+                await self.bot.send_photo(
+                    chat_id=message.chat.id,
+                    photo=self._media,
+                    caption=text_to_send or "",
+                    reply_markup=make_keyboard(*keyboard_buttons),
+                    **self._message_kwargs
+                )
         else:
             raise ValueError("Unknown answer type")

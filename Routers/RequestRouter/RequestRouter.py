@@ -39,7 +39,7 @@ class RequestRouter(Router):
         self.bot = bot
 
         self.callback_query.register(
-            self.enter_handler, F.data == button_text_leave_request_to_sc["en"][1]
+            self.enter_handler, F.data == "leave_request_entry"
         )
         self.callback_query.register(
             self.enter_handler, F.data == button_text_back_to_topic["en"][1]

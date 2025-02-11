@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Callable, Coroutine, Any
 
 from aiogram import Router, Bot
@@ -9,10 +8,7 @@ from numpy import deprecate
 from Utils.KeyboardMaker import button_text_back_to_main_menu_new
 
 from lib.base.AutoNode import AutoNode, AutoNodeAnswerType
-
-
-class ExtraAutoNodes(Enum):
-    HOME_NODE = "home_node"
+from lib.base.ExtraAutoNodes import ExtraAutoNodes
 
 
 class AutoRouter(Router):
@@ -24,6 +20,12 @@ class AutoRouter(Router):
         self.node_dict: dict[str, AutoNode] = {}
 
     def add_node(
+        self,
+        node: AutoNode,
+    ) -> None:
+        self.node_dict[node.node_name] = node
+
+    def create_node(
         self,
         node_name: str,
         text: dict[str, str] | None = None,
@@ -51,7 +53,7 @@ class AutoRouter(Router):
             node_trigger_callback=node_trigger_callback,
             **node_message_kwargs,
         )
-        self.node_dict[node_name] = node
+        self.add_node(node)
         return node
 
     @deprecate(
@@ -73,17 +75,22 @@ class AutoRouter(Router):
         node_name: str,
         next_node: str | ExtraAutoNodes,
         button_text: dict[str, str] | None = None,
+        is_node_local: bool = True,
+        is_next_node_local: bool = True,
     ) -> None:
 
-        assert node_name in self.node_dict, f"Node {node_name} doesn't exist"
+        assert not is_node_local or node_name in self.node_dict, f"Node {node_name} doesn't exist"
 
         # Register required functions on destination node
-        if not isinstance(next_node, ExtraAutoNodes) and not next_node.startswith(
+        if is_next_node_local and not isinstance(next_node, ExtraAutoNodes) and not next_node.startswith(
             "http"
         ):
             assert next_node in self.node_dict, f"Node {next_node} doesn't exist"
 
             self.node_dict[next_node].register_callback_handler()
+
+        if not is_node_local:
+            return
 
         # Simplifing ExtraAutoNodes
         next_node_name: str
@@ -101,13 +108,53 @@ class AutoRouter(Router):
         # Add edge
         self.node_dict[node_name].add_keyboard_button(next_node_name, button_text)
 
-    def add_message_edge(self, node_name: str, next_node_name: str) -> None:
+    def add_message_edge(
+        self,
+        node_name: str,
+        next_node_name: str,
+        is_node_local: bool = True,
+        is_next_node_local: bool = True,
+    ) -> None:
+        
+        assert not is_node_local or node_name in self.node_dict, f"Node {node_name} doesn't exist"
 
-        assert not self.node_dict[
+        assert not is_node_local or not self.node_dict[
             node_name
-        ].has_next_message_node(), "Message handler already registered"
+        ].has_next_message_node, "Message handler already registered"
 
-        self.node_dict[node_name].add_state_changer(
-            self.node_dict[next_node_name].get_node_state()
-        )
-        self.node_dict[next_node_name].register_message_handler()
+        if is_node_local:
+            self.node_dict[node_name].add_state_changer(
+                self.node_dict[next_node_name].node_state
+            )
+        if is_next_node_local:
+            self.node_dict[next_node_name].register_message_handler()
+
+    def add_selector_edge(
+        self,
+        node_name: str,
+        next_node: str,
+        selector: list[dict[str, str]],
+        state_destination: str | None = None,
+        is_node_local: bool = True,
+        is_next_node_local: bool = True,
+    ) -> None:
+        assert not is_node_local or node_name in self.node_dict, f"Node {node_name} doesn't exist"
+
+        # Register required functions on destination node
+        if is_next_node_local:
+            assert next_node in self.node_dict, f"Node {next_node} doesn't exist"
+            assert not self.node_dict[next_node].has_callback_with_information_handler
+
+            self.node_dict[next_node].register_callback_with_information_handler(
+                state_destination
+            )
+            
+        if not is_node_local:
+            return
+
+        # Simplifing ExtraAutoNodes
+        next_node_name = next_node
+
+        # Add edge
+        for idx, button in enumerate(selector):
+            self.node_dict[node_name].add_keyboard_button(f"{next_node_name}_dr:os{idx}", button)

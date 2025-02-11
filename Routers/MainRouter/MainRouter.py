@@ -1,120 +1,53 @@
-from aiogram import Router, Bot, F
-from aiogram.types import Message, CallbackQuery
+from aiogram import Bot
+from aiogram.types import User
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import CommandStart
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import FSInputFile
+
+from lib.base.AutoNode import AutoNode
+from lib.base.ExtraAutoNodes import EntryAutoNode, ExtraAutoNodes
+from lib.base.AutoRouter import AutoRouter
 
 from Utils.Filters import SuperChatFilter
 
-from Utils.DefaultTexts import button_text_back_to_main_menu
-from Utils.KeyboardMaker import make_keyboard
-
 from .MainRouterTexts import *
 
-from Utils.Utils import answer_callback, get_lang_from_state, check_lang_in_state
+from Utils.Utils import check_lang_in_state
 
 
-class MainRouterState(StatesGroup):
-    language_selection = State()
-    main_menu = State()
-    default = State()
-
-
-class MainRouter(Router):
+class MainRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
-        super().__init__()
+        super().__init__(bot)
 
-        self.bot = bot
+        self.add_node(EntryAutoNode(
+                bot, self,
+                text=navigation_text,
+                media=FSInputFile("./Assets/GlobalProfile.webp"),
+                node_trigger_callback=self.entry_action,
+        ))
+        self.create_node("language_selection", language_selection_text)
 
-        self.message.register(
-            self.enter_handler, CommandStart()  # , SuperChatFilter(False)
-        )
-        self.callback_query.register(
-            self.language_selection_handler,
-            F.data == button_text_change_language["en"][1],
-        )
-        self.callback_query.register(
-            self.language_selected_handler, F.data.in_(button_lang_datas + ["ru", "en"])
-        )
-        self.callback_query.register(
-            self.main_menu_handler, F.data == button_text_back_to_main_menu["en"][1]
-        )
+        self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "info_entry", button_text_info_about_sc, is_next_node_local=False)
+        self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "leave_request_entry", button_text_leave_request_to_sc, is_next_node_local=False)
+        self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "join_us_entry", button_text_work_with_us, is_next_node_local=False)
+        self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "partnership_entry", button_text_partnership, is_next_node_local=False)
 
-        self.photo_file = FSInputFile("./Assets/GlobalProfile.webp")
+        self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "language_selection", button_text_change_language)
+        self.add_selector_edge("language_selection", ExtraAutoNodes.HOME_NODE.value, change_language_button_textes)
 
-    # Enter handlers
-    async def enter_handler(self, message: Message, state: FSMContext) -> None:
-        if not check_lang_in_state(state):
+        self.convert_to_entry_node(ExtraAutoNodes.HOME_NODE.value)
+
+    async def entry_action(
+        self, node: AutoNode, state: FSMContext, user: User | None, text: str | None
+    ) -> None:
+        if text == "/start" and not await check_lang_in_state(state):
             lang = "ru"
-            if message.from_user and message.from_user.language_code:
-                lang = message.from_user.language_code
-            if lang not in ["ru", "en"]:
+            if user and user.language_code:
+                lang = user.language_code
+            if lang not in language_list:
                 lang = "en"
             await state.update_data(language=lang)
-
-        await state.set_state(MainRouterState.main_menu)
-        lang = await get_lang_from_state(state)
-        await self.bot.send_photo(
-            chat_id=message.chat.id,
-            photo=self.photo_file,
-            caption=navigation_text[lang],
-            reply_markup=make_keyboard(
-                button_text_leave_request_to_sc[lang],
-                button_text_work_with_us[lang],
-                button_text_info_about_sc[lang],
-                button_text_partnership[lang],
-                button_text_change_language[lang],
-            ),
-        )
-        return
-
-    async def language_selection_handler(
-        self, callback: CallbackQuery, state: FSMContext
-    ) -> None:
-        await state.set_state(MainRouterState.language_selection)
-
-        await callback.answer()
-
-        await answer_callback(
-            bot=self.bot,
-            callback=callback,
-            text=block_enter_text,
-            reply_markup=make_keyboard(
-                button_text_lang["ru"],
-                button_text_lang["en"],
-            ),
-        )
-
-    async def language_selected_handler(
-        self, callback: CallbackQuery, state: FSMContext
-    ) -> None:
-        await state.set_state(MainRouterState.default)
-
-        lang = callback.data[-2:] if callback.data else "ru"
-        await state.update_data(language=lang)
-
-        await self.main_menu_handler(callback, state)
-
-    async def main_menu_handler(
-        self, callback: CallbackQuery, state: FSMContext
-    ) -> None:
-        await state.set_state(MainRouterState.main_menu)
-
-        await callback.answer()
-
-        lang = await get_lang_from_state(state)
-
-        await answer_callback(
-            bot=self.bot,
-            callback=callback,
-            text=navigation_text[lang],
-            reply_markup=make_keyboard(
-                button_text_info_about_sc[lang],
-                button_text_leave_request_to_sc[lang],
-                button_text_work_with_us[lang],
-                button_text_partnership[lang],
-                button_text_change_language[lang],
-            ),
-            photo=self.photo_file,
-        )
+        
+        if text and text.split(":")[-1].startswith("os"):
+            language_id = text.split(":os")[-1]
+            lang = language_list[int(language_id)]
+            await state.update_data(language=lang)
