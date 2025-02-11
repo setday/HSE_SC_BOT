@@ -103,7 +103,7 @@ class AutoNode:
     def register_callback_with_information_handler(self, destination: str | None = None) -> None:
         if not self._is_callback_with_information_handler_registered:
             self._router.callback_query.register(
-                self.callback_handler, F.data.contains(f"{self._node_name}_dr:")
+                self.callback_with_information_handler, F.data.contains(f"{self._node_name}_dr:")
             )
             self._is_callback_with_information_handler_registered = True
             self._callback_with_information_destination = destination

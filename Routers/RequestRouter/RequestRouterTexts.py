@@ -10,39 +10,18 @@ block_enter_text: dict[str, str] = {
     "en": "❔What is your request about?",
 }
 
-button_your_requests_text: dict[str, tuple[str, str]] = {
-    "ru": ("Твои обращения 👀", "shw_appls"),
-    "en": ("Your requests 👀", "shw_appls"),
+button_your_requests_text: dict[str, str] = {
+    "ru": "Твои обращения 👀",
+    "en": "Your requests 👀",
 }
-button_text_topics: dict[str, list[tuple[str, str]]] = {
-    "ru": [
-        ("Присутствие Студсовета на апелляционной комиссии ☎️", "ct_app_com"),
-        ("Общежития или корпуса ВШЭ 🏡", "ct_cmp_or_drm_prb"),
-        ("Образовательный процесс 📖", "ct_edu_prb"),
-        ("Другое 💊", "ct_another_prb"),
-        button_your_requests_text["ru"],
-        button_text_back_to_main_menu["ru"],
-    ],
-    "en": [
-        (
-            "Student Council presence at the appeals commission ☎️",
-            "ct_app_com",
-        ),
-        (
-            "Dormitory or HSE campus 🏡",
-            "ct_cmp_or_drm_prb",
-        ),
-        (
-            "Educational process 📖",
-            "ct_edu_prb",
-        ),
-        ("Other 💊", "ct_another_prb"),
-        button_your_requests_text["en"],
-        button_text_back_to_main_menu["en"],
-    ],
-}
+topic_button_textes: list[tuple[dict[str, str], str]] = [
+    ({"ru": "Присутствие Студсовета на апелляционной комиссии ☎️", "en": "Student Council presence at the appeals commission ☎️"}, "ct_app_com"),
+    ({"ru": "Общежития или корпуса ВШЭ 🏡", "en": "Dormitory or HSE campus 🏡"}, "ct_cmp_or_drm_prb"),
+    ({"ru": "Образовательный процесс 📖", "en": "Educational process 📖"}, "ct_edu_prb"),
+    ({"ru": "Другое 💊", "en": "Other 💊"}, "ct_another_prb"),
+]
 button_text_topics_ids: dict[str, int] = {
-    key: i for i, (_, key) in enumerate(button_text_topics["ru"])
+    key: i for i, (_, key) in enumerate(topic_button_textes)
 }
 
 no_sent_requests_text: dict[str, str] = {
@@ -64,9 +43,9 @@ sent_request_text: dict[str, str] = {
 Topic: {2}""",
 }
 
-button_text_back_to_topic: dict[str, tuple[str, str]] = {
-    "ru": ("Вернуться к выбору типа обращений🔙", "bck_to_tpc"),
-    "en": ("Back to the request type menu🔙", "bck_to_tpc"),
+button_text_back_to_topic: dict[str, str] = {
+    "ru": "Вернуться к выбору типа обращений🔙",
+    "en": "Back to the request type menu🔙",
 }
 
 write_campus_or_dormitory_text: dict[str, str] = {
@@ -79,32 +58,18 @@ choose_faculty_text: dict[str, str] = {
     "en": "❔What faculty is your request about?",
 }
 
-button_text_faculties: dict[str, list[tuple[str, str]]] = {
-    "ru": [
-        ("🧬Школа физико-математических и компьютерных наук", "cf_spmcs"),
-        ("💰Школа экономики и менеджмента", "cf_sem"),
-        ("👥Школа социальных наук", "cf_sss"),
-        ("🎭Школа гуманитарных наук и искусств", "cf_sgas"),
-        ("🗺Институт востоковедения и африканистики", "cf_iva"),
-        ("🎨Школа дизайна", "cf_sd"),
-        ("👨‍⚖️Юридический факультет", "cf_law"),
-        ("🎒Факультет довузовского образования", "cf_pie"),
-        button_text_back_to_topic["ru"],
-    ],
-    "en": [
-        ("🧬School of Physics, Mathematics, and Computer Science", "cf_spmcs"),
-        ("💰School of Economics and Management", "cf_sem"),
-        ("👥School of Social Sciences", "cf_sss"),
-        ("🎭School of Humanities and Arts", "cf_sgas"),
-        ("🗺Institute of Oriental and African Studies", "cf_iva"),
-        ("🎨School of Design", "cf_sd"),
-        ("👨‍⚖️Faculty of Law", "cf_law"),
-        ("🎒Pre-university Education Faculty", "cf_pie"),
-        button_text_back_to_topic["en"],
-    ],
-}
+faculty_button_textes: list[tuple[dict[str, str], str]] = [
+    ({"ru": "🧬Школа физико-математических и компьютерных наук", "en": "🧬School of Physics, Mathematics, and Computer Science"}, "cf_spmcs"),
+    ({"ru": "💰Школа экономики и менеджмента", "en": "💰School of Economics and Management"}, "cf_sem"),
+    ({"ru": "👥Школа социальных наук", "en": "👥School of Social Sciences"}, "cf_sss"),
+    ({"ru": "🎭Школа гуманитарных наук и искусств", "en": "🎭School of Humanities and Arts"}, "cf_sgas"),
+    ({"ru": "🗺Институт востоковедения и африканистики", "en": "🗺Institute of Oriental and African Studies"}, "cf_iva"),
+    ({"ru": "🎨Школа дизайна", "en": "🎨School of Design"}, "cf_sd"),
+    ({"ru": "👨‍⚖️Юридический факультет", "en": "👨‍⚖️Faculty of Law"}, "cf_law"),
+    ({"ru": "🎒Факультет довузовского образования", "en": "🎒Pre-university Education Faculty"}, "cf_pie"),
+]
 button_text_faculties_ids: dict[str, int] = {
-    key: i for i, (_, key) in enumerate(button_text_faculties["ru"])
+    key: i for i, (_, key) in enumerate(faculty_button_textes)
 }
 
 choose_course_text: dict[str, str] = {
@@ -112,36 +77,21 @@ choose_course_text: dict[str, str] = {
     "en": "❔What course is your request about?",
 }
 
-button_text_back_to_faculty: dict[str, tuple[str, str]] = {
-    "ru": ("Вернуться к выбору факультета обращения🔙", "bck_to_fac"),
-    "en": ("Back to the faculty selection menu🔙", "bck_to_fac"),
+button_text_back_to_faculty: dict[str, str] = {
+    "ru": "Вернуться к выбору факультета обращения🔙",
+    "en": "Back to the faculty selection menu🔙",
 }
 course_selection_callback_prefix: str = "cr_slc_"
-button_text_courses: dict[str, list[tuple[str, str]]] = {
-    "ru": [
-        ("1️⃣Первый курс", course_selection_callback_prefix + "1"),
-        ("2️⃣Второй курс", course_selection_callback_prefix + "2"),
-        ("3️⃣Третий курс", course_selection_callback_prefix + "3"),
-        ("4️⃣Четвёртый курс", course_selection_callback_prefix + "4"),
-        ("5️⃣Пятый курс", course_selection_callback_prefix + "5"),
-        (
-            "🔄 Магистратура/Аспирантура/Другое",
-            course_selection_callback_prefix + "mpo",
-        ),
-        button_text_back_to_faculty["ru"],
-    ],
-    "en": [
-        ("1️⃣First year", course_selection_callback_prefix + "1"),
-        ("2️⃣Second year", course_selection_callback_prefix + "2"),
-        ("3️⃣Third year", course_selection_callback_prefix + "3"),
-        ("4️⃣Fourth year", course_selection_callback_prefix + "4"),
-        ("5️⃣Fifth year", course_selection_callback_prefix + "5"),
-        ("🔄 Master's/PhD/Other", course_selection_callback_prefix + "mpo"),
-        button_text_back_to_faculty["en"],
-    ],
-}
+course_button_textes: list[tuple[dict[str, str], str]] = [
+    ({"ru": "1️⃣Первый курс", "en": "1️⃣First year"}, course_selection_callback_prefix + "1"),
+    ({"ru": "2️⃣Второй курс", "en": "2️⃣Second year"}, course_selection_callback_prefix + "2"),
+    ({"ru": "3️⃣Третий курс", "en": "3️⃣Third year"}, course_selection_callback_prefix + "3"),
+    ({"ru": "4️⃣Четвёртый курс", "en": "4️⃣Fourth year"}, course_selection_callback_prefix + "4"),
+    ({"ru": "5️⃣Пятый курс", "en": "5️⃣Fifth year"}, course_selection_callback_prefix + "5"),
+    ({"ru": "🔄 Магистратура/Аспирантура/Другое", "en": "🔄 Master's/PhD/Other"}, course_selection_callback_prefix + "mpo"),
+]
 button_text_courses_ids: dict[str, int] = {
-    key: i for i, (_, key) in enumerate(button_text_courses["ru"])
+    key: i for i, (_, key) in enumerate(course_button_textes)
 }
 
 request_full_descr_text: dict[str, str] = {
@@ -151,19 +101,6 @@ request_full_descr_text: dict[str, str] = {
     "en": """📝 Please, describe your problem in detail. If you wish to remain anonymous, state it in the body of your request. Don't worry, no-one will disclose information about you and your request since all the delegates and volunteers have signed the Non-Disclosure Agreement.
 
 <strong>Note!</strong> We need you to attach materials (precise date when smth happened, photos, videos, polls etc.) that will help us with solving your problem. For convenience, create a folder using Google or Yandex drive and upload all of your files to it. Please, don't forget to make your folder accessible by link.""",
-}
-
-confirm_application_text: dict[str, str] = {
-    "ru": """👀 Проверь, пожалуйста, корректность данных и наличие доступа по ссылке к прикреплённым материалам. Обращение в Студсовет будет отправлено в следующем виде:
-
-————
-{0}
-————""",
-    "en": """👀 Please check the correctness of the data and the availability of access via the link to your attached materials. The appeal to the Student Council will be sent in the following form:
-
-————
-{0}
-————""",
 }
 
 campus_or_dormitory_text: dict[str, str] = {
@@ -186,21 +123,34 @@ application_sent_text: dict[str, str] = {
 
 <strong>Тема: {topic}{second_row}{third_row}</strong>
 
-{text}""",
+{request_text}""",
     "en": """<strong>Application from {user_name} (@{user_nick} | id={user_id}):</strong>
 
 <strong>Topic: {topic}{second_row}{third_row}</strong>
 
-{text}""",
+{request_text}""",
 }
 
-button_text_back_to_application: dict[str, tuple[str, str]] = {
-    "ru": ("Вернуться к составлению текста обращения🔙", "bck_to_apl_wrt"),
-    "en": ("Back to the application text menu🔙", "bck_to_apl_wrt"),
+confirm_application_text: dict[str, str] = {
+    "ru": """👀 Проверь, пожалуйста, корректность данных и наличие доступа по ссылке к прикреплённым материалам. Обращение в Студсовет будет отправлено в следующем виде:
+
+————
+{request}
+————""",
+    "en": """👀 Please check the correctness of the data and the availability of access via the link to your attached materials. The appeal to the Student Council will be sent in the following form:
+
+————
+{request}
+————""",
 }
-button_text_approve_application: dict[str, tuple[str, str]] = {
-    "ru": ("Отправить обращение✅", "snd_appl"),
-    "en": ("Send application✅", "snd_appl"),
+
+button_text_back_to_application: dict[str, str] = {
+    "ru": "Вернуться к составлению текста обращения🔙",
+    "en": "Back to the application text menu🔙",
+}
+button_text_approve_application: dict[str, str] = {
+    "ru": "Отправить обращение✅",
+    "en": "Send application✅",
 }
 
 wait_a_little_text: dict[str, str] = {
@@ -210,11 +160,11 @@ wait_a_little_text: dict[str, str] = {
 
 reqest_registred_text: dict[str, str] = {
     "ru": """🎉 Готово! Твой номер обращения:
-{0}
+{request_id}
 
 Студсовет рассмотрит обращение и свяжется с вами в течение рабочей недели.""",
     "en": """🎉 Done! Your application number:
-{0}
+{request_id}
 
 The Student Council will consider the application and contact you within a working week.""",
 }

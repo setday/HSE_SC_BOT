@@ -32,7 +32,7 @@ class MainRouter(AutoRouter):
         self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "partnership_entry", button_text_partnership, is_next_node_local=False)
 
         self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "language_selection", button_text_change_language)
-        self.add_selector_edge("language_selection", ExtraAutoNodes.HOME_NODE.value, change_language_button_textes)
+        self.add_selector_edge("language_selection", ExtraAutoNodes.HOME_NODE.value, change_language_button_textes, state_destination="language")
 
         self.convert_to_entry_node(ExtraAutoNodes.HOME_NODE.value)
 
@@ -45,9 +45,4 @@ class MainRouter(AutoRouter):
                 lang = user.language_code
             if lang not in language_list:
                 lang = "en"
-            await state.update_data(language=lang)
-        
-        if text and text.split(":")[-1].startswith("os"):
-            language_id = text.split(":os")[-1]
-            lang = language_list[int(language_id)]
             await state.update_data(language=lang)

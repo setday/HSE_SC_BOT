@@ -133,7 +133,7 @@ class AutoRouter(Router):
         self,
         node_name: str,
         next_node: str,
-        selector: list[dict[str, str]],
+        selector: list[tuple[dict[str, str], str]],
         state_destination: str | None = None,
         is_node_local: bool = True,
         is_next_node_local: bool = True,
@@ -156,5 +156,5 @@ class AutoRouter(Router):
         next_node_name = next_node
 
         # Add edge
-        for idx, button in enumerate(selector):
-            self.node_dict[node_name].add_keyboard_button(f"{next_node_name}_dr:os{idx}", button)
+        for (button, value) in selector:
+            self.node_dict[node_name].add_keyboard_button(f"{next_node_name}_dr:{value}", button)

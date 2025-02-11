@@ -11,15 +11,21 @@ language_selection_text: dict[str, str] = {
     "ru": "Выбери язык общения:",
 }
 
-change_language_button_textes: list[dict[str, str]] = [
-    {
-        "en": "Русский ⚪🔵🔴",
-        "ru": "Русский ⚪🔵🔴",
-    },
-    {
-        "en": "English 🌍",
-        "ru": "English 🌍",
-    },
+change_language_button_textes: list[tuple[dict[str, str], str]] = [
+    (
+        {
+            "en": "Русский ⚪🔵🔴",
+            "ru": "Русский ⚪🔵🔴",
+        },
+        "ru",
+    ),
+    (
+        {
+            "en": "English 🌍",
+            "ru": "English 🌍",
+        },
+        "en",
+    ),
 ]
 language_list: list[str] = ["ru", "en"]
 
