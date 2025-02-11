@@ -5,6 +5,7 @@ from aiogram import Router, Bot, F
 from aiogram.types import CallbackQuery, Message, User, InlineKeyboardMarkup, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
+from aiogram.filters import BaseFilter
 
 from Utils.KeyboardMaker import make_keyboard
 
@@ -28,13 +29,6 @@ class AutoNode:
         node_name: str,
         text: dict[str, str] | None = None,
         media: FSInputFile | None = None,
-        node_trigger_callback: (
-            Callable[
-                ["AutoNode", FSMContext, User | None, str | None],
-                Coroutine[Any, Any, bool | None],
-            ]
-            | None
-        ) = None,
         answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE,
         **message_kwargs
     ) -> None:
@@ -57,7 +51,11 @@ class AutoNode:
         self._text = text
         self._media = media
 
-        self._node_trigger_callback = node_trigger_callback
+        self._node_trigger_callback: Callable[
+            ["AutoNode", FSMContext, User | None, str | None],
+            Coroutine[Any, Any, bool | None],
+        ] | None = None
+        self._filters: list[BaseFilter] = []
 
         self._answer_type = answer_type
 
@@ -90,6 +88,22 @@ class AutoNode:
     def has_callback_with_information_handler(self) -> bool:
         return self._is_callback_with_information_handler_registered
     
+    def set_trigger_callback(
+        self,
+        node_trigger_callback: Callable[
+            ["AutoNode", FSMContext, User | None, str | None],
+            Coroutine[Any, Any, bool | None],
+        ],
+    ) -> "AutoNode":
+        self._node_trigger_callback = node_trigger_callback
+
+        return self
+    
+    def add_filter(self, filter_: BaseFilter) -> "AutoNode":
+        self._filters.append(filter_)
+
+        return self
+    
     def _prepare_text_to_send(self, lang: str, user: User | None, data: dict) -> str:
         if not self._text or lang not in self._text:
             return ""
@@ -116,7 +130,7 @@ class AutoNode:
 
     def register_message_handler(self, destination: str | None = None) -> State:
         if not self._is_message_handler_registered:
-            self._router.message.register(self.message_handler, self.node_state)
+            self._router.message.register(self.message_handler, self.node_state, *self._filters)
             self._is_message_handler_registered = True
 
         if destination is None:
@@ -124,7 +138,7 @@ class AutoNode:
         
         endpoint = f"{self._node_name}_dr:{len(self._in_data_endpoints)}"
         new_node_endpoint = State(endpoint)
-        self._router.message.register(self.message_handler, new_node_endpoint)
+        self._router.message.register(self.message_handler, new_node_endpoint, *self._filters)
         self._in_data_endpoints[new_node_endpoint] = destination
 
         return new_node_endpoint
@@ -132,14 +146,14 @@ class AutoNode:
     def register_callback_handler(self) -> None:
         if not self._is_callback_handler_registered:
             self._router.callback_query.register(
-                self.callback_handler, F.data == self._node_name
+                self.callback_handler, F.data == self._node_name, *self._filters
             )
             self._is_callback_handler_registered = True
 
     def register_callback_with_information_handler(self, destination: str | None = None) -> str | None:
         if not self._is_callback_with_information_handler_registered:
             self._router.callback_query.register(
-                self.callback_with_information_handler, F.data.contains(f"{self._node_name}_dr:")
+                self.callback_with_information_handler, F.data.startswith(f"{self._node_name}_dr:"), *self._filters
             )
             self._is_callback_with_information_handler_registered = True
 

@@ -77,7 +77,7 @@ class RequestRouter(AutoRouter):
         lrcf = self.create_node("leave_request_choose_faculty", choose_faculty_text)
         self.create_node("leave_request_choose_course", choose_course_text)
         lrea = self.create_node("leave_request_enter_application", request_full_descr_text)
-        self.create_node("leave_request_review", confirm_application_text, node_trigger_callback=self.review_entry_func)
+        self.create_node("leave_request_review", confirm_application_text).set_trigger_callback(self.review_entry_func)
         self.add_node(SenderAutoNode(bot, self, "leave_request_sent", reqest_registred_text))
 
         self.add_node(MappingCallbackAutoNode(bot, self, "leave_request_entry_mapping", {

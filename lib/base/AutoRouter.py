@@ -31,13 +31,6 @@ class AutoRouter(Router):
         text: dict[str, str] | None = None,
         media: FSInputFile | str | None = None,
         answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE,
-        node_trigger_callback: (
-            Callable[
-                [AutoNode, FSMContext, User | None, str | None],
-                Coroutine[Any, Any, bool | None],
-            ]
-            | None
-        ) = None,
         **node_message_kwargs,
     ) -> AutoNode:
         if isinstance(media, str):
@@ -50,7 +43,6 @@ class AutoRouter(Router):
             text,
             media,
             answer_type=answer_type,
-            node_trigger_callback=node_trigger_callback,
             **node_message_kwargs,
         )
         self.add_node(node)

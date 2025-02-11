@@ -5,7 +5,7 @@ from aiogram import Router, Bot
 from aiogram.types import User, CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 from aiogram.types import FSInputFile
-from aiogram.filters import CommandStart
+from aiogram.filters import BaseFilter, CommandStart
 
 from lib.base.AutoNode import AutoNode, AutoNodeAnswerType
 
@@ -21,14 +21,8 @@ class EntryAutoNode(AutoNode):
         router: Router,
         text: dict[str, str] | None = None,
         media: FSInputFile | None = None,
-        node_trigger_callback: (
-            Callable[
-                ["AutoNode", FSMContext, User | None, str | None],
-                Coroutine[Any, Any, bool | None],
-            ]
-            | None
-        ) = None,
         answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE,
+        filters: list[BaseFilter] = [],
         **message_kwargs
     ) -> None:
         super().__init__(
@@ -37,15 +31,19 @@ class EntryAutoNode(AutoNode):
             ExtraAutoNodes.HOME_NODE.value,
             text,
             media,
-            node_trigger_callback,
             answer_type,
             **message_kwargs
         )
 
-        self._router.message.register(self.message_handler, CommandStart())
+        self._filters = filters
+
+        self._router.message.register(self.message_handler, CommandStart(), *self._filters)
         self._is_message_handler_registered = True
 
         self.register_callback_handler()
+
+    def add_filter(self, filter_: BaseFilter) -> AutoNode:
+        raise NotImplementedError("Filters should be set in the constructor")
 
 
 class MappingCallbackAutoNode(AutoNode):
@@ -61,14 +59,19 @@ class MappingCallbackAutoNode(AutoNode):
 
 
 class DefaultAutoNode(AutoNode):
-    def __init__(self, bot: Bot, router: Router, text: dict[str, str] | None = None) -> None:
+    def __init__(self, bot: Bot, router: Router, text: dict[str, str] | None = None, filters: list[BaseFilter] = []) -> None:
         super().__init__(bot, router, "default_node", text)
 
-        self._router.callback_query.register(self.callback_handler)
+        self._filters = filters
+
+        self._router.callback_query.register(self.callback_handler, *self._filters)
         self._is_callback_handler_registered = True
 
-        self._router.message.register(self.message_handler)
+        self._router.message.register(self.message_handler, *self._filters)
         self._is_message_handler_registered = True
+
+    def add_filter(self, filter_: BaseFilter) -> AutoNode:
+        raise NotImplementedError("Filters should be set in the constructor")
 
     def register_message_handler(self) -> None:
         raise NotImplementedError("This node is already handling all messages")

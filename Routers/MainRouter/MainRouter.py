@@ -18,14 +18,12 @@ class MainRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot)
 
-        # TODO: Add filter for entry node
-
         self.add_node(EntryAutoNode(
                 bot, self,
                 text=navigation_text,
                 media=FSInputFile("./Assets/GlobalProfile.webp"),
-                node_trigger_callback=self.entry_action,
-        ))
+                filters=[SuperChatFilter(False)]
+        ).set_trigger_callback(self.entry_action))
         self.create_node("language_selection", language_selection_text)
 
         self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "info_entry", button_text_info_about_sc, is_next_node_local=False)

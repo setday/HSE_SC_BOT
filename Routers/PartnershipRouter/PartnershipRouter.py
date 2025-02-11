@@ -70,13 +70,11 @@ class PartnershipRouter(AutoRouter):
             block_enter_text,
             "./Assets/PartnershipProfile.webp",
             parse_mode="HTML",
-            node_trigger_callback=self.clear_state_func,
-        )
+        ).set_trigger_callback(self.clear_state_func)
         self.create_node(
             "partners_message_review",
             confirm_application_text,
-            node_trigger_callback=self.review_entry_func,
-        )
+        ).set_trigger_callback(self.review_entry_func)
         self.add_node(
             SenderAutoNode(
                 bot,
