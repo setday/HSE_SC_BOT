@@ -23,9 +23,10 @@ prev_text = "< Назад"
 back_text = "< Назад"
 back_to_menu_text = "< Назад в меню"
 
+# TODO: Remove this old approach
 button_text_back_to_main_menu: dict[str, tuple[str, str]] = {
-    "ru": ("Вернуться в главное меню🔙", "bck_to_mm"),
-    "en": ("Back to main menu🔙", "bck_to_mm"),
+    "ru": ("Вернуться в главное меню🔙", "home_node"),
+    "en": ("Back to main menu🔙", "home_node"),
 }
 
 button_text_back_to_main_menu_new: tuple[str, dict[str, str]] = (

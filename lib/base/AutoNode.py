@@ -2,14 +2,16 @@ from enum import Enum
 from typing import Callable, Coroutine, Any
 
 from aiogram import Router, Bot, F
-from aiogram.types import CallbackQuery, Message, User
+from aiogram.types import CallbackQuery, Message, User, InlineKeyboardMarkup, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
-from aiogram.types import FSInputFile
 
 from Utils.KeyboardMaker import make_keyboard
 
 from Utils.Utils import answer_callback, get_lang_from_state
+
+
+void_state = State("void")
 
 
 class AutoNodeAnswerType(Enum):
@@ -50,7 +52,7 @@ class AutoNode:
         self._is_callback_with_information_handler_registered: bool = False
         self._is_message_handler_registered: bool = False
 
-        self._callback_with_information_destination: str | None = None
+        self._in_data_endpoints: dict[str | State, str] = {}
 
         self._text = text
         self._media = media
@@ -87,11 +89,45 @@ class AutoNode:
     @property
     def has_callback_with_information_handler(self) -> bool:
         return self._is_callback_with_information_handler_registered
+    
+    def _prepare_text_to_send(self, lang: str, user: User | None, data: dict) -> str:
+        if not self._text or lang not in self._text:
+            return ""
+        
+        translated_text = self._text[lang]
+        formated_text = translated_text.format(
+            user_name=user.full_name if user else "Unknown user",
+            user_nick=user.username or "" if user else "",
+            user_id=user.id if user else None,
+            **data
+        )
 
-    def register_message_handler(self) -> None:
+        return formated_text
+    
+    def _prepare_keyboard_buttons(self, lang: str) -> InlineKeyboardMarkup:
+        keyboard_buttons = []
+
+        for button_text, next_node_name, link in self._keyboard_buttons:
+            keyboard_buttons.append((button_text[lang], next_node_name, link))
+        
+        keyboard = make_keyboard(*keyboard_buttons)
+
+        return keyboard
+
+    def register_message_handler(self, destination: str | None = None) -> State:
         if not self._is_message_handler_registered:
             self._router.message.register(self.message_handler, self.node_state)
             self._is_message_handler_registered = True
+
+        if destination is None:
+            return self.node_state
+        
+        endpoint = f"{self._node_name}_dr:{len(self._in_data_endpoints)}"
+        new_node_endpoint = State(endpoint)
+        self._router.message.register(self.message_handler, new_node_endpoint)
+        self._in_data_endpoints[new_node_endpoint] = destination
+
+        return new_node_endpoint
 
     def register_callback_handler(self) -> None:
         if not self._is_callback_handler_registered:
@@ -100,13 +136,20 @@ class AutoNode:
             )
             self._is_callback_handler_registered = True
 
-    def register_callback_with_information_handler(self, destination: str | None = None) -> None:
+    def register_callback_with_information_handler(self, destination: str | None = None) -> str | None:
         if not self._is_callback_with_information_handler_registered:
             self._router.callback_query.register(
                 self.callback_with_information_handler, F.data.contains(f"{self._node_name}_dr:")
             )
             self._is_callback_with_information_handler_registered = True
-            self._callback_with_information_destination = destination
+
+        if destination is None:
+            return None
+
+        endpoint = f"{self._node_name}_dr:{len(self._in_data_endpoints)}"
+        self._in_data_endpoints[endpoint] = destination
+
+        return endpoint
 
     def add_keyboard_button(
         self, next_node_name: str, button_text: dict[str, str]
@@ -136,26 +179,14 @@ class AutoNode:
             if result is False:
                 return
 
-        if self._next_node_state:
-            await state.set_state(self._next_node_state)
+        await state.set_state(self._next_node_state or void_state)
 
         user: User = callback.from_user
-        lang: str = await get_lang_from_state(state)
         data = await state.get_data()
+        lang: str = await get_lang_from_state(state)
 
-        text_to_send: str | None = None
-        if self._text:
-            text_to_send = self._text[lang]
-            text_to_send = text_to_send.format(
-                user_name=user.full_name,
-                user_nick=user.username or "",
-                user_id=user.id,
-                **data
-            )
-
-        keyboard_buttons: list[tuple[str, str, str | None]] = []
-        for button_text, next_node_name, link in self._keyboard_buttons:
-            keyboard_buttons.append((button_text[lang], next_node_name, link))
+        text_to_send = self._prepare_text_to_send(lang, user, data)
+        keyboard = self._prepare_keyboard_buttons(lang)
 
         if self._answer_type == AutoNodeAnswerType.NEW_MESSAGE:
             await callback.answer()
@@ -164,7 +195,7 @@ class AutoNode:
                 bot=self._bot,
                 callback=callback,
                 text=text_to_send,
-                reply_markup=make_keyboard(*keyboard_buttons),
+                reply_markup=keyboard,
                 photo=self._media,
                 **self._message_kwargs
             )
@@ -176,13 +207,26 @@ class AutoNode:
     async def callback_with_information_handler(
         self, callback: CallbackQuery, state: FSMContext
     ) -> None:
-        if self._callback_with_information_destination:
-            data = callback.data.split(":")[-1] if callback.data else None
-            await state.update_data({self._callback_with_information_destination: data})
+        if callback.data is None:
+            await self.callback_handler(callback, state)
+            return
+
+        endpoint_and_data = callback.data.rsplit(":", 1)
+        destination = self._in_data_endpoints.get(endpoint_and_data[0], None)
+
+        if len(endpoint_and_data) == 1 or destination is None:
+            await self.callback_handler(callback, state)
+            return
+
+        await state.update_data({destination: endpoint_and_data[1]})
 
         await self.callback_handler(callback, state)
 
     async def message_handler(self, message: Message, state: FSMContext) -> None:
+
+        graph_state = await state.get_state()
+        if graph_state in self._in_data_endpoints:
+            await state.update_data({self._in_data_endpoints[graph_state]: message.text})
 
         if self._node_trigger_callback:
             result = await self._node_trigger_callback(
@@ -192,32 +236,20 @@ class AutoNode:
             if result is False:
                 return
 
-        if self._next_node_state:
-            await state.set_state(self._next_node_state)
+        await state.set_state(self._next_node_state or void_state)
 
         user: User | None = message.from_user
-        lang: str = await get_lang_from_state(state)
         data = await state.get_data()
-
-        text_to_send: str | None = None
-        if self._text:
-            text_to_send = self._text[lang]
-            text_to_send = text_to_send.format(
-                user_name=user.full_name if user else "Unknown user",
-                user_nick=user.username or "" if user else "",
-                user_id=user.id if user else None,
-                **data
-            )
-
-        keyboard_buttons: list[tuple[str, str, str | None]] = []
-        for button_text, next_node_name, link in self._keyboard_buttons:
-            keyboard_buttons.append((button_text[lang], next_node_name, link))
+        lang: str = await get_lang_from_state(state)
+ 
+        text_to_send = self._prepare_text_to_send(lang, user, data)
+        keyboard = self._prepare_keyboard_buttons(lang)
 
         if self._answer_type == AutoNodeAnswerType.NEW_MESSAGE:
             if not self._media:
                 await message.answer(
                     text=text_to_send or "No text",
-                    reply_markup=make_keyboard(*keyboard_buttons),
+                    reply_markup=keyboard,
                     **self._message_kwargs
                 )
             else:
@@ -225,8 +257,25 @@ class AutoNode:
                     chat_id=message.chat.id,
                     photo=self._media,
                     caption=text_to_send or "",
-                    reply_markup=make_keyboard(*keyboard_buttons),
+                    reply_markup=keyboard,
                     **self._message_kwargs
                 )
+        else:
+            raise ValueError("Unknown answer type")
+        
+    async def send_to_user(self, state: FSMContext, user: User) -> None:
+        data = await state.get_data()
+        lang = await get_lang_from_state(state)
+
+        text_to_send = self._prepare_text_to_send(lang, user, data)
+        keyboard_buttons = self._prepare_keyboard_buttons(lang)
+
+        if self._answer_type == AutoNodeAnswerType.NEW_MESSAGE:
+            await self.bot.send_message(
+                chat_id=user.id,
+                text=text_to_send or "",
+                reply_markup=keyboard_buttons,
+                **self._message_kwargs
+            )
         else:
             raise ValueError("Unknown answer type")

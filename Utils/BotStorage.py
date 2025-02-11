@@ -1,7 +1,7 @@
 import random
 import pickle
 
-from typing import Any, Optional
+from typing import Optional
 
 from aiogram import Dispatcher
 from aiogram.fsm.storage.base import BaseStorage

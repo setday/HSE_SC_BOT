@@ -112,6 +112,7 @@ class AutoRouter(Router):
         self,
         node_name: str,
         next_node_name: str,
+        state_destination: str | None = None,
         is_node_local: bool = True,
         is_next_node_local: bool = True,
     ) -> None:
@@ -122,12 +123,12 @@ class AutoRouter(Router):
             node_name
         ].has_next_message_node, "Message handler already registered"
 
+        assert is_next_node_local, f"Currently, nodes from different routers are not supported"
+
+        endpoint = self.node_dict[next_node_name].register_message_handler(destination=state_destination)
+        
         if is_node_local:
-            self.node_dict[node_name].add_state_changer(
-                self.node_dict[next_node_name].node_state
-            )
-        if is_next_node_local:
-            self.node_dict[next_node_name].register_message_handler()
+            self.node_dict[node_name].add_state_changer(endpoint)
 
     def add_selector_edge(
         self,
@@ -140,21 +141,20 @@ class AutoRouter(Router):
     ) -> None:
         assert not is_node_local or node_name in self.node_dict, f"Node {node_name} doesn't exist"
 
+        endpoint: str | None = None
+
         # Register required functions on destination node
         if is_next_node_local:
             assert next_node in self.node_dict, f"Node {next_node} doesn't exist"
             assert not self.node_dict[next_node].has_callback_with_information_handler
 
-            self.node_dict[next_node].register_callback_with_information_handler(
+            endpoint = self.node_dict[next_node].register_callback_with_information_handler(
                 state_destination
             )
             
         if not is_node_local:
             return
 
-        # Simplifing ExtraAutoNodes
-        next_node_name = next_node
-
         # Add edge
         for (button, value) in selector:
-            self.node_dict[node_name].add_keyboard_button(f"{next_node_name}_dr:{value}", button)
+            self.node_dict[node_name].add_keyboard_button(f"{endpoint}:{value}", button)

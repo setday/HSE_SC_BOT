@@ -18,6 +18,8 @@ class MainRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot)
 
+        # TODO: Add filter for entry node
+
         self.add_node(EntryAutoNode(
                 bot, self,
                 text=navigation_text,

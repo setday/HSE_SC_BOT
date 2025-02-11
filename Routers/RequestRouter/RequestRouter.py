@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from aiogram import Bot, F
 from aiogram.types import Message, CallbackQuery, User
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 
 from lib.base.AutoNode import AutoNode
 from lib.base.AutoRouter import AutoRouter, ExtraAutoNodes
@@ -82,20 +81,19 @@ class RequestRouter(AutoRouter):
         self.add_node(SenderAutoNode(bot, self, "leave_request_sent", reqest_registred_text))
 
         self.add_node(MappingCallbackAutoNode(bot, self, "leave_request_entry_mapping", {
-            "leave_request_entry_mapping_dr:ct_app_com": lrcf,
-            "leave_request_entry_mapping_dr:ct_cmp_or_drm_prb": lrcd,
-            "leave_request_entry_mapping_dr:ct_edu_prb": lrcf,
-            "leave_request_entry_mapping_dr:ct_another_prb": lrea,
+            "leave_request_entry_mapping_dr:0:ct_app_com": lrcf,
+            "leave_request_entry_mapping_dr:0:ct_cmp_or_drm_prb": lrcd,
+            "leave_request_entry_mapping_dr:0:ct_edu_prb": lrcf,
+            "leave_request_entry_mapping_dr:0:ct_another_prb": lrea,
         }))
 
         self.convert_to_entry_node("leave_request_entry")
 
-        ### --- ###
-
         self.add_selector_edge("leave_request_entry", "leave_request_entry_mapping", topic_button_textes, state_destination="topic")
-        self.add_button_edge("leave_request_entry", "shw_appls", button_your_requests_text, is_next_node_local=False)
+        self.add_button_edge("leave_request_entry", "leave_request_show_applications", button_your_requests_text, is_next_node_local=False)
 
-        self.add_message_edge("leave_request_choose_dormitory", "leave_request_enter_application")
+        self.add_message_edge("leave_request_choose_dormitory", "leave_request_enter_application", state_destination="campus_or_dormitory")
+        self.add_button_edge("leave_request_choose_dormitory", "leave_request_entry", button_text_back_to_topic)
 
         self.add_selector_edge("leave_request_choose_faculty", "leave_request_choose_course", faculty_button_textes, state_destination="faculty")
         self.add_button_edge("leave_request_choose_faculty", "leave_request_entry", button_text_back_to_topic)
@@ -111,9 +109,9 @@ class RequestRouter(AutoRouter):
         self.add_button_edge("leave_request_entry", ExtraAutoNodes.HOME_NODE)
         self.add_button_edge("leave_request_sent", ExtraAutoNodes.HOME_NODE)
 
-        ### +++ ###
+        # TODO: Remove old approach
 
-        self.callback_query.register(self.show_sent_requests, F.data == "shw_appls")
+        self.callback_query.register(self.show_sent_requests, F.data == "leave_request_show_applications")
         self.callback_query.register(self.print_request_n, F.data.startswith("req_"))
 
 
@@ -197,13 +195,11 @@ class RequestRouter(AutoRouter):
             callback=callback,
             text=request["request"],
             reply_markup=make_keyboard(
-                button_your_requests_text[lang],
+                (button_your_requests_text[lang], "leave_request_show_applications"),
             ),
         )
 
-    async def assemble_reqest(self, state: FSMContext, user: User | None, lang: str = "ru") -> str:
-        data = await state.get_data()
-
+    async def assemble_request(self, data: dict, user: User | None, lang: str = "ru") -> str:
         topic_id_name = data.get("topic", "ct_another_prb")
         topic_id = button_text_topics_ids[topic_id_name]
         topic_row = topic_button_textes[topic_id][0][lang]
@@ -214,13 +210,11 @@ class RequestRouter(AutoRouter):
         elif topic_id_name != "ct_another_prb" and data.get("faculty"):
             faculty_id = button_text_faculties_ids[data["faculty"]]
             second_row = faculty[lang] + faculty_button_textes[faculty_id][0][lang]
-        await state.update_data(second_row=second_row)
 
         third_row = ""
         if topic_id_name not in ["ct_another_prb", "ct_cmp_or_drm_prb"] and data.get("course"):
             course_id = button_text_courses_ids[data["course"]]
             third_row = course[lang] + course_button_textes[course_id][0][lang]
-        await state.update_data(third_row=third_row)
 
         return application_sent_text[lang].format(
             user_name=user.full_name if user else "Unknown user",
@@ -235,14 +229,13 @@ class RequestRouter(AutoRouter):
     async def review_entry_func(
         self, node: AutoNode, state: FSMContext, user: User | None, text: str | None
     ) -> None:
-        lang = await get_lang_from_state(state)
-
         await state.update_data(request_text=text)
+        data = await state.get_data()
 
-        request_text_to_send = await self.assemble_reqest(state, user)
+        request_text_to_send = await self.assemble_request(data, user)
         await state.update_data(request_to_send=request_text_to_send)
 
         lang = await get_lang_from_state(state)
 
-        request_text = await self.assemble_reqest(state, user, lang)
+        request_text = await self.assemble_request(data, user, lang)
         await state.update_data(request=request_text)
