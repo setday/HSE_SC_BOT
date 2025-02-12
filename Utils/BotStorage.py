@@ -4,7 +4,7 @@ import pickle
 from typing import Optional
 
 from aiogram import Dispatcher
-from aiogram.fsm.storage.base import BaseStorage
+from aiogram.fsm.storage.memory import MemoryStorage
 
 
 class BotStorage:
@@ -41,10 +41,15 @@ class BotStorage:
         except FileNotFoundError:
             print("No data found. Creating new storage...")
 
-    def load_storage(self) -> BaseStorage | None:
+    def load_storage(self) -> MemoryStorage | None:
         try:
             with open("Data/user_storage.pickle", "rb") as f:
-                return pickle.load(f)
+                storage = pickle.load(f)
+
+                if not isinstance(storage, MemoryStorage):
+                    raise ValueError("Invalid storage type")
+                
+                return storage
         except FileNotFoundError:
             print("No data found. Creating new storage...")
             return None

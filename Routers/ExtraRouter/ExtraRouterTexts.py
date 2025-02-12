@@ -2,6 +2,8 @@ chat_id_text = "ID твоего чата: {0}"
 bot_id_text = "ID бота: {0}"
 fsm_state_text = "Твой state: {0}\nТвои данные: {1}"
 
+approval_text = "{command}\n\nПользователь {user_name}|{user_id} пытается выполнить эту команду, однако она может затронуть большое число пользователей\n\nДля её выполнения нужно ещё минимум [{min_approval_count}] одобрений со стороны других пользователей\n\nПодверждения дали:\n"
+
 facts_format_text: dict[str, str] = {
     "ru": "Интересный факт №{0}:\n\n",
     "en": "Interesting fact №{0}:\n\n",

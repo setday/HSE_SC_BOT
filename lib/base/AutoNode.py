@@ -5,6 +5,8 @@ from aiogram import Router, Bot, F
 from aiogram.types import CallbackQuery, Message, User, InlineKeyboardMarkup, FSInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
+from aiogram.fsm.storage.base import BaseStorage
+from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters import BaseFilter
 
 from Utils.KeyboardMaker import make_keyboard
@@ -301,11 +303,31 @@ class AutoNode:
         keyboard_buttons = self._prepare_keyboard_buttons(lang)
 
         if self._answer_type == AutoNodeAnswerType.NEW_MESSAGE:
-            await self.bot.send_message(
-                chat_id=user.id,
-                text=text_to_send or "",
-                reply_markup=keyboard_buttons,
-                **self._message_kwargs
-            )
+            if not self._media:
+                await self.bot.send_message(
+                    chat_id=user.id,
+                    text=text_to_send or "",
+                    reply_markup=keyboard_buttons,
+                    **self._message_kwargs
+                )
+            else:
+                await self.bot.send_photo(
+                    chat_id=user.id,
+                    photo=self._media,
+                    caption=text_to_send or "",
+                    reply_markup=keyboard_buttons,
+                    **self._message_kwargs
+                )
         else:
             raise ValueError("Unknown answer type")
+        
+    async def broadcast_message(self, storage: BaseStorage) -> None:
+        if not isinstance(storage, MemoryStorage):
+            raise ValueError("Currently only MemoryStorage is supported")
+
+        users = storage.storage.keys()
+
+        for user in users:
+            user_id = user.user_id
+            state = FSMContext(storage, user)
+            await self.send_to_user(state, User(id=user_id, is_bot=False, first_name=""))
