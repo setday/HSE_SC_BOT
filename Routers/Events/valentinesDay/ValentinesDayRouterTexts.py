@@ -29,10 +29,14 @@ Leave your valentine — the Student Council of HSE SPb will definitely look at 
 valentine_send_text: dict[str, str] = {
     "ru": """💌 Отправить валентинку?
 
-{valentine_text}""",
+{valentine_text}
+
+*все добавленные картинки тоже отправтся ❤️*""",
     "en": """💌 Send a valentine?
 
-{valentine_text}""",
+{valentine_text}
+
+*all added pictures will be sent too ❤️*""",
 }
 
 valentine_send_button_text: dict[str, str] = {

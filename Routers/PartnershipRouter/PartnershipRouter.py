@@ -33,7 +33,7 @@ class SenderAutoNode(AutoNode):
             await callback.answer(wait_a_little_text[lang])
             return
 
-        request_id = await send_request_to_back(self.bot, data["request_to_send"])
+        request_id = await send_request_to_back(self.bot, data["request_to_send"], data.get("attached_photos", []), data.get("attached_files", []))
 
         user = callback.from_user
 
@@ -87,7 +87,7 @@ class PartnershipRouter(AutoRouter):
 
         self.convert_to_entry_node("partnership_entry")
 
-        self.add_message_edge("partnership_entry", "partners_message_review")
+        self.add_message_edge("partnership_entry", "partners_message_review", state_destination="request_text")
 
         self.add_button_edge(
             "partners_message_review",
@@ -127,7 +127,6 @@ class PartnershipRouter(AutoRouter):
     ) -> None:
         lang = await get_lang_from_state(state)
 
-        await state.update_data(request_text=text)
         await state.update_data(
             request_to_send=application_sent_text["ru"].format(
                 user_name=user.full_name if user else "Unknown user",

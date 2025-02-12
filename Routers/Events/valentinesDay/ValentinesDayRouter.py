@@ -10,8 +10,7 @@ from lib.base.AutoNode import AutoNode
 from lib.base.AutoRouter import AutoRouter, ExtraAutoNodes
 
 from Utils.Utils import get_lang_from_state
-from Utils.BotStorage import BotStorage
-from Utils.BackChatUtils import send_request_to_back
+from Utils.BackChatUtils import send_data_to_chat
 
 from .ValentinesDayRouterTexts import *
 
@@ -29,7 +28,14 @@ class SenderAutoNode(AutoNode):
             await callback.answer(wait_a_little_text[lang])
             return
         
-        await send_request_to_back(self.bot, data["valentine_text"])
+        await send_data_to_chat(
+            self.bot,
+            config.valentines_day_chat_id,
+            data["valentine_text"],
+            data.get("attached_photos", []),
+            data.get("attached_files", []),
+            allow_caption=True
+        )
 
         await state.update_data(last_valentine = datetime.now())
         await state.update_data(valentine_text = None)

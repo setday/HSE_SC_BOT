@@ -24,17 +24,13 @@ confirm_application_text: dict[str, str] = {
     "ru": """👀 Проверьте, пожалуйста, корректность данных и наличие доступа по ссылке к вашим прикреплённым материалам. Обращение в Студсовет будет отправлено в следующем виде:
 
 ————
-{0}
-————""".format(
-        application_sent_text["ru"]
-    ),
+{request}
+————""",
     "en": """👀 Please check the correctness of the data and the availability of access via the link to your attached materials. The appeal to the Student Council will be sent in the following form:
 
 ————
-{0}
-————""".format(
-        application_sent_text["en"]
-    ),
+{request}
+————""",
 }
 
 button_text_back_to_application: dict[str, str] = {

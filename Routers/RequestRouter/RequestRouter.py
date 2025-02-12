@@ -36,7 +36,7 @@ class SenderAutoNode(AutoNode):
             await callback.answer(wait_a_little_text[lang])
             return
 
-        request_id = await send_request_to_back(self.bot, data["request_to_send"])
+        request_id = await send_request_to_back(self.bot, data["request_to_send"], data.get("attached_photos", []), data.get("attached_files", []))
 
         user = callback.from_user
         topic = "Cooperation"
@@ -106,7 +106,7 @@ class RequestRouter(AutoRouter):
         self.add_button_edge("leave_request_enter_application", "leave_request_entry", button_text_back_to_topic)
 
         self.add_button_edge("leave_request_review", "leave_request_sent", button_text_approve_application)
-        self.add_button_edge("leave_request_review", "leave_request_entry", button_text_back_to_application)
+        self.add_button_edge("leave_request_review", "leave_request_enter_application", button_text_back_to_application)
 
         self.add_button_edge("leave_request_entry", ExtraAutoNodes.HOME_NODE)
         self.add_button_edge("leave_request_sent", ExtraAutoNodes.HOME_NODE)

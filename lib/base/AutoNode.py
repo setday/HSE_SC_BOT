@@ -255,10 +255,30 @@ class AutoNode:
         await self.callback_handler(callback, state)
 
     async def message_handler(self, message: Message, state: FSMContext) -> None:
+        if message.html_text:
+            await state.update_data(attached_photos=[])
+            await state.update_data(attached_files=[])
+
+        if message.photo:
+            attached_photos = await state.get_value("attached_photos", [])
+            if len(attached_photos) < 15:
+                attached_photos.append(message.photo[-1].file_id)
+                attached_photos = list(set(attached_photos))
+                await state.update_data(attached_photos=attached_photos)
+
+        if message.document:
+            attached_files = await state.get_value("attached_files", [])
+            if len(attached_files) < 15:
+                attached_files.append(message.document.file_id)
+                attached_files = list(set(attached_files))
+                await state.update_data(attached_files=attached_files)
+
+        if not message.html_text:
+            return
 
         graph_state = await state.get_state()
         if graph_state in self._in_data_endpoints:
-            await state.update_data({self._in_data_endpoints[graph_state]: message.text})
+            await state.update_data({self._in_data_endpoints[graph_state]: message.html_text})
 
         if self._node_trigger_callback:
             result = await self._node_trigger_callback(
@@ -326,8 +346,12 @@ class AutoNode:
             raise ValueError("Currently only MemoryStorage is supported")
 
         users = storage.storage.keys()
+        broadcasted_users = set()
 
         for user in users:
+            if user in broadcasted_users:
+                continue
             user_id = user.user_id
             state = FSMContext(storage, user)
             await self.send_to_user(state, User(id=user_id, is_bot=False, first_name=""))
+            broadcasted_users.add(user)
