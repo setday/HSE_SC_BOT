@@ -1,5 +1,7 @@
 from aiogram import Bot
 
+from config import config
+
 from lib.base.AutoNode import AutoNodeAnswerType
 from lib.base.AutoRouter import AutoRouter, ExtraAutoNodes
 
@@ -17,7 +19,7 @@ class JoinUsRouter(AutoRouter):
         # ..._vu - Volunteer is available, delegate is unavailable
         # ..._uv - Delegate is available, volunteer is unavailable
         # ..._av - Both delegate and volunteer are available
-        self.create_node("join_us_entry", block_enter_text_uu, "./Assets/WorkWithUsProfile.webp")
+        self.entry = self.create_node("join_us_entry", block_enter_text_uu, config.posters_dir / "WorkWithUsProfile.webp")
         self.create_node(
             "join_us_unavailable",
             option_is_temporarily_unavailable_text,
@@ -33,3 +35,8 @@ class JoinUsRouter(AutoRouter):
         # self.add_button_edge(ju_entry_name, delegate_link, button_text_become_volunteer_a)
 
         self.add_button_edge("join_us_entry", ExtraAutoNodes.HOME_NODE)
+
+    def reload_assets(self) -> None:
+        self.entry.media = self._load_media(config.posters_dir / "WorkWithUsProfile.webp")
+
+        return super().reload_assets()

@@ -4,6 +4,8 @@ from aiogram import Bot, F
 from aiogram.types import Message, CallbackQuery, User
 from aiogram.fsm.context import FSMContext
 
+from config import config
+
 from lib.base.AutoNode import AutoNode
 from lib.base.AutoRouter import AutoRouter, ExtraAutoNodes
 from lib.base.ExtraAutoNodes import MappingCallbackAutoNode
@@ -72,7 +74,7 @@ class RequestRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot)
 
-        self.create_node("leave_request_entry", block_enter_text, "./Assets/RequestProfile.webp")
+        self.entry = self.create_node("leave_request_entry", block_enter_text, config.posters_dir / "RequestProfile.webp")
         lrcd = self.create_node("leave_request_choose_dormitory", write_campus_or_dormitory_text)
         lrcf = self.create_node("leave_request_choose_faculty", choose_faculty_text)
         self.create_node("leave_request_choose_course", choose_course_text)
@@ -114,6 +116,10 @@ class RequestRouter(AutoRouter):
         self.callback_query.register(self.show_sent_requests, F.data == "leave_request_show_applications")
         self.callback_query.register(self.print_request_n, F.data.startswith("req_"))
 
+    def reload_assets(self) -> None:
+        self.entry.media = self._load_media(config.posters_dir / "RequestProfile.webp")
+
+        return super().reload_assets()
 
     async def reset_user(
         self,

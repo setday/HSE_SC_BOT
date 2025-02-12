@@ -1,10 +1,9 @@
 import asyncio
-import pickle
 
 from aiogram import Bot, Dispatcher, enums
 from aiogram.client.default import DefaultBotProperties
 
-from keysLoader import get_bot_key
+from config import config
 
 from Utils.BotStorage import BotStorage
 
@@ -18,7 +17,7 @@ from Routers.DefaultRouter.DefaultRouter import DefaultRouter
 
 
 default_properties = DefaultBotProperties(parse_mode=enums.ParseMode.HTML)
-bot_token = get_bot_key()
+bot_token = config.bot_api_token
 
 bot = Bot(bot_token, default=default_properties)
 
@@ -35,6 +34,18 @@ work_with_us_router = JoinUsRouter(bot)
 info_router = InfoRouter(bot)
 request_router = RequestRouter(bot)
 default_router = DefaultRouter(bot)
+
+
+def reload_assets() -> None:
+    main_router.reload_assets()
+    partnership_router.reload_assets()
+    work_with_us_router.reload_assets()
+    info_router.reload_assets()
+    request_router.reload_assets()
+    default_router.reload_assets()
+
+
+extra_router.set_reload_assets_callback(reload_assets)
 
 
 def poll_keyboard() -> None:

@@ -3,6 +3,8 @@ from aiogram.types import User
 from aiogram.fsm.context import FSMContext
 from aiogram.types import FSInputFile
 
+from config import config
+
 from lib.base.AutoNode import AutoNode
 from lib.base.ExtraAutoNodes import EntryAutoNode, ExtraAutoNodes
 from lib.base.AutoRouter import AutoRouter
@@ -18,12 +20,14 @@ class MainRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot)
 
-        self.add_node(EntryAutoNode(
+        self.entry = EntryAutoNode(
                 bot, self,
                 text=navigation_text,
-                media=FSInputFile("./Assets/GlobalProfile.webp"),
+                media=FSInputFile(config.posters_dir / "GlobalProfile.webp"),
                 filters=[SuperChatFilter(False)]
-        ).set_trigger_callback(self.entry_action))
+        ).set_trigger_callback(self.entry_action)
+
+        self.add_node(self.entry)
         self.create_node("language_selection", language_selection_text)
 
         self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "info_entry", button_text_info_about_sc, is_next_node_local=False)
@@ -35,6 +39,11 @@ class MainRouter(AutoRouter):
         self.add_selector_edge("language_selection", ExtraAutoNodes.HOME_NODE.value, change_language_button_textes, state_destination="language")
 
         self.convert_to_entry_node(ExtraAutoNodes.HOME_NODE.value)
+
+    def reload_assets(self) -> None:
+        self.entry.media = self._load_media(config.posters_dir / "GlobalProfile.webp")
+
+        return super().reload_assets()
 
     async def entry_action(
         self, node: AutoNode, state: FSMContext, user: User | None, text: str | None

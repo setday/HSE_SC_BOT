@@ -1,7 +1,7 @@
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from aiogram.filters import BaseFilter
 
-from keysLoader import get_back_id, get_vote_id
+from config import config
 
 
 class AdminChatFilter(BaseFilter):
@@ -10,10 +10,13 @@ class AdminChatFilter(BaseFilter):
 
         self.is_this_admin_chat = is_this_admin_chat
 
-    async def __call__(self, message: Message) -> bool:
+    async def __call__(self, message: Message | CallbackQuery) -> bool:
+        if isinstance(message, CallbackQuery):
+            return True
+
         if self.is_this_admin_chat:
-            return message.chat.id == get_back_id()
-        return message.chat.id != get_back_id()
+            return message.chat.id == config.back_chat_id
+        return message.chat.id != config.back_chat_id
 
 
 class SuperChatFilter(BaseFilter):
@@ -22,7 +25,11 @@ class SuperChatFilter(BaseFilter):
 
         self.is_this_admin_chat = is_this_admin_chat
 
-    async def __call__(self, message: Message) -> bool:
+    async def __call__(self, message: Message | CallbackQuery) -> bool:
+        return True
+        if isinstance(message, CallbackQuery):
+            return True
+
         if self.is_this_admin_chat:
-            return message.chat.id == get_back_id() or message.chat.id == get_vote_id()
-        return message.chat.id != get_back_id() and message.chat.id != get_vote_id()
+            return message.chat.id == config.back_chat_id or message.chat.id == config.vote_chat_id
+        return message.chat.id != config.back_chat_id and message.chat.id != config.vote_chat_id

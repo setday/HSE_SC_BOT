@@ -1,5 +1,7 @@
 from aiogram import Bot
 
+from config import config
+
 from lib.base.AutoRouter import AutoRouter, ExtraAutoNodes
 
 from .InfoRouterTexts import *
@@ -9,7 +11,7 @@ class InfoRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot)
 
-        self.create_node("info_entry", block_enter_text, "./Assets/AboutUsProfile.webp")
+        self.entry = self.create_node("info_entry", block_enter_text, config.posters_dir / "AboutUsProfile.webp")
         self.create_node(
             "info_member_list",
             members_text,
@@ -30,3 +32,8 @@ class InfoRouter(AutoRouter):
         self.add_button_edge("info_entry", ExtraAutoNodes.HOME_NODE)
         self.add_button_edge("info_member_list", ExtraAutoNodes.HOME_NODE)
         self.add_button_edge("info_links", ExtraAutoNodes.HOME_NODE)
+
+    def reload_assets(self) -> None:
+        self.entry.media = self._load_media(config.posters_dir / "AboutUsProfile.webp")
+
+        return super().reload_assets()

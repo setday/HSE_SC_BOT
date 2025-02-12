@@ -1,7 +1,6 @@
 import random
 from datetime import datetime
 import re
-import os
 
 from docx import Document
 
@@ -11,9 +10,9 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import User
 
-from Utils.Filters import (
-    AdminChatFilter,
-)
+from config import config
+
+from Utils.Filters import AdminChatFilter
 
 from Utils.KeyboardMaker import make_back_to_main_menu_keyboard
 
@@ -51,10 +50,18 @@ class ExtraRouter(Router):
         self.message.register(self.get_bot_id_handler, Command("bot_id"))
         self.message.register(self.get_state_handler, Command("get_state"))
 
+        self.message.register(self.start_event_handler, AdminChatFilter(), Command("start_event"))
+        self.message.register(self.stop_event_handler, AdminChatFilter(), Command("stop_event"))
+
         self.message.register(self.get_credits_handler, Command("credits"))
         self.message.register(self.get_fact_handler, Command("fact"))
         self.message.register(self.del_handler, Command("del"))
         self.message.register(self.answer_user, AdminChatFilter(), Command("ans"))
+
+        self._reload_assets_callback = None
+
+    def set_reload_assets_callback(self, callback) -> None:
+        self._reload_assets_callback = callback
 
     async def get_chat_id_handler(self, message: Message) -> None:
         await message.answer(
@@ -79,6 +86,68 @@ class ExtraRouter(Router):
             reply_markup=make_back_to_main_menu_keyboard(),
         )
 
+    async def start_event_handler(self, message: Message, state: FSMContext) -> None:
+        if not message.text:
+            return
+
+        parts = message.html_text.split(maxsplit=1)
+        if len(parts) == 1:
+            await message.answer(
+                "Команда должна быть в формате `/start_event [valentines_day]`",
+                parse_mode="Markdown",
+            )
+            return
+        
+        event_name = parts[1]
+
+        if event_name not in ["valentines_day"]:
+            await message.answer(
+                "Событие не найдено",
+                parse_mode="Markdown",
+            )
+            return
+
+        config.activate_event(event_name)
+        if self._reload_assets_callback:
+            self._reload_assets_callback()
+
+        await message.answer(
+            f"Событие {event_name} запущено"
+        )
+
+    async def stop_event_handler(self, message: Message, state: FSMContext) -> None:
+        if not message.text:
+            return
+
+        parts = message.html_text.split(maxsplit=1)
+        if len(parts) == 1:
+            config.activate_event(None)
+            if self._reload_assets_callback:
+                self._reload_assets_callback()
+                
+            await message.answer(
+                f"Все события остановлены"
+            )
+
+            return
+        
+        event_name = parts[1]
+
+        if event_name not in ["valentines_day"]:
+            await message.answer(
+                "Событие не найдено",
+                parse_mode="Markdown",
+            )
+            return
+
+        config.activate_event(None)
+        if self._reload_assets_callback:
+            self._reload_assets_callback()
+            
+        await message.answer(
+            f"Событие {event_name} остановлено"
+        )
+
     async def get_credits_handler(self, message: Message, state: FSMContext) -> None:
         lang = await get_lang_from_state(state)
 
@@ -90,7 +159,6 @@ class ExtraRouter(Router):
     datetime_event_start = datetime(
         year=2024, month=1, day=19, hour=4, minute=4, microsecond=0
     )
-    secret_trash = os.getenv("SECRET_TRASH")
 
     async def get_fact_handler(self, message: Message, state: FSMContext) -> None:
         lang = await get_lang_from_state(state)
@@ -100,10 +168,10 @@ class ExtraRouter(Router):
             == self.datetime_event_start
             and message.from_user
             and message.from_user.username
-            and self.secret_trash
+            and config.secret_trash
         ):
 
-            user_hash = hash(message.from_user.username + self.secret_trash)
+            user_hash = hash(message.from_user.username + config.secret_trash)
             await message.answer(
                 facts_format_text[lang].format("?")
                 + facts_text[lang][0].format(user_hash),

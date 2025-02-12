@@ -1,8 +1,8 @@
-from typing import Callable, Coroutine, Any
+from pathlib import Path
 
 from aiogram import Router, Bot
-from aiogram.types import FSInputFile, User
-from aiogram.fsm.context import FSMContext
+from aiogram.types import FSInputFile
+
 from numpy import deprecate
 
 from Utils.KeyboardMaker import button_text_back_to_main_menu_new
@@ -19,6 +19,11 @@ class AutoRouter(Router):
 
         self.node_dict: dict[str, AutoNode] = {}
 
+    def _load_media(self, media: FSInputFile | Path | str | None) -> FSInputFile | None:
+        if isinstance(media, str) or isinstance(media, Path):
+            media = FSInputFile(media)
+        return media
+
     def add_node(
         self,
         node: AutoNode,
@@ -29,12 +34,11 @@ class AutoRouter(Router):
         self,
         node_name: str,
         text: dict[str, str] | None = None,
-        media: FSInputFile | str | None = None,
+        media: FSInputFile | Path | str | None = None,
         answer_type: AutoNodeAnswerType = AutoNodeAnswerType.NEW_MESSAGE,
         **node_message_kwargs,
     ) -> AutoNode:
-        if isinstance(media, str):
-            media = FSInputFile(media)
+        media = self._load_media(media)
 
         node = AutoNode(
             self.bot,
@@ -150,3 +154,6 @@ class AutoRouter(Router):
         # Add edge
         for (button, value) in selector:
             self.node_dict[node_name].add_keyboard_button(f"{endpoint}:{value}", button)
+
+    def reload_assets(self) -> None:
+        pass

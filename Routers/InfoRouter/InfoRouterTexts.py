@@ -24,24 +24,53 @@ links_text: dict[str, str] = {
     "en": '🌐 Webpage: https://spb.hse.ru/studsovet/\n\n📱 <a href="https://vk.com/hsespbstudcouncil">VK page</a> and <a href="https://t.me/studcouncil">TG-channel</a>\n\n✉️ Email: studsovet.spb@hse.ru',
 }
 
-# member_data_list = [
-#     ["Богосьян Лариса Мироновна", "https://vk.com/lrsbog", "https://t.me/lrbog", "4 курс, «Социология и социальная информатика»", "Председатель"],
-#     ["Саранская Екатерина", "https://vk.com/ekatia17", "https://t.me/ekatia17", "3 курс, «Юриспруденция»", "Секретарь"],
-#     ["Серков Александр Максимович", "https://vk.com/setday", "https://t.me/", "2 курс, «Прикладной анализ данных и искусственный интеллект»", "IT-инфраструктура"],
-#     ["Горшков Максим Викторович", "https://vk.com/flihten", "https://t.me/KiJhoTo", "2 курс, «Политология и мировая политика»", "Глава комитета Event-менеджмента и PR"],
-#     ["Архипов Данил Владимирович", "https://vk.com/capnsoth", "https://t.me/CapnSoth", "2 курс, «Юриспруденция»", "Глава HR-комитет"],
-#     ["Козин Георгий Евгеньевич", "https://vk.com/waitforit", "https://t.me/Wait_For_lt", "2 курс, «Международный бакалавриат по экономике и бизнесу»", "Глава Научного отдела"],
-#     ["Астафьева Елизавета Денисовна", "https://vk.com/asterlissa", "https://t.me/lizastaf", "3 курс, «Филология»", "Глава Медиа-комитета"],
-#     ["Бахвалова Анита Николаевна", "https://vk.com/abnnow", "https://t.me/anita_bn03", "4 курс, «Управление и аналитика в государственном секторе»", "Глава SMM-комитета"],
-#     ["Сударева Екатерина Михайловна", "https://vk.com/kattyayaa", "https://t.me/kattyyaaa", "1 курс, «Медиакоммуникации»", "Дизайнер SMM-комитета"],
-#     ["Дмитриева Ксения Дмитриевна", "https://vk.com/queen_cordelia", "https://t.me/Ksenia_26", "3 курс, «Международный бакалавриат»", "Руководитель команды продвижения"],
-#     ["Пшеничникова Анастасия Сергеевна", "https://vk.com/anastasiapsh", "https://t.me/you_no_you", "4 курс, «Социология и социальная информатика»", "Руководитель отдела по партнерским связям"],
-#     ["Вавилов Вячеслав Леонидович", "https://vk.com/vvavilov04", "https://t.me/VaviLove14", "3 курс, «Политология»", "Делегат"],
-#     ["Филиппова София Денисовна", "https://vk.com/filizhopss", "https://t.me/filizhops", "4 курс, «Юриспруденция»", "И.О. Председателя | Глава Правового комитета"],
-#     ["Девицкий Иван Михайлович", "https://vk.com/i.devitsky", "https://t.me/Ivatalks", "4 курс, «Юриспруденция»", "Глава Социального комитета"],
-#     ["Бекетова Софья Александровна", "https://vk.com/mirrrroh", "https://t.me/mirrr0h", "3 курс, «Дизайн»", "Делегат"],
-#     ["Слинкина Екатерина Алексеевна", "https://vk.com/katie_sss", "https://t.me/katie_sss", "3 курс, «Востоковедение»", "Делегат"],
-# ]
+faculty_names: dict[str, list[str]] = {
+    "ru": [
+        "Юриспруденция",
+        "Политология и мировая политика",
+        "УАГС",
+        "Социология и социальная информатика",
+        "Межбак по бизнесу и экономике",
+        "ПАДиИИ",
+        "Медиакоммуникации",
+        "Дизайн",
+        "Востоковедение",
+    ],
+    "en": [
+        "Law",
+        "Political Science and World Politics",
+        "Public Policy and Analytics",
+        "Sociology and Social Informatics",
+        "Interbac",
+        "ADAaAI",
+        "Media Communications",
+        "Design",
+        "Asian and African Studies",
+    ],
+}
+
+committee_names: dict[str, list[str]] = {
+    "ru": [
+        "Event-менеджмент и PR",
+        "HR-комитет",
+        "SMM-комитет",
+        "Социальный комитет",
+        "Правовой комитет",
+        "Аналитический комитет",
+        "IT-инфраструктура",
+        "Дизайнер SMM-комитета",
+    ],
+    "en": [
+        "Event Management and PR Committee",
+        "HR Committee",
+        "SMM Committee",
+        "Social Committee",
+        "Legal Committee",
+        "Analytical Committee",
+        "IT Infrastructure",
+        "SMM Committee Designer",
+    ],
+}
 
 headmaster_member_data_list = [
     [
@@ -49,167 +78,108 @@ headmaster_member_data_list = [
         "https://vk.com/filizhopss",
         "https://t.me/filizhops",
         "Юриспруденция",
-        "И.О. Председателя",
+        "Председатель",
         "Filippova Sofia Denisovna",
         "Law",
-        "Acting President",
+        "Chairman",
     ],
     [
-        "Саранская Екатерина",
-        "https://vk.com/ekatia17",
-        "https://t.me/ekatia17",
-        "Юриспруденция",
+        "Майков Андрей Владимирович",
+        "https://vk.com/steeninfo",
+        "https://t.me/steeninfo",
+        "Политология и мировая политика",
         "Секретарь",
-        "Ekaterina Saranskaya",
-        "Law",
+        "Maykov Andrey Vladimirovich",
+        "Political Science and World Politics",
         "Secretary",
     ],
 ]
 
-head_member_data_list = [
+head_member_data_list = []
+
+other_member_data_list = [
     [
+	    "Смирнова Анастасия",
+        "https://vk.com/prostomuka",
+        "https://t.me/prostiik",
+        "Юриспруденция",
+        "Глава правового комитета / Ответственная за СММ",
+        "Smirnova Anastasia",
+        "Law",
+        "Head of the law committee / Responsible for SMM",
+    ], [
+    	"Якимович Сергей",
+        "https://vk.com/se.yakimovich",
+        "https://t.me/se_yakimovich",
+        "Международный бакалавриат по бизнесу и экономике",
+        "Ответственный за качество образования",
+        "Yakimovich Sergey",
+        "IBBE",
+        "Responsible for the quality of education",
+    ], [
         "Горшков Максим",
         "https://vk.com/flihten",
         "https://t.me/KiJhoTo",
         "Политология и мировая политика",
-        "Комитет Event-менеджмента и PR",
+        "Ответственный за внешние связи",
         "Maxim Gorshkov",
         "Political Science and World Politics",
-        "Event Management and PR Committee",
-    ],
-    [
+        "Responsible for external relations",
+    ], [
+	    "Сизова Ольга",
+        "https://vk.com/osvloz",
+        "https://t.me/Olllgessa",
+        "Социология и социальная информатика",
+        "Ответственный за СММ",
+        "Sizova Olga",
+        "Sociology and Social Informatics",
+        "Responsible for SMM",
+    ], [
+        "Богосьян Софья",
+        "https://vk.com/sofia_bogosyan",
+        "https://t.me/Sfbgs",
+        "Аналитика в экономике",
+        "Делегат в БСС (Большой Студенческий Совет)",
+        "Bogosyan Sofia",
+        "Economic Data Analytics",
+        "Delegate to the BSC (Big Student Council)",
+    ], [
         "Архипов Данил",
         "https://vk.com/capnsoth",
-        "https://t.me/CapnSoth",
+        "https://t.me/capnsoth",
         "Юриспруденция",
-        "HR-комитет",
-        "Daniel Arkhipov",
+        "Делегат в БСС / Ответственный за социальные вопросы",
+        "Arkhipov Danil",
         "Law",
-        "HR Committee",
-    ],
-    [
-        "Бахвалова Анита",
-        "https://vk.com/abnnow",
-        "https://t.me/anita_bn03",
-        "УАГС",
-        "SMM-комитет",
-        "Anita Bakhvalova",
-        "Public Policy and Analytics",
-        "SMM Committee",
-    ],
-    [
-        "Девицкий Иван",
-        "https://vk.com/i.devitsky",
-        "https://t.me/Ivatalks",
-        "Юриспруденция",
-        "Социальный комитет",
-        "Ivan Devitsky",
-        "Law",
-        "Social Committee",
-    ],
-    [
-        "Филиппова София",
-        "https://vk.com/filizhopss",
-        "https://t.me/filizhops",
-        "Юриспруденция",
-        "Правовой комитет",
-        "Sofia Filippova",
-        "Law",
-        "Legal Committee",
-    ],
-    [
-        "Богосьян Лариса",
-        "https://vk.com/lrsbog",
-        "https://t.me/lrbog",
-        "Социология и социальная информатика",
-        "Аналитический комитет",
-        "Bogosyan Larisa Mironovna",
-        "Sociology and Social Informatics",
-        "Analytical Committee",
-    ],
-]
-
-other_member_data_list = [
-    [
-        "Козин Георгий",
-        "https://vk.com/waitforit",
-        "https://t.me/Wait_For_lt",
+        "Delegate to the BSC / Responsible for social issues",
+    ], [
+        "Попов Кирилл",
+        "https://vk.com/krilllllmozgyi",
+        "https://t.me/kirillpoov",
         "Межбак по бизнесу и экономике",
-        "Руководитель научного отдела",
-        "Georgy Kozin",
-        "Interbac",
-        "Head of the Scientific Department",
-    ],
-    [
-        "Дмитриева Ксения",
-        "https://vk.com/queen_cordelia",
-        "https://t.me/Ksenia_26",
-        "Межбак по бизнесу и экономике",
-        "Руководитель команды продвижения",
-        "Ksenia Dmitrieva",
-        "Interbac",
-        "Promotion Team Leader",
-    ],
-    [
-        "Пшеничникова Анастасия",
-        "https://vk.com/anastasiapsh",
-        "https://t.me/you_no_you",
-        "Социология и социальная информатика",
-        "Руководитель отдела по партнерским связям",
-        "Anastasia Pshenichnikova",
-        "Sociology and Social Informatics",
-        "Head of the Partnership Relations Department",
-    ],
-    [
-        "Серков Александр",
-        "https://vk.com/setday",
-        "https://t.me/",
-        "ПАДиИИ",
-        "IT-инфраструктура",
-        "Alexander Serkov",
-        "ADAaAI",
-        "IT Infrastructure",
-    ],
-    [
-        "Сударева Екатерина",
-        "https://vk.com/kattyayaa",
-        "https://t.me/kattyyaaa",
-        "Медиакоммуникации",
-        "Дизайнер SMM-комитета",
-        "Ekaterina Sudareva",
-        "Media Communications",
-        "SMM Committee Designer",
-    ],
-    [
-        "Бекетова Софья",
-        "https://vk.com/mirrrroh",
-        "https://t.me/mirrr0h",
-        "Дизайн",
         "Делегат",
-        "Sofia Beketova",
-        "Design",
+        "Popov Kirill",
+        "IBBE",
         "Delegate",
-    ],
-    [
-        "Слинкина Екатерина",
-        "https://vk.com/katie_sss",
-        "https://t.me/katie_sss",
-        "Востоковедение",
+    ], [
+        "Султанов Роберт",
+        "https://vk.com/cxld.ribs",
+        "https://t.me/cxld_ribs",
+        "Управление бизнесом",
         "Делегат",
-        "Ekaterina Slinkina",
-        "Asian and African Studies",
+        "Sultanov Robert",
+        "Business Administration",
         "Delegate",
-    ],
-    [
-        "Вавилов Вячеслав",
-        "https://vk.com/vvavilov04",
-        "https://t.me/VaviLove14",
-        "Политология и мировая политика",
+    ], [
+        "Эноумани Сэмюэл",
+        "https://vk.com/mrwisdom96",
+        "t.me/PrinceSamuelAyuk",
+        "Международный бизнес в Азиатско-Тихоокеанском регионе",
         "Делегат",
-        "Vyacheslav Vavilov",
-        "Political Science and World Politics",
+        "Enowmanyi Samuel Ayuk",
+        "International Business in the Asia-Pacific Region",
         "Delegate",
-    ],
+    ]
 ]
 
 members_text: dict[str, str] = {
@@ -220,11 +190,11 @@ members_text: dict[str, str] = {
                 f"├ {member[4]} — [{member[0]}]({member[1]}) («{member[3]}»)\n"
                 for member in headmaster_member_data_list
             ],
-            "\n┌── Главы комитетов ──\n│\n",
-            *[
-                f"├ {member[4]} — [{member[0]}]({member[1]}) («{member[3]}»)\n"
-                for member in head_member_data_list
-            ],
+            # "\n┌── Главы комитетов ──\n│\n",
+            # *[
+            #     f"├ {member[4]} — [{member[0]}]({member[1]}) («{member[3]}»)\n"
+            #     for member in head_member_data_list
+            # ],
             "\n",
             *[
                 f"├ {member[4]} — [{member[0]}]({member[1]}) («{member[3]}»)\n"
@@ -239,11 +209,11 @@ members_text: dict[str, str] = {
                 f"├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n"
                 for member in headmaster_member_data_list
             ],
-            "\n┌── Heads of Committees ──\n│\n",
-            *[
-                f"├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n"
-                for member in head_member_data_list
-            ],
+            # "\n┌── Heads of Committees ──\n│\n",
+            # *[
+            #     f"├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n"
+            #     for member in head_member_data_list
+            # ],
             "\n",
             *[
                 f"├ {member[7]} — [{member[5]}]({member[1]}) («{member[6]}»)\n"

@@ -13,6 +13,6 @@ class DefaultRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot)
 
-        self.add_node(DefaultAutoNode(bot, self, unknown_action_text, filters=[SuperChatFilter(False)]))
+        self.add_node(DefaultAutoNode(bot, self, unknown_action_text))
 
         self.add_button_edge("default_node", ExtraAutoNodes.HOME_NODE)

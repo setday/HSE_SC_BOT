@@ -4,6 +4,8 @@ from aiogram import Bot
 from aiogram.types import User, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
+from config import config
+
 from Utils.BotStorage import BotStorage
 
 from Utils.BackChatUtils import send_request_to_back
@@ -63,12 +65,11 @@ class SenderAutoNode(AutoNode):
 class PartnershipRouter(AutoRouter):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot)
-        super().__init__(bot)
 
-        self.create_node(
+        self.entry = self.create_node(
             "partnership_entry",
             block_enter_text,
-            "./Assets/PartnershipProfile.webp",
+            config.posters_dir / "PartnershipProfile.webp",
             parse_mode="HTML",
         ).set_trigger_callback(self.clear_state_func)
         self.create_node(
@@ -101,6 +102,11 @@ class PartnershipRouter(AutoRouter):
 
         self.add_button_edge("partnership_entry", ExtraAutoNodes.HOME_NODE)
         self.add_button_edge("partners_message_sent", ExtraAutoNodes.HOME_NODE)
+
+    def reload_assets(self) -> None:
+        self.entry.media = self._load_media(config.posters_dir / "PartnershipProfile.webp")
+
+        return super().reload_assets()
 
     async def clear_state_func(
         self, node: AutoNode, state: FSMContext, user: User | None, text: str | None

@@ -88,6 +88,22 @@ class AutoNode:
     def has_callback_with_information_handler(self) -> bool:
         return self._is_callback_with_information_handler_registered
     
+    @property
+    def media(self) -> FSInputFile | None:
+        return self._media
+
+    @media.setter
+    def media(self, media: FSInputFile | None) -> None:
+        self._media = media
+
+    @property
+    def text(self) -> dict[str, str] | None:
+        return self._text
+    
+    @text.setter
+    def text(self, text: dict[str, str] | None) -> None:
+        self._text = text
+    
     def set_trigger_callback(
         self,
         node_trigger_callback: Callable[

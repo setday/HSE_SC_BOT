@@ -90,11 +90,13 @@ class DefaultAutoNode(AutoNode):
     async def message_handler(self, message: Message, state: FSMContext) -> None:
         print(
             "Unhandeled message:",
-            message.text,
+            message.html_text,
             " | DOC -> | ",
             message.document,
             " | MIM -> | ",
             message.document.mime_type if message.document else None,
+            " | PID -> | ",
+            message.photo,
             " | MID -> | ",
             message.media_group_id,
             " | CID -> | ",
