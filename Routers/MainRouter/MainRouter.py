@@ -9,7 +9,7 @@ from lib.base.AutoNode import AutoNode
 from lib.base.ExtraAutoNodes import EntryAutoNode, ExtraAutoNodes
 from lib.base.AutoRouter import AutoRouter
 
-from Utils.Filters import SuperChatFilter
+from Utils.Filters import AdminChatFilter
 
 from .MainRouterTexts import *
 from Routers.Events.valentinesDay.ValentinesDayRouterTexts import valentine_send_button_text
@@ -25,7 +25,7 @@ class MainRouter(AutoRouter):
                 bot, self,
                 text=navigation_text,
                 media=FSInputFile(config.posters_dir / "GlobalProfile.webp"),
-                filters=[SuperChatFilter(False)]
+                filters=[AdminChatFilter(False)]
         ).set_trigger_callback(self.entry_action)
 
         self.add_node(self.entry)

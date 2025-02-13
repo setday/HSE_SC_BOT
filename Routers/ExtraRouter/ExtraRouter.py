@@ -1,8 +1,5 @@
 import random
 from datetime import datetime
-import re
-
-from docx import Document
 
 from aiogram import Router, Bot, F
 from aiogram.types import Message, CallbackQuery
@@ -23,23 +20,6 @@ from Utils.Utils import try_delete_message, get_lang_from_state
 from Utils.BotStorage import BotStorage
 
 from Routers.Events.valentinesDay.ValentinesDayRouter import ValentinesDayRouter
-
-
-def get_dead_list(file):
-    res = []
-
-    doc = Document(file)
-    for para in doc.paragraphs:
-        re_res = re.findall(
-            r"римен.ть в отношении студент..? .* мер.? дисциплинарного взыскания",
-            para.text,
-        )
-        for r in re_res:
-            r = r.split(" ", 4)[4]
-            r = r.rsplit(" ", 3)[0]
-            res.append(r)
-
-    return res
 
 
 class ExtraRouter(Router):

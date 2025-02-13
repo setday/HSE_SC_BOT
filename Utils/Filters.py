@@ -17,18 +17,3 @@ class AdminChatFilter(BaseFilter):
         if self.is_this_admin_chat:
             return message.chat.id == config.back_chat_id
         return message.chat.id != config.back_chat_id
-
-
-class SuperChatFilter(BaseFilter):
-    def __init__(self, is_this_admin_chat: bool = True):
-        super().__init__()
-
-        self.is_this_admin_chat = is_this_admin_chat
-
-    async def __call__(self, message: Message | CallbackQuery) -> bool:
-        if isinstance(message, CallbackQuery):
-            return True
-
-        if self.is_this_admin_chat:
-            return message.chat.id == config.back_chat_id or message.chat.id == config.vote_chat_id
-        return message.chat.id != config.back_chat_id and message.chat.id != config.vote_chat_id

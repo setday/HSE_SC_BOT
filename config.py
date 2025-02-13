@@ -28,7 +28,6 @@ class Config(BaseSettings):
     bot_api_token: str = Field(default=None, env="BOT_API_TOKEN")
     
     back_chat_id: int = Field(default=None, env="BACK_CHAT_ID")
-    vote_chat_id: int = Field(default=None, env="VOTE_CHAT_ID")
     valentines_day_chat_id: int = Field(default=None, env="VALENTINE_CHAT_ID")
 
     secret_trash: str = Field(default=secrets.token_urlsafe(32), env="SECRET_TRASH")
