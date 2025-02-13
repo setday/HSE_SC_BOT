@@ -121,9 +121,9 @@ class ExtraRouter(Router):
         if not callback.message or not isinstance(callback.message, Message) or not callback.message.text:
             return
         
-        # if str(callback.from_user.id) in callback.message.text:
-        #     await callback.answer("Вы уже одобрили эту команду")
-        #     return
+        if str(callback.from_user.id) in callback.message.text:
+            await callback.answer("Вы уже одобрили эту команду")
+            return
         
         await callback.answer("Команда одобрена")
 
