@@ -365,12 +365,12 @@ class AutoNode:
             raise ValueError("Currently only MemoryStorage is supported")
 
         users = storage.storage.keys()
-        broadcasted_users = set()
+        broadcasted_users: set[int] = set()
 
         for user in users:
-            if user in broadcasted_users:
-                continue
             user_id = user.user_id
+            if user.user_id in broadcasted_users:
+                continue
             state = FSMContext(storage, user)
             await self.send_to_user(state, User(id=user_id, is_bot=False, first_name=""))
-            broadcasted_users.add(user)
+            broadcasted_users.add(user.user_id)
