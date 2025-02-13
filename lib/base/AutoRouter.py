@@ -73,7 +73,7 @@ class AutoRouter(Router):
         button_text: dict[str, str] | None = None,
         is_node_local: bool = True,
         is_next_node_local: bool = True,
-    ) -> None:
+    ) -> str | None:
 
         assert not is_node_local or node_name in self.node_dict, f"Node {node_name} doesn't exist"
 
@@ -102,7 +102,9 @@ class AutoRouter(Router):
         ), "Button text can't be None for edge with ordinary nodes"
 
         # Add edge
-        self.node_dict[node_name].add_keyboard_button(next_node_name, button_text)
+        button_id = self.node_dict[node_name].add_keyboard_button(next_node_name, button_text)
+
+        return f"{node_name}|{button_id}|{next_node_name}"
 
     def add_message_edge(
         self,
@@ -111,7 +113,7 @@ class AutoRouter(Router):
         state_destination: str | None = None,
         is_node_local: bool = True,
         is_next_node_local: bool = True,
-    ) -> None:
+    ) -> str | None:
         
         assert not is_node_local or node_name in self.node_dict, f"Node {node_name} doesn't exist"
 
@@ -125,6 +127,8 @@ class AutoRouter(Router):
         
         if is_node_local:
             self.node_dict[node_name].add_state_changer(endpoint)
+            
+        return f"{node_name}|m|{next_node_name}"
 
     def add_selector_edge(
         self,
@@ -134,7 +138,7 @@ class AutoRouter(Router):
         state_destination: str | None = None,
         is_node_local: bool = True,
         is_next_node_local: bool = True,
-    ) -> None:
+    ) -> list[str] | None:
         assert not is_node_local or node_name in self.node_dict, f"Node {node_name} doesn't exist"
 
         endpoint: str | None = None
@@ -151,9 +155,30 @@ class AutoRouter(Router):
         if not is_node_local:
             return
 
+        edge_ids = []
+
         # Add edge
         for (button, value) in selector:
-            self.node_dict[node_name].add_keyboard_button(f"{endpoint}:{value}", button)
+            button_id = self.node_dict[node_name].add_keyboard_button(f"{endpoint}:{value}", button)
+            edge_ids.append(f"{node_name}|{button_id}|{next_node}")
+
+        return edge_ids
+    
+    def toggle_edge(
+        self,
+        edge_id: str,
+        state: bool | None = None
+    ) -> None:
+        parts = edge_id.rsplit("|")
+
+        assert len(parts) == 3
+
+        node_name = parts[0]
+        button_id = int(parts[1])
+
+        assert node_name in self.node_dict, f"Node {node_name} doesn't exist"
+
+        self.node_dict[node_name].toggle_button(button_id, state)
 
     def reload_assets(self) -> None:
         pass

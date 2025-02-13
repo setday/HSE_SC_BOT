@@ -12,6 +12,7 @@ from lib.base.AutoRouter import AutoRouter
 from Utils.Filters import SuperChatFilter
 
 from .MainRouterTexts import *
+from Routers.Events.valentinesDay.ValentinesDayRouterTexts import valentine_send_button_text
 
 from Utils.Utils import check_lang_in_state
 
@@ -30,6 +31,13 @@ class MainRouter(AutoRouter):
         self.add_node(self.entry)
         self.create_node("language_selection", language_selection_text)
 
+        ### Event edges
+
+        self.valentines_day_edge = self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "valentines_day_entry", valentine_send_button_text, is_next_node_local=False) or ""
+        self.toggle_edge(self.valentines_day_edge, False)
+
+        ### Normal edges
+
         self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "info_entry", button_text_info_about_sc, is_next_node_local=False)
         self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "leave_request_entry", button_text_leave_request_to_sc, is_next_node_local=False)
         self.add_button_edge(ExtraAutoNodes.HOME_NODE.value, "join_us_entry", button_text_work_with_us, is_next_node_local=False)
@@ -42,6 +50,12 @@ class MainRouter(AutoRouter):
 
     def reload_assets(self) -> None:
         self.entry.media = self._load_media(config.posters_dir / "GlobalProfile.webp")
+
+        if config.current_event == "valentines_day":
+            self.toggle_edge(self.valentines_day_edge, True)
+        else:
+            self.toggle_edge(self.valentines_day_edge, False)
+
 
         return super().reload_assets()
 

@@ -63,7 +63,7 @@ class AutoNode:
 
         self._message_kwargs = message_kwargs
 
-        self._keyboard_buttons: list[tuple[dict[str, str], str, str | None]] = []
+        self._keyboard_buttons: list[tuple[dict[str, str], str, str | None, bool]] = []
 
         self._next_node_state: State | None = None
 
@@ -139,7 +139,9 @@ class AutoNode:
     def _prepare_keyboard_buttons(self, lang: str) -> InlineKeyboardMarkup:
         keyboard_buttons = []
 
-        for button_text, next_node_name, link in self._keyboard_buttons:
+        for button_text, next_node_name, link, usage in self._keyboard_buttons:
+            if not usage:
+                continue
             keyboard_buttons.append((button_text[lang], next_node_name, link))
         
         keyboard = make_keyboard(*keyboard_buttons)
@@ -185,17 +187,34 @@ class AutoNode:
 
     def add_keyboard_button(
         self, next_node_name: str, button_text: dict[str, str]
-    ) -> None:
+    ) -> int:
         assert (
             self._answer_type == AutoNodeAnswerType.NEW_MESSAGE
         ), "Can't add button to toast"
 
         if next_node_name.startswith("http"):
             self._keyboard_buttons.append(
-                (button_text, "url_destination", next_node_name)
+                (button_text, "url_destination", next_node_name, True)
             )
         else:
-            self._keyboard_buttons.append((button_text, next_node_name, None))
+            self._keyboard_buttons.append((button_text, next_node_name, None, True))
+
+        return len(self._keyboard_buttons) - 1
+    
+    def toggle_button(self, button_id: int, state: bool | None = None):
+        assert 0 <= button_id <= len(self._keyboard_buttons)
+
+        if state is None:
+            state = not self._keyboard_buttons[button_id][3]
+        elif state == self._keyboard_buttons[button_id][3]:
+            return
+        
+        self._keyboard_buttons[button_id] = (
+            self._keyboard_buttons[button_id][0],
+            self._keyboard_buttons[button_id][1],
+            self._keyboard_buttons[button_id][2],
+            state
+        )
 
     def add_state_changer(self, next_node_state: State) -> None:
         self._next_node_state = next_node_state
